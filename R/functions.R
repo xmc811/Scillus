@@ -42,9 +42,13 @@ vlookup <- function(list, table, col_1, col_2) {
         return(new_list)
 }
 
-load_10X_mito_cc <- function(dir = NULL, raw_data = NULL, gcol = 2, proj_name, min_cells = 5, org = "human", cc = T) {
+load_10X_mito_cc <- function(dir = NULL, matrix = NULL, gcol = 2, proj_name, min_cells = 5, org = "human", cc = T) {
         
-        if (!is.null(dir))  raw_data <- Read10X(data.dir = dir, gene.column = gcol)
+        if (!is.null(dir))  {
+                raw_data <- Read10X(data.dir = dir, gene.column = gcol)
+        } else {
+                raw_data <- read.table(file = matrix, sep = "\t", header = T)
+        }
         
         data <- CreateSeuratObject(counts = raw_data, project = proj_name, min.cells = min_cells)
         
@@ -629,6 +633,4 @@ analyze_monocle <- function(cds, rev = F) {
 
 # Test
 
-        
-epi_cds <- seurat_to_monocle(dataset = gfp_combined, subset = T, clusters = c('Basal 1','Luminal 1','Basal 2','Luminal 2'))
 
