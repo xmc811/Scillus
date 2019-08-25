@@ -1,13 +1,34 @@
 
 # Helper functions
 
+#' Look up corresponding values from a lookup table
+#' 
+#' @param list A string vector - keys
+#' @param table A tibble - the lookup table
+#' @param col_1 An integer - column index of the keys
+#' @param col_2 An integer - column index of the values
+#' 
+#' @return A string vector.
+#' @export
+#' 
+
 vlookup <- function(list, table, col_1, col_2) {
         new_list <- table[[col_2]][match(list, table[[col_1]])]
         return(new_list)
 }
 
 
-
+#' Get top genes of each cluster
+#' 
+#' @param dataset A Seurat object.
+#' @param markers A tibble - from FindMarkers function. 
+#' @param n An integer - number of top genes to choose. 
+#' 
+#' @return A string vector of genes.
+#' @importFrom dplyr filter arrange group_by row_number
+#' @importFrom magrittr %>% %<>%
+#' @export
+#' 
 
 get_top_genes <- function(dataset, markers, n) {
         
