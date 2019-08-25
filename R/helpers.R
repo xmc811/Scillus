@@ -1,5 +1,4 @@
 
-
 # Helper functions
 
 vlookup <- function(list, table, col_1, col_2) {
@@ -46,6 +45,7 @@ get_palette <- function(ncolor, palette = c("Paired", "Set2", "Set1")) {
 #' @param v An integer index vector.
 #' @param pal A string value describing the name of palette in \code{RColorBrewer}.
 #' @return A vector of colors.
+#' @importFrom RColorBrewer brewer.pal.info brewer.pal
 #' @export
 #' @examples
 #' get_colors(c(1:2,4,6), "Paired")
