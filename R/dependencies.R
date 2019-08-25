@@ -30,7 +30,5 @@ library(DoubletFinder)
 
 library(foreach)
 library(doParallel)
-library(svglite)
-
 
 
