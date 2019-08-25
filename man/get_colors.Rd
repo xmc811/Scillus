@@ -18,6 +18,5 @@ A vector of colors.
 Get a vector of colors.
 }
 \examples{
-get_colors(1:5, "Set1")
 get_colors(c(1:2,4,6), "Paired")
 }

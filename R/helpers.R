@@ -46,8 +46,8 @@ get_palette <- function(ncolor, palette = c("Paired", "Set2", "Set1")) {
 #' @param v An integer index vector.
 #' @param pal A string value describing the name of palette in \code{RColorBrewer}.
 #' @return A vector of colors.
+#' @export
 #' @examples
-#' get_colors(1:5, "Set1")
 #' get_colors(c(1:2,4,6), "Paired")
 
 
