@@ -1,0 +1,7 @@
+language: r
+
+r:
+  - release
+  - devel
+  
+warnings_are_errors: false
