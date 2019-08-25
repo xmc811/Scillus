@@ -35,12 +35,13 @@ Imports:
         scales,
         sctransform,
         Seurat,
+        tibble,
         tidyverse,
         viridis
 Collate:
         "dependencies.R"
-        "helpers.R"
         "data.R"
+        "helpers.R"
         "processing.R"
         "visualization.R"
         "deprecated.R"

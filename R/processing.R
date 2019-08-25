@@ -112,6 +112,27 @@ find_doublets <- function(dataset, dims = 1:20, ratio = 0.05, resolution = 0.4, 
         
 }
 
+#' Streamlined analysis of Seurat object after integration
+#' 
+#' @param dataset A Seurat object.
+#' @param group.levels A string vector - factor levels of biological samples. 
+#' @param verbose A logical value -  
+#' @param npcs An integer - 
+#' @param reduction A string -
+#' @param dims An integer vector -
+#' @param nnei An integer -
+#' @param min.dist A double -
+#' @param spread A double -
+#' @param n.epochs An integer -
+#' @param k.param An integer -
+#' @param resolution A double -
+#' 
+#' @return A Seurat object.
+#' @importFrom Seurat RunPCA RunUMAP FindNeighbors FindClusters
+#' @importFrom magrittr %>% %<>%
+#' @export
+#' 
+
 analyze_merged <- function(dataset, group.levels,
                            verbose = T, npcs = 50,
                            reduction = "umap", dims = 1:20, nnei = 30, min.dist = 0.3, spread = 1, n.epochs = 500, 
@@ -128,6 +149,17 @@ analyze_merged <- function(dataset, group.levels,
 }
 
 
+#' Rename clusters in Seurat object
+#' 
+#' @param dataset A Seurat object.
+#' @param labels An string vector - new names of each cluster. 
+#' 
+#' @return A Seurat object.
+#' @importFrom Seurat Idents
+#' @importFrom plyr mapvalues
+#' @export
+#' 
+
 rename_cluster <- function(dataset, labels) {
         
         if (length(labels) != length(levels(Idents(dataset)))) {
@@ -141,6 +173,19 @@ rename_cluster <- function(dataset, labels) {
         }
 }
 
+#' Find differential expressed genes between two groups in each cluster
+#' 
+#' @param dataset A Seurat object.
+#' @param clusters A string vector - clusters to investigate.
+#' @param groups A string vector -
+#' @param logfc A double -
+#' 
+#' @return A Seurat object.
+#' @importFrom Seurat Idents FindMarkers
+#' @importFrom tibble add_column as_tibble
+#' @importFrom magrittr %>% %<>%
+#' @export
+#' 
 
 find_diff_genes <- function(dataset, clusters, groups, logfc = 0.25) {
         
@@ -200,8 +245,19 @@ test_GSEA <- function(diff, clusters, pathway) {
         
 }
 
-
-
+#' Add gene program scores
+#' 
+#' @param dataset A Seurat object.
+#' @param features An string vector - a gene list of expression programs. 
+#' @param org A string - name of organism. Currently only "human" or "mouse" are accepted. 
+#' @param nbin An integer - number of bins of aggregate expression levels for all analyzed features
+#' @param ctrl An integer - number of control features selected from the same bin per analyzed feature
+#' @param name A string - name of the expression program
+#' 
+#' @return A Seurat object.
+#' @importFrom Seurat AddModuleScore
+#' @export
+#' 
 
 add_program_score <- function(dataset, features, org = "human", nbin = 20, ctrl = 10, name){
   
@@ -209,7 +265,7 @@ add_program_score <- function(dataset, features, org = "human", nbin = 20, ctrl 
                 prog_genes <- vlookup(features, mm_hs, 2, 1)
                 prog_genes <- list(prog_genes[!is.na(prog_genes)])
         } else {
-                ex_genes <- list(features)
+                prog_genes <- list(features)
         }
         
         n_genes <- nrow(dataset@assays$integrated@scale.data)
