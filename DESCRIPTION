@@ -1,0 +1,14 @@
+Package: Scillus
+Type: Package
+Title: Scillus is a wrapper package enhancing the visualization of single cell omics data
+Version: 0.1
+Date: 2019-08-24
+Authors@R: person("Mingchu", "Xu", email = "mxu.china@gmail.com",
+                  role = c("aut", "cre"))
+Description: Scillus is a wrapper package enhancing the visualization of single cell omics data.
+Depends: R (>= 3.1.0)
+License: GPL-3
+LazyData: true
+Imports:
+Depends:
+Suggests:
