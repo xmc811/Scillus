@@ -33,7 +33,6 @@ Imports:
         ROCR,
         scales,
         sctransform,
-        svglite,
         Seurat,
         tidyverse,
         viridis
