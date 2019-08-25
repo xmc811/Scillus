@@ -1,6 +1,18 @@
 
 # These functions are used for visualization
 
+
+#' Plot the QC metrics of an individual biological sample
+#' 
+#' @param data_list A list of Seurat objects.
+#' @param metrics A string - the name of the QC metrics.
+#' 
+#' @return A plot.
+#' @importFrom tibble tibble
+#' @importFrom ggplot2 ggplot geom_boxplot aes scale_fill_brewer labs
+#' @export
+#' 
+
 plot_qc <- function(data_list, metrics) {
         
         qc <- list()
@@ -16,6 +28,22 @@ plot_qc <- function(data_list, metrics) {
                 labs(y = metrics)
 }
 
+
+#' Single cell visualization - merged and colored by biological sample
+#' 
+#' @param dataset A Seurat object.
+#' @param reduction A string -
+#' @param group.by A string -
+#' @param colors A string vector -
+#' @param legend.title A string -
+#' @param labels A string vector -
+#' 
+#' @return A plot.
+#' @importFrom Seurat DimPlot
+#' @importFrom ggplot2 scale_color_manual theme scale_color_manual element_rect element_blank
+#' @export
+#' 
+
 plot_merge <- function(dataset, reduction = "umap", group.by = "group", 
                        colors = c('#92c5de','#d6604d'), legend.title = "Group", labels = levels(dataset$group)) {
         
@@ -27,6 +55,22 @@ plot_merge <- function(dataset, reduction = "umap", group.by = "group",
                       aspect.ratio = 1
                 )
 }
+
+
+#' Single cell visualization - split by biological sample, colored by cluster
+#' 
+#' @param dataset A Seurat object.
+#' @param reduction A string -
+#' @param split.by A string -
+#' @param colors A string vector -
+#' @param legend.title A string -
+#' @param labels A string vector -
+#' 
+#' @return A plot.
+#' @importFrom Seurat DimPlot
+#' @importFrom ggplot2 scale_color_manual theme scale_color_manual element_rect element_blank element_text
+#' @export
+#' 
 
 plot_split <- function(dataset, reduction = "umap", split.by = "group", 
                        colors = c('#92c5de','#d6604d'), legend.title = "Cluster", labels = levels(dataset$seurat_clusters)) {
@@ -40,6 +84,23 @@ plot_split <- function(dataset, reduction = "umap", split.by = "group",
                       aspect.ratio = 1
                 )
 }
+
+
+#' Single cell visualization - colored by cluster
+#' 
+#' @param dataset A Seurat object.
+#' @param reduction A string -
+#' @param label A logical value -
+#' @param levels A string vector -
+#' @param self_set_color A logical value -
+#' @param self_colors A string vector -
+#' @param palette A string vector -
+#' 
+#' @return A plot.
+#' @importFrom Seurat DimPlot Idents Idents<-
+#' @importFrom ggplot2 scale_color_manual theme scale_color_manual element_rect element_blank
+#' @export
+#' 
 
 plot_cluster <- function(dataset, reduction = "umap", label = T, levels = NULL,
                          self_set_color = F,
@@ -64,6 +125,20 @@ plot_cluster <- function(dataset, reduction = "umap", label = T, levels = NULL,
                 )
 }
 
+
+#' Single cell visualization - gene expression levels
+#' 
+#' @param dataset A Seurat object.
+#' @param features A string vector -
+#' @param ncol An integer -
+#' 
+#' @return A plot.
+#' @importFrom Seurat DefaultAssay DefaultAssay<- FeaturePlot CombinePlots
+#' @importFrom ggplot2 theme element_rect element_blank element_text
+#' @importFrom colormap colormap
+#' @export
+#' 
+
 plot_features <- function(dataset, features, ncol) {
         
         DefaultAssay(dataset) <- "RNA"
@@ -85,6 +160,24 @@ plot_features <- function(dataset, features, ncol) {
         )
         CombinePlots(plots = p_gene, ncol = ncol)
 }
+
+
+#' Plot the heatmap of single cell dataset
+#' 
+#' @param dataset A Seurat object.
+#' @param markers A tibble -
+#' @param nfeatures An integer -
+#' @param cluster_pal A string vector -
+#' @param group_colors A string vector -
+#' 
+#' @return A plot.
+#' @importFrom Seurat DoHeatmap Idents
+#' @importFrom ggplot2 ggplot_build annotation_raster coord_cartesian scale_fill_gradient2 guides
+#' @importFrom magrittr %<>%
+#' @importFrom tibble as_tibble
+#' @importFrom dplyr arrange
+#' @export
+#' 
 
 plot_heatmap <- function(dataset, markers, nfeatures,
                          cluster_pal = c("Paired", "Set2", "Set1"),
@@ -119,6 +212,29 @@ plot_heatmap <- function(dataset, markers, nfeatures,
                 guides(colour="none")
         
 }
+
+
+#' Plot the basic statistics after cell clustering and labeling
+#' 
+#' @param dataset A Seurat object.
+#' @param plot_type A string -
+#' @param cluster_levels A string vector -
+#' @param group_levels A string vector -
+#' @param self_set_color A logical value -
+#' @param self_colors A string vector -
+#' @param group_colors A string vector -
+#' @param palette A string vector - 
+#' @param plot_ratio A double -
+#' @param text_size A double -
+#' 
+#' @return A plot.
+#' @importFrom tibble tibble
+#' @importFrom ggplot2 ggplot geom_col geom_text geom_bar scale_fill_manual scale_y_continuous coord_flip facet_wrap expand_scale
+#' @importFrom dplyr mutate summarise n
+#' @importFrom forcats fct_rev
+#' @importFrom formattable percent
+#' @export
+#' 
 
 plot_stat <- function(dataset, plot_type, 
                       group_levels, cluster_levels,
@@ -212,6 +328,20 @@ plot_stat <- function(dataset, plot_type,
         
 }
 
+
+#' plot the results of GSEA
+#' 
+#' @param gsea_res A tibble -
+#' @param pattern A string -
+#' @param p_cutoff A double -
+#' @param levels A string vector -
+#' 
+#' @return A plot.
+#' @importFrom stringr str_remove
+#' @importFrom ggplot2 geom_point scale_color_gradient2 scale_size scale_shape_manual
+#' @export
+#' 
+
 plot_GSEA <- function(gsea_res, pattern = "HALLMARK_", p_cutoff = 0.05, levels) {
         
         gsea_res %>%
@@ -229,6 +359,19 @@ plot_GSEA <- function(gsea_res, pattern = "HALLMARK_", p_cutoff = 0.05, levels) 
                       axis.title.y = element_blank())
         
 }
+
+
+#' Boxplot of gene program scores
+#' 
+#' @param dataset A Seurat object.
+#' @param measure A string -
+#' @param plot_type A string -
+#' @param group_levels A string vector -
+#' @param cluster_levels A string vector -
+#' 
+#' @return A plot.
+#' @export
+#' 
 
 plot_measure <- function(dataset, measure, plot_type, group_levels, cluster_levels) {
         
