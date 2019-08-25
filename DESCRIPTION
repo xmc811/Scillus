@@ -28,6 +28,7 @@ Imports:
         modes,
         org.Mm.eg.db,
         plyr,
+        purrr,
         reshape2,
         RColorBrewer,
         ROCR,
