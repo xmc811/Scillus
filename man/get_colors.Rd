@@ -2,7 +2,7 @@
 % Please edit documentation in R/helpers.R
 \name{get_colors}
 \alias{get_colors}
-\title{Get a vector of colors.}
+\title{Get a vector of colors}
 \usage{
 get_colors(v, pal = "Paired")
 }
@@ -15,7 +15,7 @@ get_colors(v, pal = "Paired")
 A vector of colors.
 }
 \description{
-Get a vector of colors.
+Get a vector of colors
 }
 \examples{
 get_colors(c(1:2,4,6), "Paired")

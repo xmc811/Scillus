@@ -23,7 +23,7 @@ get_top_genes <- function(dataset, markers, n) {
         return(df$gene)
 }
 
-#' Get a extended vector of colors.
+#' Get an extended vector of colors
 #' 
 #' @param ncolor Number of colors to be generated
 #' @param palette A string vector describing the name of palette in \code{RColorBrewer}.
@@ -51,7 +51,7 @@ get_palette <- function(ncolor, palette = c("Paired", "Set2", "Set1")) {
         
 }
 
-#' Get a vector of colors.
+#' Get a vector of colors
 #' 
 #' @param v An integer index vector.
 #' @param pal A string value describing the name of palette in \code{RColorBrewer}.

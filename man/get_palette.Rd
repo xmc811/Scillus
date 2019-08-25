@@ -2,7 +2,7 @@
 % Please edit documentation in R/helpers.R
 \name{get_palette}
 \alias{get_palette}
-\title{Get a extended vector of colors.}
+\title{Get an extended vector of colors}
 \usage{
 get_palette(ncolor, palette = c("Paired", "Set2", "Set1"))
 }
@@ -15,7 +15,7 @@ get_palette(ncolor, palette = c("Paired", "Set2", "Set1"))
 A vector of colors.
 }
 \description{
-Get a extended vector of colors.
+Get an extended vector of colors
 }
 \examples{
 get_palette(12, c("Set2", "Set1"))

@@ -37,6 +37,13 @@ Imports:
         Seurat,
         tidyverse,
         viridis
+Collate:
+        "dependencies.R"
+        "helpers.R"
+        "data.R"
+        "processing.R"
+        "visualization.R"
+        "deprecated.R"
 Suggests:
 RoxygenNote: 6.1.1
 Encoding: UTF-8
