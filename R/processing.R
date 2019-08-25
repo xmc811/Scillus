@@ -215,6 +215,22 @@ find_diff_genes <- function(dataset, clusters, groups, logfc = 0.25) {
 
 }
 
+#' GSEA analysis of differential gene expression in each cluster
+#' 
+#' @param diff A tibble -
+#' @param clusters A string vector - clusters to investigate.
+#' @param pathway A vector list - group of gene lists 
+#' 
+#' @return A Seurat object.
+#' @importFrom Seurat Idents FindMarkers
+#' @importFrom dplyr filter right_join distinct arrange desc
+#' @importFrom tidyr replace_na
+#' @importFrom tibble add_column as_tibble
+#' @importFrom magrittr %>% %<>%
+#' @importFrom fgsea fgsea
+#' @export
+#' 
+
 test_GSEA <- function(diff, clusters, pathway) {
         
         gsea_res <- list()

@@ -15,6 +15,7 @@ Imports:
         colormap,
         cowplot,
         doParallel,
+        dplyr,
         DoubletFinder,
         fgsea,
         fields,
@@ -36,6 +37,7 @@ Imports:
         sctransform,
         Seurat,
         tibble,
+        tidyr,
         tidyverse,
         viridis
 Collate:
