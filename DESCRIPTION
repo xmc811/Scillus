@@ -41,6 +41,7 @@ Imports:
 Collate:
         "dependencies.R"
         "data.R"
+        "globals.R"
         "helpers.R"
         "processing.R"
         "visualization.R"
