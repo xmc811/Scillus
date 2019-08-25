@@ -19,4 +19,5 @@ Get a vector of colors.
 }
 \examples{
 get_colors(c(1:2,4,6), "Paired")
+
 }

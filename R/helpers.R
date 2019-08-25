@@ -31,8 +31,10 @@ get_top_genes <- function(dataset, markers, n) {
 #' @importFrom RColorBrewer brewer.pal.info brewer.pal
 #' @importFrom purrr map2
 #' @export
+#' 
 #' @examples
-#' get_palette(12, c("Set2", "Set1))
+#' get_palette(12, c("Set2", "Set1"))
+#' 
 
 get_palette <- function(ncolor, palette = c("Paired", "Set2", "Set1")) {
         
@@ -56,8 +58,10 @@ get_palette <- function(ncolor, palette = c("Paired", "Set2", "Set1")) {
 #' @return A vector of colors.
 #' @importFrom RColorBrewer brewer.pal.info brewer.pal
 #' @export
+#' 
 #' @examples
 #' get_colors(c(1:2,4,6), "Paired")
+#' 
 
 get_colors <- function(v, pal = "Paired") {
         

@@ -17,3 +17,7 @@ A vector of colors.
 \description{
 Get a extended vector of colors.
 }
+\examples{
+get_palette(12, c("Set2", "Set1"))
+
+}
