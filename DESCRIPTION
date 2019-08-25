@@ -7,7 +7,7 @@ Authors@R: person("Mingchu", "Xu", email = "mxu.china@gmail.com",
                   role = c("aut", "cre"))
 Description: Scillus is a wrapper package enhancing the visualization of single cell omics data.
 Depends: R (>= 3.1.0)
-License: GPL-3
+License: GPL-3 | file LICENSE
 LazyData: true
 Imports:
 Depends:
