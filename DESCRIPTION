@@ -11,13 +11,10 @@ License: GPL-3 | file LICENSE
 LazyData: TRUE
 biocViews:
 Imports:
-        biomaRt,
-        clusterProfiler,
         colormap,
         cowplot,
         doParallel,
         dplyr,
-        DoubletFinder,
         fgsea,
         fields,
         forcats,
