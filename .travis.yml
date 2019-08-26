@@ -4,4 +4,9 @@ r:
   - release
   - devel
   
+addons:
+  apt:
+    packages:
+      - libv8-3.14-dev
+  
 warnings_are_errors: false
