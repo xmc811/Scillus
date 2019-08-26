@@ -9,6 +9,7 @@ Description: Scillus is a wrapper package enhancing the visualization of single 
 Depends: R (>= 3.5.0)
 License: GPL-3 | file LICENSE
 LazyData: TRUE
+biocViews:
 Imports:
         biomaRt,
         clusterProfiler,
