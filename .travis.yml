@@ -1,12 +1,14 @@
-language: r
-
-r:
-  - release
-  - devel
-  
+language: R
+cache: packages
+sudo: required
+dist: trusty
 addons:
   apt:
     packages:
       - libv8-3.14-dev
+
+r:
+  - release
+  - devel
   
 warnings_are_errors: false
