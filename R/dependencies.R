@@ -16,17 +16,13 @@ library(sctransform)
 library(ggpubr)
 library(scales)
 
-library(clusterProfiler)
-library(org.Mm.eg.db)
 library(fgsea)
-library(biomaRt)
 
 library(Matrix)
 library(fields)
 library(KernSmooth)
 library(modes)
 library(ROCR)
-library(DoubletFinder)
 
 library(foreach)
 library(doParallel)
