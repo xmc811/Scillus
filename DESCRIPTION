@@ -27,7 +27,6 @@ Imports:
         magrittr,
         Matrix,
         modes,
-        org.Mm.eg.db,
         plyr,
         purrr,
         reshape2,
