@@ -5,6 +5,16 @@
 
 # Scillus v0.1
 
+Please use the following code to install and load the package:
+
+```R
+install.packages("devtools")
+library(devtools)
+
+install_github("xmc811/Scillus", ref = "development")
+library(Scillus)
+```
+
 ### Version History
 
 August 25, 2019
