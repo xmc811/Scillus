@@ -14,6 +14,7 @@
 #' 
 #' @importFrom Seurat Read10X CreateSeuratObject PercentageFeatureSet CellCycleScoring
 #' @importFrom utils read.table
+#' @importFrom data.table fread
 #' @export
 #' 
 
