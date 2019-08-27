@@ -13,6 +13,7 @@ biocViews:
 Imports:
         colormap,
         cowplot,
+        data.table,
         doParallel,
         dplyr,
         fgsea,
