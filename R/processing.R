@@ -21,7 +21,7 @@
 load_scfile <- function(dir = NULL, gcol = 2, org = "human", cc = T, file = NULL, ...) {
         
         if (is.null(dir) + is.null(file) == 0) warning("Both directory and file are provided. Only the former was used.", call. = F, immediate. = T)  
-  
+        
         if (!is.null(dir))  {
                 mtx <- Read10X(data.dir = dir, gene.column = gcol)
         } else {
@@ -68,13 +68,13 @@ load_scfile <- function(dir = NULL, gcol = 2, org = "human", cc = T, file = NULL
 #' 
 
 filter_scdata <- function(dataset, 
-                              range_nFeature = c(500, Inf), range_nCount = c(500, Inf), range_mt = c(-Inf, 10)) {
+                          range_nFeature = c(500, Inf), range_nCount = c(500, Inf), range_mt = c(-Inf, 10)) {
         
         expr <- purrr::map(.x = c("nFeature_RNA", "nCount_RNA", "percent.mt"), .f = Seurat::FetchData, object = dataset)
         
         dataset <- dataset[, which(x = expr[[1]] >= range_nFeature[1] & expr[[1]] <= range_nFeature[2] &
-                                      expr[[2]] >= range_nCount[1] & expr[[2]] <= range_nCount[2] &
-                                     expr[[3]] >= range_mt[1] & expr[[3]] <= range_mt[2])]
+                                           expr[[2]] >= range_nCount[1] & expr[[2]] <= range_nCount[2] &
+                                           expr[[3]] >= range_mt[1] & expr[[3]] <= range_mt[2])]
         
         return(dataset)
 }
@@ -92,6 +92,8 @@ filter_sctrans_10X <- function(dataset, nfeature = 500, mito = 10,
                 SCTransform(vars.to.regress = vars, verbose = T)
         
 }
+
+
 
 find_doublets <- function(dataset, dims = 1:20, ratio = 0.05, resolution = 0.4, txt) {
         
@@ -206,10 +208,10 @@ find_diff_genes <- function(dataset, clusters, groups, logfc = 0.25) {
         for (i in seq(length(clusters))) {
                 
                 d <- FindMarkers(dataset, 
-                                  ident.1 = paste(clusters[i], groups[2], sep = "_"),
-                                  ident.2 = paste(clusters[i], groups[1], sep = "_"),
-                                  logfc.threshold = logfc,
-                                  assay = "RNA")
+                                 ident.1 = paste(clusters[i], groups[2], sep = "_"),
+                                 ident.2 = paste(clusters[i], groups[1], sep = "_"),
+                                 logfc.threshold = logfc,
+                                 assay = "RNA")
                 d %<>%
                         add_column(feature = rownames(d), .before = 1) %>%
                         add_column(cluster = clusters[i], .after = 1)
@@ -220,7 +222,7 @@ find_diff_genes <- function(dataset, clusters, groups, logfc = 0.25) {
         de <- do.call("rbind", de)
         
         de
-
+        
 }
 
 #' GSEA analysis of differential gene expression in each cluster
@@ -284,7 +286,7 @@ test_GSEA <- function(diff, clusters, pathway) {
 #' 
 
 add_program_score <- function(dataset, features, org = "human", nbin = 20, ctrl = 10, name){
-  
+        
         if(org == "mouse"){
                 prog_genes <- vlookup(features, mm_hs, 2, 1)
                 prog_genes <- list(prog_genes[!is.na(prog_genes)])
@@ -295,15 +297,15 @@ add_program_score <- function(dataset, features, org = "human", nbin = 20, ctrl 
         n_genes <- nrow(dataset@assays$integrated@scale.data)
         
         genes_per_bin <- round(n_genes/nbin)
-  
+        
         ctrl <- ifelse(ctrl > genes_per_bin, round(genes_per_bin/3), ctrl)
-  
+        
         dataset <- AddModuleScore(dataset,
                                   features = prog_genes,
                                   ctrl = ctrl,
                                   nbin = nbin,
                                   name = name)
-  
+        
         return(dataset)
 }
 
