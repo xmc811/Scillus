@@ -53,7 +53,7 @@ load_scfile <- function(dir = NULL, gcol = 2, org = "human", cc = T, file = NULL
         return(data)
 }
 
-#' Filter and normalize Seurat object
+#' Filter Seurat object
 #' 
 #' @param dataset A Seurat object.
 #' @param range_nFeature An integer vector - the range of nFeature_RNA for filtering. Default value is \code{c(500, Inf)}. 
@@ -61,13 +61,12 @@ load_scfile <- function(dir = NULL, gcol = 2, org = "human", cc = T, file = NULL
 #' @param range_mt An numeric vector - the range of percent.mt for filtering. Default value is \code{c(-Inf, 10)}.
 #' 
 #' @return A Seurat object.
-#' @importFrom Seurat FetchData NormalizeData FindVariableFeatures
+#' @importFrom Seurat FetchData
 #' @importFrom purrr map
-#' @importFrom magrittr %>% %<>%
 #' @export
 #' 
 
-filter_norm_scdata <- function(dataset, 
+filter_scdata <- function(dataset, 
                               range_nFeature = c(500, Inf), range_nCount = c(500, Inf), range_mt = c(-Inf, 10)) {
         
         expr <- purrr::map(.x = c("nFeature_RNA", "nCount_RNA", "percent.mt"), .f = Seurat::FetchData, object = dataset)
@@ -76,12 +75,10 @@ filter_norm_scdata <- function(dataset,
                                       expr[[2]] >= range_nCount[1] & expr[[2]] <= range_nCount[2] &
                                      expr[[3]] >= range_mt[1] & expr[[3]] <= range_mt[2])]
         
-        dataset %<>%
-                NormalizeData() %>%
-                FindVariableFeatures()
-        
         return(dataset)
 }
+
+
 
 filter_sctrans_10X <- function(dataset, nfeature = 500, mito = 10, 
                                vars = c("percent.mt","nCount_RNA","S.Score","G2M.Score")) {
