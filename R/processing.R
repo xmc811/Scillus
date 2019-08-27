@@ -56,26 +56,31 @@ load_scfile <- function(dir = NULL, gcol = 2, org = "human", cc = T, file = NULL
 #' Filter and normalize Seurat object
 #' 
 #' @param dataset A Seurat object.
-#' @param nfeature An integer - include cells with at least this many features. 
-#' @param mito An integer - include cells with at most this many percentage of mitochondrial RNA molecules. 
-#' @param nfeatures An integer - number of features to select as top variable features.
+#' @param range_nFeature An integer vector - the range of nFeature_RNA for filtering. Default value is \code{c(500, Inf)}. 
+#' @param range_nCount An integer vector - the range of nCount_RNA for filtering. Default value is \code{c(500, Inf)}.
+#' @param range_mt An numeric vector - the range of percent.mt for filtering. Default value is \code{c(-Inf, 10)}.
 #' 
 #' @return A Seurat object.
 #' @importFrom Seurat FetchData NormalizeData FindVariableFeatures
+#' @importFrom purrr map
 #' @importFrom magrittr %>% %<>%
 #' @export
 #' 
 
-filter_norm_10X <- function(dataset, nfeature = 500, mito = 10, nfeatures = 2000) {
+filter_norm_scdata <- function(dataset, 
+                              range_nFeature = c(500, Inf), range_nCount = c(500, Inf), range_mt = c(-Inf, 10)) {
         
-        expr1 <- FetchData(dataset, vars = "nFeature_RNA")
-        expr2 <- FetchData(dataset, vars = "percent.mt")
+        expr <- purrr::map(.x = c("nFeature_RNA", "nCount_RNA", "percent.mt"), .f = Seurat::FetchData, object = dataset)
         
-        dataset <- dataset[, which(x = expr1 > nfeature & expr2 < mito)]
-        dataset %<>% 
-                NormalizeData(verbose = FALSE) %>%
-                FindVariableFeatures(selection.method = "vst", nfeatures = nfeatures)
+        dataset <- dataset[, which(x = expr[[1]] >= range_nFeature[1] & expr[[1]] <= range_nFeature[2] &
+                                      expr[[2]] >= range_nCount[1] & expr[[2]] <= range_nCount[2] &
+                                     expr[[3]] >= range_mt[1] & expr[[3]] <= range_mt[2])]
         
+        dataset %<>%
+                NormalizeData() %>%
+                FindVariableFeatures()
+        
+        return(dataset)
 }
 
 filter_sctrans_10X <- function(dataset, nfeature = 500, mito = 10, 

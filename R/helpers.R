@@ -94,3 +94,14 @@ get_colors <- function(v, pal = "Paired") {
         return(brewer.pal(n = ncol, name = pal)[v])
         
 }
+
+
+test_args <- function(...) {
+        
+        funs <- list(...)
+        arg_lists <- lapply(X = funs, FUN = formalArgs)
+        dup_args <- Reduce(intersect, arg_lists)
+        
+        return(dup_args)
+}
+
