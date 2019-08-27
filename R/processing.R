@@ -24,7 +24,7 @@ load_scfile <- function(dir = NULL, gcol = 2, org = "human", cc = T, file = NULL
         if (!is.null(dir))  {
                 mtx <- Read10X(data.dir = dir, gene.column = gcol)
         } else {
-                mtx <- read.table(file = file, sep = "\t", header = T, check.names = F)
+                mtx <- data.frame(fread(file = file), row.names = T)
         }
         
         data <- CreateSeuratObject(counts = mtx, ...)
