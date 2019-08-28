@@ -68,7 +68,9 @@ load_scfile <- function(dir = NULL, gcol = 2, org = "human", cc = T, file = NULL
 #' 
 
 filter_scdata <- function(dataset, 
-                          range_nFeature = c(500, Inf), range_nCount = c(500, Inf), range_mt = c(-Inf, 10)) {
+                          range_nFeature = c(500, Inf), 
+                          range_nCount = c(500, Inf), 
+                          range_mt = c(-Inf, 10)) {
         
         expr <- purrr::map(.x = c("nFeature_RNA", "nCount_RNA", "percent.mt"), .f = Seurat::FetchData, object = dataset)
         
@@ -77,20 +79,6 @@ filter_scdata <- function(dataset,
                                            expr[[3]] >= range_mt[1] & expr[[3]] <= range_mt[2])]
         
         return(dataset)
-}
-
-
-
-filter_sctrans_10X <- function(dataset, nfeature = 500, mito = 10, 
-                               vars = c("percent.mt","nCount_RNA","S.Score","G2M.Score")) {
-        
-        expr1 <- FetchData(dataset, vars = "nFeature_RNA")
-        expr2 <- FetchData(dataset, vars = "percent.mt")
-        
-        dataset <- dataset[, which(x = expr1 > nfeature & expr2 < mito)]
-        dataset %<>% 
-                SCTransform(vars.to.regress = vars, verbose = T)
-        
 }
 
 
