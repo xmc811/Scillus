@@ -8,6 +8,7 @@
 #' @param gcol An integer - the column index of gene names in the 10xGenomics directory. Default value is \code{2}.
 #' @param org A string - name of organism. Currently only "human" or "mouse" are accepted. Default value is \code{"human"}.
 #' @param cc A logcial value - if cell cycle scores are calculated. Default value is \code{TRUE}.
+#' @param pdx A logcal value - if the sequencing sample is human - mouse mixed. Default value is \code{FALSE}.
 #' @param ... Additional arguments to be passed to the function \code{\link{CreateSeuratObject}}.
 #' 
 #' @return A Seurat of object.
@@ -18,7 +19,7 @@
 #' @export
 #' 
 
-load_scfile <- function(dir = NULL, gcol = 2, org = "human", cc = T, file = NULL, ...) {
+load_scfile <- function(dir = NULL, gcol = 2, org = "human", cc = TRUE, pdx = FALSE, file = NULL, ...) {
         
         if (is.null(dir) + is.null(file) == 0) warning("Both directory and file are provided. Only the former was used.", call. = F, immediate. = T)  
         
@@ -30,7 +31,12 @@ load_scfile <- function(dir = NULL, gcol = 2, org = "human", cc = T, file = NULL
         
         data <- CreateSeuratObject(counts = mtx, ...)
         
-        mito_pattern <- ifelse(org == 'human', "^MT-", "^mt-")
+        if (pdx) {
+                mito_pattern <- ifelse(org == 'human', "^hg19-MT-", "^mm10-mt-")
+        } else {
+                mito_pattern <- ifelse(org == 'human', "^MT-", "^mt-")
+        }
+        
         data[["percent.mt"]] <- PercentageFeatureSet(data, pattern = mito_pattern)
         
         if (org == "mouse") {
