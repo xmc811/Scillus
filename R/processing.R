@@ -9,6 +9,7 @@
 #' @param org A string - name of organism. Currently only "human" or "mouse" are accepted. Default value is \code{"human"}.
 #' @param cc A logcial value - if cell cycle scores are calculated. Default value is \code{TRUE}.
 #' @param pdx A logcal value - if the sequencing sample is human - mouse mixed. Default value is \code{FALSE}.
+#' @param project A string - the name of the biological sample.
 #' @param ... Additional arguments to be passed to the function \code{\link{CreateSeuratObject}}.
 #' 
 #' @return A Seurat of object.
@@ -19,7 +20,7 @@
 #' @export
 #' 
 
-load_scfile <- function(dir = NULL, gcol = 2, org = "human", cc = TRUE, pdx = FALSE, file = NULL, ...) {
+load_scfile <- function(dir = NULL, gcol = 2, org = "human", cc = TRUE, pdx = FALSE, file = NULL, project, ...) {
         
         if (is.null(dir) + is.null(file) == 0) warning("Both directory and file are provided. Only the former was used.", call. = F, immediate. = T)  
         
@@ -29,7 +30,7 @@ load_scfile <- function(dir = NULL, gcol = 2, org = "human", cc = TRUE, pdx = FA
                 mtx <- data.frame(fread(file = file), row.names = T)
         }
         
-        data <- CreateSeuratObject(counts = mtx, ...)
+        data <- CreateSeuratObject(counts = mtx, project = project, ...)
         
         if (pdx) {
                 mito_pattern <- ifelse(org == 'human', "^hg19-MT-", "^mm10-mt-")
