@@ -10,6 +10,8 @@
 #' @return A plot.
 #' @importFrom tibble tibble
 #' @importFrom ggplot2 ggplot geom_boxplot aes scale_fill_brewer labs
+#' @importFrom RColorBrewer brewer.pal
+#' @importFrom grDevices colorRampPalette
 #' @export
 #' 
 
