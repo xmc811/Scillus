@@ -22,9 +22,12 @@ plot_qc <- function(data_list, metrics) {
                                   sample = names(data_list)[i])
         }
         qc <- do.call(rbind, qc)
+        
+        getPalette <- colorRampPalette(brewer.pal(12, "Set3"))
+        
         ggplot(qc) + 
                 geom_boxplot(aes(x = sample, y = value, fill = sample)) +
-                scale_fill_brewer(palette = "Set3") +
+                scale_fill_manual(values = getPalette(length(data_list))) +
                 labs(y = metrics)
 }
 
