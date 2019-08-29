@@ -2,7 +2,7 @@
 name: Development question
 about: Describe this question during package development
 title: "[Development]"
-labels: ''
+labels: development
 assignees: Zhongqige, xmc811
 
 ---
