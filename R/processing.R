@@ -32,8 +32,6 @@ load_scfile <- function(dir = NULL, gcol = 2, org = "human", cc = TRUE, pdx = FA
         
         data <- CreateSeuratObject(counts = mtx, project = project, ...)
         
-        data <- NormalizeData(data)
-        
         if (pdx) {
                 mito_pattern <- ifelse(org == 'human', "^hg19-MT-", "^mm10-mt-")
         } else {
