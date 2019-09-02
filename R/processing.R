@@ -7,20 +7,17 @@
 #' @param file A string - file path of single cell RNA-Seq count matrix. Default value is \code{NULL}. If both \code{dir} and \code{file} are provided. Only the former will be used.
 #' @param gcol An integer - the column index of gene names in the 10xGenomics directory. Default value is \code{2}.
 #' @param org A string - name of organism. Currently only "human" or "mouse" are accepted. Default value is \code{"human"}.
-#' @param cc A logcial value - if cell cycle scores are calculated. Default value is \code{TRUE}.
-#' @param pdx A logcal value - if the sequencing sample is human - mouse mixed. Default value is \code{FALSE}.
 #' @param project A string - the name of the biological sample.
 #' @param ... Additional arguments to be passed to the function \code{\link{CreateSeuratObject}}.
 #' 
 #' @return A Seurat of object.
 #' 
-#' @importFrom Seurat Read10X CreateSeuratObject PercentageFeatureSet CellCycleScoring
-#' @importFrom utils read.table
+#' @importFrom Seurat Read10X CreateSeuratObject PercentageFeatureSet
 #' @importFrom data.table fread
 #' @export
 #' 
 
-load_scfile <- function(dir = NULL, gcol = 2, org = "human", cc = TRUE, pdx = FALSE, file = NULL, project, ...) {
+load_scfile <- function(dir = NULL, gcol = 2, org = "human", file = NULL, project, ...) {
         
         if (is.null(dir) + is.null(file) == 0) warning("Both directory and file are provided. Only the former was used.", call. = F, immediate. = T)  
         
@@ -32,31 +29,9 @@ load_scfile <- function(dir = NULL, gcol = 2, org = "human", cc = TRUE, pdx = FA
         
         data <- CreateSeuratObject(counts = mtx, project = project, ...)
         
-        data <- NormalizeData(data)
-        
-        if (pdx) {
-                mito_pattern <- ifelse(org == 'human', "^hg19-MT-", "^mm10-mt-")
-        } else {
-                mito_pattern <- ifelse(org == 'human', "^MT-", "^mt-")
-        }
+        mito_pattern <- ifelse(org == 'human', "^MT-", "^mt-")
         
         data[["percent.mt"]] <- PercentageFeatureSet(data, pattern = mito_pattern)
-        
-        if (org == "mouse") {
-                
-                s.genes <- vlookup(cc.genes$s.genes, mm_hs, 2, 1)
-                g2m.genes <- vlookup(cc.genes$g2m.genes, mm_hs, 2, 1)
-                
-                s.genes <- s.genes[!is.na(s.genes)]
-                g2m.genes <- g2m.genes[!is.na(g2m.genes)]
-                
-        } else {
-                
-                s.genes <- cc.genes$s.genes
-                g2m.genes <- cc.genes$g2m.genes
-        }
-        
-        if (cc) data <- CellCycleScoring(data, s.features = s.genes, g2m.features = g2m.genes, set.ident = TRUE)
         
         data$group <- data@project.name
         
