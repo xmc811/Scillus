@@ -18,6 +18,23 @@ vlookup <- function(list, table, col_1, col_2) {
 }
 
 
+#' Conversion between mouse and human gene symbols
+#' 
+#' @param gene_list A string vector - a list of genes to convert
+#' @param hs_to_mm A logical value - if the conversion is from human to mouse. Default value is \code{TRUE}.
+#' 
+#' @return A string vector.
+#' @export
+#' 
+
+convert_symbol <- function(gene_list, hs_to_mm = TRUE) {
+        
+        genes <- vlookup(gene_list, mm_hs, 1 + hs_to_mm, 2 - hs_to_mm)
+        genes[!is.na(genes)]
+       
+}
+
+
 #' Get top genes of each cluster
 #' 
 #' @param dataset A Seurat object.
