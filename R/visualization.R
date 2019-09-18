@@ -6,6 +6,7 @@
 #' 
 #' @param data_list A list of Seurat objects.
 #' @param metrics A string - the name of the QC metrics.
+#' @param plot_type A string -the type of the plot. Default value is \code{"box"}.
 #' 
 #' @return A plot.
 #' @importFrom tibble tibble
@@ -16,7 +17,7 @@
 #' @export
 #' 
 
-plot_qc <- function(data_list, metrics) {
+plot_qc <- function(data_list, metrics, plot_type = "box") {
         
         qc <- list()
         
@@ -28,13 +29,18 @@ plot_qc <- function(data_list, metrics) {
         
         getPalette <- colorRampPalette(brewer.pal(12, "Set3"))
         
-        ggplot(qc, mapping = aes(x = sample, y = value, fill = sample)) + 
-                geom_violin() +
-                geom_boxplot(width = 0.1, outlier.colour = NA) +
+        p <- ggplot(qc, mapping = aes(x = sample, y = value, fill = sample)) + 
                 scale_fill_manual(values = getPalette(length(data_list))) +
                 scale_y_continuous(breaks = scales::pretty_breaks(n = 7)) +
                 labs(y = metrics) + 
                 theme(legend.position = "none")
+        
+        switch(plot_type,
+               box = p + geom_boxplot(),
+               violin = p + geom_violin(),
+               combined = p + geom_violin() + geom_boxplot(alpha = 0.2),
+               stop("Unknown plot type")
+        )
 }
 
 

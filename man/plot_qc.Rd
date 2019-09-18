@@ -4,12 +4,14 @@
 \alias{plot_qc}
 \title{Plot the QC metrics of an individual biological sample}
 \usage{
-plot_qc(data_list, metrics)
+plot_qc(data_list, metrics, plot_type = "box")
 }
 \arguments{
 \item{data_list}{A list of Seurat objects.}
 
 \item{metrics}{A string - the name of the QC metrics.}
+
+\item{plot_type}{A string -the type of the plot. Default value is \code{"box"}.}
 }
 \value{
 A plot.
