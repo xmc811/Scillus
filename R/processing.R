@@ -65,6 +65,46 @@ filter_scdata <- function(dataset,
         return(dataset)
 }
 
+#' Filter Seurat object list
+#' 
+#' @param data_list A list of Seurat objects.
+#' @param ... Arguments passed to \code{filter_scdata}. 
+#' 
+#' @return A list of Seurat objects.
+#' @importFrom purrr map
+#' @importFrom reshape2 melt
+#' @importFrom ggplot2 position_dodge
+#' @export
+#' 
+
+filter_scdata_list <- function(data_list, ...) {
+        
+        sample <- purrr::map_chr(.x = data_list, .f = function(x) x@project.name)
+        pre <- purrr::map_int(.x = data_list, .f = function(x) nrow(x[["nCount_RNA"]]))
+        data_list <- purrr::map(.x = data_list, .f = filter_scdata, ...)
+        post <- purrr::map_int(.x = data_list, .f = function(x) nrow(x[["nCount_RNA"]]))
+        
+        df <- tibble::tibble(sample = sample,
+                             pre = pre,
+                             post = post)
+        
+        df <- reshape2::melt(df, id = "sample")
+        
+        p <- ggplot(df) +
+                geom_bar(aes(x = sample, fill = variable, y = value), stat = "identity", position = "dodge") +
+                scale_fill_manual(values = c("#fb8072","#80b1d3"), labels = c("Pre-QC", "Post-QC"), name = NULL) +
+                geom_text(aes(x = sample, y = value, label = value, group = variable), position = position_dodge(width = 1), vjust = -0.5, size = 3.5) +
+                labs(y = "Number of Cells") +
+                theme(legend.title = element_text(size = 10),
+                      legend.text = element_text(size = 10),
+                      axis.title = element_text(size = 10),
+                      axis.text = element_text(size = 10),
+                      axis.title.x = element_blank())
+        
+        plot(p)
+        return(data_list)
+}
+
 
 
 find_doublets <- function(dataset, dims = 1:20, ratio = 0.05, resolution = 0.4, txt) {

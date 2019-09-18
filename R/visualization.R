@@ -11,6 +11,7 @@
 #' @importFrom tibble tibble
 #' @importFrom ggplot2 ggplot geom_boxplot aes scale_fill_brewer labs
 #' @importFrom RColorBrewer brewer.pal
+#' @importFrom scales pretty_breaks
 #' @importFrom grDevices colorRampPalette
 #' @export
 #' 
@@ -21,16 +22,19 @@ plot_qc <- function(data_list, metrics) {
         
         for (i in seq(length(data_list))) {
                 qc[[i]] <- tibble(value = data_list[[i]][[metrics]][[1]],
-                                  sample = names(data_list)[i])
+                                  sample = data_list[[i]]@project.name)
         }
         qc <- do.call(rbind, qc)
         
         getPalette <- colorRampPalette(brewer.pal(12, "Set3"))
         
-        ggplot(qc) + 
-                geom_boxplot(aes(x = sample, y = value, fill = sample)) +
+        ggplot(qc, mapping = aes(x = sample, y = value, fill = sample)) + 
+                geom_violin() +
+                geom_boxplot(width = 0.1, outlier.colour = NA) +
                 scale_fill_manual(values = getPalette(length(data_list))) +
-                labs(y = metrics)
+                scale_y_continuous(breaks = scales::pretty_breaks(n = 7)) +
+                labs(y = metrics) + 
+                theme(legend.position = "none")
 }
 
 
