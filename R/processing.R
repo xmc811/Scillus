@@ -92,7 +92,7 @@ filter_scdata_list <- function(data_list, ...) {
         
         p <- ggplot(df) +
                 geom_bar(aes(x = sample, fill = variable, y = value), stat = "identity", position = "dodge") +
-                scale_fill_manual(values = c("#fb8072","#80b1d3"), labels = c("Pre-QC", "Post-QC"), name = NULL) +
+                scale_fill_manual(values = c("#fbb4ae","#b3cde3"), labels = c("Pre-QC", "Post-QC"), name = NULL) +
                 geom_text(aes(x = sample, y = value, label = value, group = variable), position = position_dodge(width = 1), vjust = -0.5, size = 3.5) +
                 labs(y = "Number of Cells") +
                 theme(legend.title = element_text(size = 10),
