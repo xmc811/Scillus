@@ -32,8 +32,9 @@ plot_qc <- function(data_list, metrics, plot_type = "box") {
         p <- ggplot(qc, mapping = aes(x = sample, y = value, fill = sample)) + 
                 scale_fill_manual(values = getPalette(length(data_list))) +
                 scale_y_continuous(breaks = scales::pretty_breaks(n = 7)) +
-                labs(y = metrics) +
-                ylim(0, NA) +
+                labs(y = metrics) + {
+                if (!metrics %in% c("S.Score", "G2M.Score")) ylim(0, NA)
+                } +
                 theme(legend.position = "none")
         
         switch(plot_type,

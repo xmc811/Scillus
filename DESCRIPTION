@@ -12,7 +12,8 @@ Depends:
         magrittr,
         purrr,
         RColorBrewer,
-        scales
+        scales,
+        Seurat
 License: GPL-3 | file LICENSE
 LazyData: TRUE
 biocViews:
