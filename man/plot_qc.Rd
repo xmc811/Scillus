@@ -4,7 +4,7 @@
 \alias{plot_qc}
 \title{Plot the QC metrics of an individual biological sample}
 \usage{
-plot_qc(data_list, metrics, plot_type = "box")
+plot_qc(data_list, metrics, plot_type = "combined")
 }
 \arguments{
 \item{data_list}{A list of Seurat objects.}

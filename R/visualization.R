@@ -17,7 +17,7 @@
 #' @export
 #' 
 
-plot_qc <- function(data_list, metrics, plot_type = "box") {
+plot_qc <- function(data_list, metrics, plot_type = "combined") {
         
         qc <- list()
         

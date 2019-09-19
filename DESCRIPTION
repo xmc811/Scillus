@@ -13,7 +13,8 @@ Depends:
         purrr,
         RColorBrewer,
         scales,
-        Seurat
+        Seurat,
+        tibble
 License: GPL-3 | file LICENSE
 LazyData: TRUE
 biocViews:
