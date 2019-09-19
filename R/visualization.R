@@ -50,6 +50,8 @@ plot_qc <- function(data_list, metrics, plot_type = "combined") {
 #' 
 #' @param dataset A Seurat object.
 #' @param colors A string vector - the colors used for samples. Default value is \code{NULL}.
+#' @param color_by A string - by which metadata the colors will be applied. Default value is \code{"seurat_clusters"}.
+#' @param split A string - by which metadata the plot will be split. Default value is \code{NULL}.
 #' @param ... Arguments passed to \code{DimPlot}.
 #' 
 #' @return A plot.
@@ -58,42 +60,9 @@ plot_qc <- function(data_list, metrics, plot_type = "combined") {
 #' @export
 #' 
 
-plot_merge <- function(dataset, colors = NULL, ...) {
+plot_scdata <- function(dataset, color_by = "seurat_clusters", colors = NULL, split = NULL, ...) {
         
         dataset$group <- factor(dataset$group)
-        
-        p <- DimPlot(object = dataset, reduction = "umap", group.by = "group", ...)
-        
-        num <- length(levels(dataset$group))
-        
-        if (is.null(colors)) colors <- get_colors(seq(num), "Set3")
-        
-        p + scale_color_manual(values = colors, name = "Sample", labels = levels(dataset$group)) +
-                theme(panel.border = element_rect(colour = "black", fill = NA, size = 1, linetype = 1),
-                      axis.line=element_blank(),
-                      aspect.ratio = 1
-                )
-}
-
-
-#' Single cell visualization - split by biological sample, colored by cluster
-#' 
-#' @param dataset A Seurat object.
-#' @param colors A string vector - the colors used for levels. Default value is \code{NULL}.
-#' @param color_by A string - by which metadata the colors will be applied. Default value is \code{"seurat_clusters"}.
-#' 
-#' @return A plot.
-#' @importFrom Seurat DimPlot
-#' @importFrom ggplot2 scale_color_manual theme scale_color_manual element_rect element_blank element_text
-#' @export
-#' 
-
-plot_split <- function(dataset, color_by = "seurat_clusters", colors = NULL, ...) {
-        
-        dataset$group <- factor(dataset$group)
-        
-        p <- DimPlot(object = dataset, reduction = "umap", split.by = "group", group.by = color_by, 
-                     ncol = ceiling(sqrt(length(levels(dataset$group)))), ...)
         
         if (color_by == "group") {
                 levels <- levels(dataset$group)
@@ -105,53 +74,25 @@ plot_split <- function(dataset, color_by = "seurat_clusters", colors = NULL, ...
         
         if (is.null(colors)) colors <- get_colors(seq(length(levels)), "Set3")
         
-        p  + scale_color_manual(values = colors, name = legend.title, labels = levels) +
-                theme(panel.border = element_rect(colour = "black", fill = NA, size = 1, linetype = 1),
-                      strip.text.x = element_text(face = "plain", vjust = 1),
-                      axis.line = element_blank(),
-                      aspect.ratio = 1
-                )
-}
-
-
-#' Single cell visualization - colored by cluster
-#' 
-#' @param dataset A Seurat object.
-#' @param reduction A string -
-#' @param label A logical value -
-#' @param levels A string vector -
-#' @param self_set_color A logical value -
-#' @param self_colors A string vector -
-#' @param palette A string vector -
-#' 
-#' @return A plot.
-#' @importFrom Seurat DimPlot Idents Idents<-
-#' @importFrom ggplot2 scale_color_manual theme scale_color_manual element_rect element_blank
-#' @export
-#' 
-
-plot_cluster <- function(dataset, label = T, levels = NULL,
-                         self_set_color = F,
-                         self_colors,
-                         palette = c("Set2", "Paired")) {
+        thm <- theme(panel.border = element_rect(colour = "black", fill = NA, size = 1, linetype = 1),
+                     axis.line=element_blank(),
+                     aspect.ratio = 1)
         
-        ncolor <- length(levels(Idents(dataset)))
-        colors <- if (self_set_color) self_colors else (get_palette(ncolor, palette))
-        
-        tmp <- dataset
-        
-        if (is.null(levels) == F) {
-                Idents(tmp) <- factor(Idents(tmp), levels = levels)
+        if (is.null(split)) {
+                p <- DimPlot(object = dataset, reduction = "umap", group.by = color_by, ...)
+                
+                p + scale_color_manual(values = colors, name = legend.title, labels = levels) + thm
+                        
+        } else {
+                p <- DimPlot(object = dataset, reduction = "umap", split.by = split, group.by = color_by, 
+                             ncol = ceiling(sqrt(length(levels(dataset$group)))), ...)
+                
+                p  + scale_color_manual(values = colors, name = legend.title, labels = levels) + thm + 
+                        theme(strip.text.x = element_text(face = "plain", vjust = 1))
         }
-        
-        p <- DimPlot(object = tmp, reduction = reduction, label = label)
-        p + scale_color_manual(values = colors, name = "Clusters") +
-                theme(panel.border = element_rect(colour = "black", fill=NA, size=1, linetype = 1),
-                      axis.line=element_blank(),
-                      strip.text = element_blank(),
-                      aspect.ratio = 1
-                )
+                
 }
+
 
 
 #' Single cell visualization - gene expression levels
