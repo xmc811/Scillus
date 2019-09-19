@@ -64,6 +64,8 @@ plot_scdata <- function(dataset, color_by = "seurat_clusters", colors = NULL, sp
         
         dataset$group <- factor(dataset$group)
         
+        getPalette <- colorRampPalette(brewer.pal(12, "Set3"))
+        
         if (color_by == "group") {
                 levels <- levels(dataset$group)
         } else {
@@ -72,8 +74,15 @@ plot_scdata <- function(dataset, color_by = "seurat_clusters", colors = NULL, sp
         
         legend.title <- ifelse(color_by == "group", "Sample", "Cluster")
         
-        if (is.null(colors)) colors <- get_colors(seq(length(levels)), "Set3")
-        
+        if (is.null(colors)) {
+                if (color_by == "group") {
+                        colors <- getPalette(length(levels))
+                } else {
+                        colors <- get_palette(length(levels))
+                }
+                
+        }
+                
         thm <- theme(panel.border = element_rect(colour = "black", fill = NA, size = 1, linetype = 1),
                      axis.line=element_blank(),
                      aspect.ratio = 1)
@@ -187,14 +196,11 @@ plot_heatmap <- function(dataset, markers, nfeatures,
 #' 
 #' @param dataset A Seurat object.
 #' @param plot_type A string -
-#' @param cluster_levels A string vector -
-#' @param group_levels A string vector -
-#' @param self_set_color A logical value -
-#' @param self_colors A string vector -
+#' @param cluster_colors A string vector -
 #' @param group_colors A string vector -
-#' @param palette A string vector - 
 #' @param plot_ratio A double -
 #' @param text_size A double -
+#' @param tilt_text A logical -
 #' 
 #' @return A plot.
 #' @importFrom tibble tibble
@@ -205,14 +211,23 @@ plot_heatmap <- function(dataset, markers, nfeatures,
 #' @export
 #' 
 
-plot_stat <- function(dataset, plot_type, 
-                      group_levels, cluster_levels,
-                      self_set_color = F,
-                      self_colors,
-                      group_colors = c('#92c5de','#d6604d'),
-                      palette = c("Set3", "Paired"),
+plot_stat <- function(dataset, 
+                      plot_type, 
+                      cluster_colors = NULL,
+                      group_colors = NULL,
                       plot_ratio = 1,
-                      text_size = 10) {
+                      text_size = 10,
+                      tilt_text = FALSE) {
+        
+        dataset$group <- factor(dataset$group)
+        
+        group_levels <- levels(dataset$group)
+        cluster_levels <- levels(dataset$seurat_clusters)
+        
+        getPalette <- colorRampPalette(brewer.pal(12, "Set3"))
+        
+        if (is.null(group_colors)) group_colors <- getPalette(length(group_levels))
+        if (is.null(cluster_colors)) cluster_colors <- get_palette(length(cluster_levels))
         
         stat <- as_tibble(cbind(group = as.character(dataset$group), cluster = as.character(Idents(dataset))))
         stat %<>%
@@ -222,7 +237,6 @@ plot_stat <- function(dataset, plot_type,
                 summarise(n = n()) %>%
                 mutate(freq = n / sum(n))
         
-        cluster_colors <- if(self_set_color) self_colors else (get_palette(length(levels(Idents(dataset))), palette = palette))
         
         thm <- theme(aspect.ratio = plot_ratio,
                      legend.title = element_text(size = text_size),
@@ -231,6 +245,8 @@ plot_stat <- function(dataset, plot_type,
                      axis.text = element_text(size = text_size),
                      axis.title.x = element_blank()
         )
+        thm2 <- theme(legend.position = "none")
+        thm3 <- theme(axis.text.x = element_text(angle = 45, vjust = 0.5))
         
         switch(plot_type,
                group_count = stat %>%
@@ -240,8 +256,9 @@ plot_stat <- function(dataset, plot_type,
                        geom_col(aes(x = group, y = `sum(n)`, fill = group)) +
                        geom_text(aes(x = group, y = `sum(n)`, label = `sum(n)`), 
                                  vjust = -0.5, size = text_size * 0.35) +
-                       scale_fill_manual(values = group_colors, name = "Group") + 
-                       labs(y = "Counts") + thm,
+                       scale_fill_manual(values = group_colors) + 
+                       labs(y = "Number of Cells") + 
+                       thm + thm2 + if (tilt_text) {thm3},
                
                cluster_count = stat %>%
                        group_by(cluster) %>%
@@ -251,15 +268,15 @@ plot_stat <- function(dataset, plot_type,
                        geom_text(aes(x = cluster, y = `sum(n)`, label = `sum(n)`), 
                                  vjust = -0.5, size = text_size * 0.35) +
                        scale_fill_manual(values = cluster_colors, name = "Cluster") + 
-                       labs(y = "Counts") + 
-                       theme(axis.text.x = element_text(angle = 45, vjust = 0.5)) +
-                       thm,
+                       labs(y = "Number of Cells") + 
+                       thm + thm2 + if (tilt_text) {thm3},
                
                prop_fill = ggplot(stat) + 
                        geom_bar(aes(x = group, y = freq, fill = cluster), position = "fill", stat = "identity") +
                        scale_y_continuous(labels = scales::percent) +
                        scale_fill_manual(values = cluster_colors, name = "Cluster") +
-                       labs(y = "Proportion") + thm,
+                       labs(y = "Proportion") + 
+                       thm + if (tilt_text) {thm3},
                
                prop_diverge = stat %>%
                        mutate(cluster = fct_rev(cluster)) %>%
@@ -289,12 +306,12 @@ plot_stat <- function(dataset, plot_type,
                        facet_wrap(~cluster, ncol = 4, scales = "free") +
                        scale_fill_manual(values = group_colors, name = "Group") +
                        labs(x = NULL, y = "Proportion") + 
-                       theme(strip.text.x = element_text(size = text_size)) + thm,
+                       theme(strip.text.x = element_text(size = text_size)) + 
+                       thm + thm2 + if (tilt_text) {thm3},
                
                stop("Unknown plot type")
         )
-        
-        
+
 }
 
 
