@@ -145,7 +145,7 @@ plot_features <- function(dataset, features, ncol) {
 #' @param dataset A Seurat object.
 #' @param markers A tibble -
 #' @param nfeatures An integer -
-#' @param cluster_pal A string vector -
+#' @param cluster_colors A string vector -
 #' @param group_colors A string vector -
 #' 
 #' @return A plot.
@@ -157,9 +157,13 @@ plot_features <- function(dataset, features, ncol) {
 #' @export
 #' 
 
-plot_heatmap <- function(dataset, markers, nfeatures,
-                         cluster_pal = c("Paired", "Set2", "Set1"),
-                         group_colors = c('#92c5de','#d6604d')) {
+plot_heatmap <- function(dataset, 
+                         markers, 
+                         nfeatures = 5,
+                         cluster_colors = NULL,
+                         group_colors = NULL) {
+        
+        dataset$group <- factor(dataset$group)
         
         df <- as_tibble(cbind(colnames(dataset), dataset$seurat_clusters, dataset$group))
         colnames(df) <- c("barcode","cluster","group")
@@ -175,17 +179,20 @@ plot_heatmap <- function(dataset, markers, nfeatures,
         p_pos_y <- ggplot_build(plot = p_heat)$layout$panel_params[[1]]$y.range
         
         ncol <- length(levels(Idents(dataset)))
+        ngroup <- length(levels(dataset$group))
         
-        pal1 <- get_palette(ncolor = ncol, palette = cluster_pal)
+        getPalette <- colorRampPalette(brewer.pal(12, "Set3"))
+        
+        pal1 <- if (is.null(cluster_colors)) get_palette(ncol) else cluster_colors
         col1 <- pal1[as.numeric(df$cluster)]
         
-        pal2 <- group_colors
+        pal2 <- if (is.null(group_colors)) getPalette(ngroup) else group_colors
         col2 <- pal2[as.numeric(factor(df$group))]
         
         p_heat + 
-                annotation_raster(t(col2), -Inf, Inf, max(p_pos_y)+0.5, max(p_pos_y)+1.5) +
-                annotation_raster(t(col1), -Inf, Inf, max(p_pos_y)+2, max(p_pos_y)+3) +
-                coord_cartesian(ylim = c(0, max(p_pos_y)+4), clip = 'off') +
+                annotation_raster(t(col2), -Inf, Inf, max(p_pos_y) + 0.5, max(p_pos_y) + 1.5) +
+                annotation_raster(t(col1), -Inf, Inf, max(p_pos_y) + 2, max(p_pos_y) + 3) +
+                coord_cartesian(ylim = c(0, max(p_pos_y) + 4), clip = 'off') +
                 scale_fill_gradient2(low = '#377eb8', high = '#e41a1c', mid = 'white', midpoint = 0) +
                 guides(colour="none")
         
