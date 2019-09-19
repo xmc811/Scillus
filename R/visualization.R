@@ -79,11 +79,8 @@ plot_merge <- function(dataset, colors = NULL, ...) {
 #' Single cell visualization - split by biological sample, colored by cluster
 #' 
 #' @param dataset A Seurat object.
-#' @param reduction A string -
-#' @param split.by A string -
-#' @param colors A string vector -
-#' @param legend.title A string -
-#' @param labels A string vector -
+#' @param colors A string vector - the colors used for levels. Default value is \code{NULL}.
+#' @param color_by A string - by which metadata the colors will be applied. Default value is \code{"seurat_clusters"}.
 #' 
 #' @return A plot.
 #' @importFrom Seurat DimPlot
@@ -91,15 +88,27 @@ plot_merge <- function(dataset, colors = NULL, ...) {
 #' @export
 #' 
 
-plot_split <- function(dataset, reduction = "umap", split.by = "group", 
-                       colors = c('#92c5de','#d6604d'), legend.title = "Cluster", labels = levels(dataset$seurat_clusters)) {
+plot_split <- function(dataset, color_by = "seurat_clusters", colors = NULL, ...) {
         
-        p <- DimPlot(object = dataset, reduction = reduction, split.by = split.by)
+        dataset$group <- factor(dataset$group)
         
-        p  + scale_color_manual(values = colors, name = legend.title, labels = labels) +
+        p <- DimPlot(object = dataset, reduction = "umap", split.by = "group", group.by = color_by, 
+                     ncol = ceiling(sqrt(length(levels(dataset$group)))), ...)
+        
+        if (color_by == "group") {
+                levels <- levels(dataset$group)
+        } else {
+                levels <- levels(dataset$seurat_clusters)
+        }
+        
+        legend.title <- ifelse(color_by == "group", "Sample", "Cluster")
+        
+        if (is.null(colors)) colors <- get_colors(seq(length(levels)), "Set3")
+        
+        p  + scale_color_manual(values = colors, name = legend.title, labels = levels) +
                 theme(panel.border = element_rect(colour = "black", fill = NA, size = 1, linetype = 1),
                       strip.text.x = element_text(face = "plain", vjust = 1),
-                      axis.line=element_blank(),
+                      axis.line = element_blank(),
                       aspect.ratio = 1
                 )
 }
@@ -121,7 +130,7 @@ plot_split <- function(dataset, reduction = "umap", split.by = "group",
 #' @export
 #' 
 
-plot_cluster <- function(dataset, reduction = "umap", label = T, levels = NULL,
+plot_cluster <- function(dataset, label = T, levels = NULL,
                          self_set_color = F,
                          self_colors,
                          palette = c("Set2", "Paired")) {

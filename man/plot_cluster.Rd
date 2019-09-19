@@ -4,13 +4,11 @@
 \alias{plot_cluster}
 \title{Single cell visualization - colored by cluster}
 \usage{
-plot_cluster(dataset, reduction = "umap", label = T, levels = NULL,
-  self_set_color = F, self_colors, palette = c("Set2", "Paired"))
+plot_cluster(dataset, label = T, levels = NULL, self_set_color = F,
+  self_colors, palette = c("Set2", "Paired"))
 }
 \arguments{
 \item{dataset}{A Seurat object.}
-
-\item{reduction}{A string -}
 
 \item{label}{A logical value -}
 
@@ -21,6 +19,8 @@ plot_cluster(dataset, reduction = "umap", label = T, levels = NULL,
 \item{self_colors}{A string vector -}
 
 \item{palette}{A string vector -}
+
+\item{reduction}{A string -}
 }
 \value{
 A plot.

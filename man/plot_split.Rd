@@ -4,22 +4,14 @@
 \alias{plot_split}
 \title{Single cell visualization - split by biological sample, colored by cluster}
 \usage{
-plot_split(dataset, reduction = "umap", split.by = "group",
-  colors = c("#92c5de", "#d6604d"), legend.title = "Cluster",
-  labels = levels(dataset$seurat_clusters))
+plot_split(dataset, color_by = "seurat_clusters", colors = NULL, ...)
 }
 \arguments{
 \item{dataset}{A Seurat object.}
 
-\item{reduction}{A string -}
+\item{color_by}{A string - by which metadata the colors will be applied. Default value is \code{"seurat_clusters"}.}
 
-\item{split.by}{A string -}
-
-\item{colors}{A string vector -}
-
-\item{legend.title}{A string -}
-
-\item{labels}{A string vector -}
+\item{colors}{A string vector - the colors used for levels. Default value is \code{NULL}.}
 }
 \value{
 A plot.
