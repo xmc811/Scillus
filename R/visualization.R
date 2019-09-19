@@ -49,11 +49,8 @@ plot_qc <- function(data_list, metrics, plot_type = "combined") {
 #' Single cell visualization - merged and colored by biological sample
 #' 
 #' @param dataset A Seurat object.
-#' @param reduction A string -
-#' @param group.by A string -
-#' @param colors A string vector -
-#' @param legend.title A string -
-#' @param labels A string vector -
+#' @param colors A string vector - the colors used for samples. Default value is \code{NULL}.
+#' @param ... Arguments passed to \code{DimPlot}.
 #' 
 #' @return A plot.
 #' @importFrom Seurat DimPlot
@@ -61,13 +58,18 @@ plot_qc <- function(data_list, metrics, plot_type = "combined") {
 #' @export
 #' 
 
-plot_merge <- function(dataset, reduction = "umap", group.by = "group", 
-                       colors = c('#92c5de','#d6604d'), legend.title = "Group", labels = levels(dataset$group)) {
+plot_merge <- function(dataset, colors = NULL, ...) {
         
-        p <- DimPlot(object = dataset, reduction = reduction, group.by = group.by)
+        dataset$group <- factor(dataset$group)
         
-        p  + scale_color_manual(values = colors, name = legend.title, labels = labels) +
-                theme(panel.border = element_rect(colour = "black", fill=NA, size=1, linetype = 1),
+        p <- DimPlot(object = dataset, reduction = "umap", group.by = "group", ...)
+        
+        num <- length(levels(dataset$group))
+        
+        if (is.null(colors)) colors <- get_colors(seq(num), "Set3")
+        
+        p + scale_color_manual(values = colors, name = "Sample", labels = levels(dataset$group)) +
+                theme(panel.border = element_rect(colour = "black", fill = NA, size = 1, linetype = 1),
                       axis.line=element_blank(),
                       aspect.ratio = 1
                 )

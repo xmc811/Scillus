@@ -4,22 +4,14 @@
 \alias{plot_merge}
 \title{Single cell visualization - merged and colored by biological sample}
 \usage{
-plot_merge(dataset, reduction = "umap", group.by = "group",
-  colors = c("#92c5de", "#d6604d"), legend.title = "Group",
-  labels = levels(dataset$group))
+plot_merge(dataset, colors = NULL, ...)
 }
 \arguments{
 \item{dataset}{A Seurat object.}
 
-\item{reduction}{A string -}
+\item{colors}{A string vector - the colors used for samples. Default value is \code{NULL}.}
 
-\item{group.by}{A string -}
-
-\item{colors}{A string vector -}
-
-\item{legend.title}{A string -}
-
-\item{labels}{A string vector -}
+\item{...}{Arguments passed to \code{DimPlot}.}
 }
 \value{
 A plot.
