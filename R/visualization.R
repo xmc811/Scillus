@@ -359,43 +359,61 @@ plot_GSEA <- function(gsea_res, pattern = "HALLMARK_", p_cutoff = 0.05, levels) 
 #' @param dataset A Seurat object.
 #' @param measure A string -
 #' @param plot_type A string -
-#' @param group_levels A string vector -
-#' @param cluster_levels A string vector -
+#' @param group_colors A string vector -
+#' @param cluster_colors A string vector -
+#' @param show A string -
 #' 
 #' @return A plot.
 #' @export
 #' 
 
-plot_measure <- function(dataset, measure, plot_type, group_levels, cluster_levels) {
+plot_measure <- function(dataset, measure, plot_type, show = "combined",
+                         group_colors = NULL, 
+                         cluster_colors = NULL) {
+        
+        dataset$group <- factor(dataset$group)
+        
+        group_levels <- levels(dataset$group)
+        cluster_levels <- levels(dataset$seurat_clusters)
+        
+        getPalette <- colorRampPalette(brewer.pal(12, "Set3"))
+        
+        if (is.null(group_colors)) group_colors <- getPalette(length(group_levels))
+        if (is.null(cluster_colors)) cluster_colors <- get_palette(length(cluster_levels))
         
         df <- tibble(group = as.character(dataset$group),
                      cluster = as.character(Idents(dataset)),
                      measure = as.numeric(dataset@meta.data[[measure]]))
         
-        thm <- theme(axis.title.x = element_blank(),
-                     axis.title.y = element_blank())
+        thm <- theme(axis.title.y = element_blank())
+        thm2 <- theme(legend.position = "none")
+        
+        a <- ifelse(show == "box", 1, 0.2)
         
         switch(plot_type,
                group = ggplot(df, aes(x = factor(group, levels = group_levels), 
                                       y = measure,
                                       fill = factor(group, levels = group_levels))) + 
-                       geom_boxplot() +
-                       scale_fill_manual(values = get_colors(1:length(group_levels)),
-                                         name = "Group") + thm,
+                       {if (show != "box") geom_violin()} +
+                       {if (show != "violin") geom_boxplot(alpha = a)} +
+                       xlab("Sample") +
+                       scale_fill_manual(values = group_colors) + thm + thm2,
                
                cluster = ggplot(df, aes(x = factor(cluster, levels = cluster_levels), 
                                         y = measure,
                                         fill = factor(cluster, levels = cluster_levels))) + 
-                       geom_boxplot() +
-                       scale_fill_manual(values = get_colors(1:length(cluster_levels)), 
-                                         name = "Cluster") + thm,
+                       {if (show != "box") geom_violin()} + 
+                       {if (show != "violin") geom_boxplot(alpha = a)} +
+                       xlab("Cluster") +
+                       scale_fill_manual(values = cluster_colors) + thm + thm2,
                
                cluster_group = ggplot(df, aes(x = factor(cluster, levels = cluster_levels), 
                                               y = measure,
                                               fill = factor(group, levels = group_levels))) + 
-                       geom_boxplot() +
-                       scale_fill_manual(values = get_colors(1:length(group_levels)), 
-                                         name = "Group") + thm,
+                       {if (show != "box") geom_violin(position = position_dodge(width = 0.8))} + 
+                       {if (show != "violin") geom_boxplot(alpha = a, width = 0.7, position = position_dodge(width = 0.8))} +
+                       xlab("Cluster") +
+                       scale_fill_manual(values = group_colors, name = "Sample") + thm,
                
                stop("Unknown plot type")
         )
