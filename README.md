@@ -3,6 +3,14 @@
 
 <img align="right" width="108" height="125" src="Scillus.png">
 
+
+Please visit the Scillus documentation website:
+
+[scillus.netlify.com](scillus.netlify.com)
+
+
+[![Netlify Status](https://api.netlify.com/api/v1/badges/eadbcb9a-16d1-4a9a-9e50-c0e8d4104ddc/deploy-status)](https://app.netlify.com/sites/scillus/deploys)
+
 # Scillus v0.1
 
 Please use the following code to install and load the package:
