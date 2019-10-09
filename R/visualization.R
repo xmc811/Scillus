@@ -314,6 +314,71 @@ plot_stat <- function(dataset,
 }
 
 
+#' plot the GO enrichment analysis of a cluster
+#' 
+#' @param markers A tibble -
+#' @param cluster_name A string -
+#' @param topn An integer -
+#' @param ... Additional arguments to be passed to the function \code{\link{enrichGO}}.
+#' 
+#' @return A plot.
+#' @importFrom clusterProfiler enrichGO
+#' @importFrom utils head
+#' @importFrom dplyr pull
+#' @importFrom forcats fct_reorder
+#' @importFrom ggplot2 facet_grid geom_hline xlab ylab
+#' @export
+#' 
+
+plot_cluster_go <- function(markers, cluster_name, topn = 100, ...) {
+        
+        gene_list <- markers %>%
+                filter(cluster == cluster_name) %>%
+                arrange(p_val_adj) %>%
+                head(topn) %>%
+                pull(gene)
+        
+        res <- enrichGO(gene = gene_list, OrgDb = org.Hs.eg.db, keyType = 'SYMBOL', ...)
+        
+        df <- as_tibble(res@result) %>%
+                arrange(p.adjust) %>%
+                head(10) %>%
+                mutate(cluster = cluster_name) %>%
+                mutate(Description = stringr::str_to_title(Description)) %>%
+                mutate(Description = fct_reorder(Description, desc(p.adjust)))
+        
+        ggplot(df, mapping = aes(x = Description, y = -log10(p.adjust))) + 
+                geom_bar(aes(fill = Count), stat = "identity") +
+                scale_fill_gradient2("Gene Count", low = "lightgrey", mid = "#feb24c", high = "#bd0026") +
+                coord_flip() +
+                geom_hline(yintercept = -log10(0.05), linetype = "dashed") +
+                xlab("Gene Ontology") + ylab(bquote("-log"[10]~" adjusted p-value")) +
+                facet_grid(. ~ cluster)
+}
+
+
+#' plot the GO enrichment analysis of all clusters of a dataset
+#' 
+#' @param markers A tibble -
+#' @param ... Additional arguments to be passed to the function \code{\link{plot_cluster_go}}.
+#' 
+#' @return A plot.
+#' @importFrom gridExtra grid.arrange
+#' @export
+#' 
+
+plot_all_cluster_go <- function(markers, ...) {
+        
+        lst <- list()
+        
+        clusters <- levels(markers$cluster)
+        
+        lst <- purrr::map(.x = clusters, .f = plot_cluster_go, markers = pdx_markers, ...)
+        
+        do.call("grid.arrange", c(lst, ncol = floor(sqrt(length(lst)))))
+}
+
+
 #' plot the results of GSEA
 #' 
 #' @param gsea_res A tibble -
