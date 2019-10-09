@@ -27,10 +27,8 @@ plot_qc <- function(data_list, metrics, plot_type = "combined") {
         }
         qc <- do.call(rbind, qc)
         
-        getPalette <- colorRampPalette(brewer.pal(12, "Set3"))
-        
         p <- ggplot(qc, mapping = aes(x = sample, y = value, fill = sample)) + 
-                scale_fill_manual(values = getPalette(length(data_list))) +
+                scale_fill_manual(values = get_spectrum(length(data_list))) +
                 scale_y_continuous(breaks = scales::pretty_breaks(n = 7)) +
                 labs(y = metrics) + {
                 if (!metrics %in% c("S.Score", "G2M.Score")) ylim(0, NA)
@@ -64,8 +62,6 @@ plot_scdata <- function(dataset, color_by = "seurat_clusters", colors = NULL, sp
         
         dataset$group <- factor(dataset$group)
         
-        getPalette <- colorRampPalette(brewer.pal(12, "Set3"))
-        
         if (color_by == "group") {
                 levels <- levels(dataset$group)
         } else {
@@ -76,7 +72,7 @@ plot_scdata <- function(dataset, color_by = "seurat_clusters", colors = NULL, sp
         
         if (is.null(colors)) {
                 if (color_by == "group") {
-                        colors <- getPalette(length(levels))
+                        colors <- get_spectrum(length(levels))
                 } else {
                         colors <- get_palette(length(levels))
                 }
@@ -181,12 +177,10 @@ plot_heatmap <- function(dataset,
         ncol <- length(levels(Idents(dataset)))
         ngroup <- length(levels(dataset$group))
         
-        getPalette <- colorRampPalette(brewer.pal(12, "Set3"))
-        
         pal1 <- if (is.null(cluster_colors)) get_palette(ncol) else cluster_colors
         col1 <- pal1[as.numeric(df$cluster)]
         
-        pal2 <- if (is.null(group_colors)) getPalette(ngroup) else group_colors
+        pal2 <- if (is.null(group_colors)) get_spectrum(ngroup) else group_colors
         col2 <- pal2[as.numeric(factor(df$group))]
         
         p_heat + 
@@ -231,9 +225,7 @@ plot_stat <- function(dataset,
         group_levels <- levels(dataset$group)
         cluster_levels <- levels(dataset$seurat_clusters)
         
-        getPalette <- colorRampPalette(brewer.pal(12, "Set3"))
-        
-        if (is.null(group_colors)) group_colors <- getPalette(length(group_levels))
+        if (is.null(group_colors)) group_colors <- get_spectrum(length(group_levels))
         if (is.null(cluster_colors)) cluster_colors <- get_palette(length(cluster_levels))
         
         stat <- as_tibble(cbind(group = as.character(dataset$group), cluster = as.character(Idents(dataset))))
@@ -376,9 +368,7 @@ plot_measure <- function(dataset, measure, plot_type, show = "combined",
         group_levels <- levels(dataset$group)
         cluster_levels <- levels(dataset$seurat_clusters)
         
-        getPalette <- colorRampPalette(brewer.pal(12, "Set3"))
-        
-        if (is.null(group_colors)) group_colors <- getPalette(length(group_levels))
+        if (is.null(group_colors)) group_colors <- get_spectrum(length(group_levels))
         if (is.null(cluster_colors)) cluster_colors <- get_palette(length(cluster_levels))
         
         df <- tibble(group = as.character(dataset$group),
