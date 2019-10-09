@@ -113,26 +113,26 @@ plot_scdata <- function(dataset, color_by = "seurat_clusters", colors = NULL, sp
 #' @export
 #' 
 
-plot_features <- function(dataset, features, ncol) {
+plot_features <- function(dataset, genes, cols = NULL, ...) {
         
-        DefaultAssay(dataset) <- "RNA"
-        p_gene <- FeaturePlot(object = dataset, 
-                              features = features, 
-                              min.cutoff = "q9",
-                              cols = rev(colormap(colormap = colormaps$density, nshades = 72, format = "hex",
-                                                  alpha = 1, reverse = FALSE)), combine = F)
+        p <- FeaturePlot(object = pdx, 
+                          features = genes, 
+                          min.cutoff = "q10",
+                          combine = FALSE, ...)
         
-        p_gene <- lapply(X = p_gene, 
-                         FUN = function(x) 
-                                 x + theme(plot.title = element_text(face = 'plain'),
-                                           panel.border = element_rect(colour = "black", fill=NA, size=1, linetype = 1),
-                                           axis.line=element_blank(),
-                                           axis.title.x=element_blank(),
-                                           axis.title.y=element_blank(),
-                                           legend.position = 'none',
-                                           aspect.ratio = 1)
-        )
-        CombinePlots(plots = p_gene, ncol = ncol)
+        p <- purrr::map(.x = p, .f = function(x) x +
+                                {if (is.null(cols)) scale_color_viridis_c(option = "A", direction = -1)} +
+                                theme(panel.border = element_rect(colour = "black", fill = NA, size = 1, linetype = 1),
+                                       plot.title = element_text(face = 'plain'),
+                                       axis.line = element_blank(),
+                                       axis.title.x = element_blank(),
+                                       axis.title.y = element_blank(),
+                                       axis.text = element_blank(),
+                                       axis.ticks = element_blank(),
+                                       aspect.ratio = 1))
+        
+        do.call("grid.arrange", c(p, ncol = ceiling(sqrt(length(genes)))))
+        
 }
 
 
