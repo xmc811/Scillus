@@ -12,6 +12,7 @@ Depends:
         R (>= 3.6),
         clusterProfiler,
         dplyr,
+        grid,
         gridExtra,
         magrittr,
         purrr,

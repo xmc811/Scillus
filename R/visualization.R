@@ -103,35 +103,109 @@ plot_scdata <- function(dataset, color_by = "seurat_clusters", colors = NULL, sp
 #' Single cell visualization - gene expression levels
 #' 
 #' @param dataset A Seurat object.
-#' @param features A string vector -
-#' @param ncol An integer -
+#' @param genes A string vector -
+#' @param split.by A string -
+#' @param pt.size A double -
+#' @param ... Additional arguments to be passed to the function \code{\link{FeaturePlot}}.
 #' 
 #' @return A plot.
-#' @importFrom Seurat DefaultAssay DefaultAssay<- FeaturePlot CombinePlots
-#' @importFrom ggplot2 theme element_rect element_blank element_text
+#' @importFrom Seurat FeaturePlot
+#' @importFrom ggplot2 theme element_rect element_blank element_text xlim ylim ggtitle scale_color_viridis_c
+#' @importFrom grid grobTree rectGrob textGrob gpar viewport
+#' @importFrom stats quantile
 #' @importFrom colormap colormap
+#' @importFrom purrr map_dbl
 #' @export
 #' 
 
-plot_features <- function(dataset, genes, cols = NULL, ...) {
+plot_features <- function(dataset, genes, split.by = NULL, pt.size = 0.2, ...) {
         
-        p <- FeaturePlot(object = pdx, 
-                          features = genes, 
-                          min.cutoff = "q10",
-                          combine = FALSE, ...)
+        gene_in_data <- function(dataset, gene) {
+                
+                if (!(gene %in% dataset@assays$RNA@data@Dimnames[[1]])) {
+                        return(0)
+                } else if (!(gene %in% dataset@assays$integrated@data@Dimnames[[1]])) {
+                        return(1)
+                } else {
+                        return(2)
+                }
+        }
         
-        p <- purrr::map(.x = p, .f = function(x) x +
-                                {if (is.null(cols)) scale_color_viridis_c(option = "A", direction = -1)} +
-                                theme(panel.border = element_rect(colour = "black", fill = NA, size = 1, linetype = 1),
-                                       plot.title = element_text(face = 'plain'),
-                                       axis.line = element_blank(),
-                                       axis.title.x = element_blank(),
-                                       axis.title.y = element_blank(),
-                                       axis.text = element_blank(),
-                                       axis.ticks = element_blank(),
-                                       aspect.ratio = 1))
+        genes <- genes[map_dbl(.x = genes, .f = gene_in_data, dataset = dataset) > 0]
         
-        do.call("grid.arrange", c(p, ncol = ceiling(sqrt(length(genes)))))
+        p <- FeaturePlot(object = dataset, 
+                         features = genes, 
+                         min.cutoff = "q10",
+                         pt.size = pt.size,
+                         split.by = split.by,
+                         combine = FALSE, ...)
+        
+        if (is.null(split.by)) {
+        
+                p <- suppressMessages(purrr::map(.x = p, .f = function(x) x +
+                                        scale_color_viridis_c(option = "A", direction = -1) +
+                                        theme(panel.border = element_rect(colour = "black", fill = NA, size = 1, linetype = 1),
+                                               plot.title = element_text(face = 'plain'),
+                                               axis.line = element_blank(),
+                                               axis.title.x = element_blank(),
+                                               axis.title.y = element_blank(),
+                                               axis.text = element_blank(),
+                                               axis.ticks = element_blank(),
+                                               aspect.ratio = 1)))
+                
+                do.call("grid.arrange", c(p, ncol = ceiling(sqrt(length(genes)))))
+                
+        } else {
+                
+                p_list <- list()
+                p_combined <- list()
+                l <- length(p)/length(genes)
+                
+                x_max <- max(dataset@reductions$umap@cell.embeddings[,1])
+                x_min <- min(dataset@reductions$umap@cell.embeddings[,1])
+                
+                y_max <- max(dataset@reductions$umap@cell.embeddings[,2])
+                y_min <- min(dataset@reductions$umap@cell.embeddings[,2])
+                
+                for (i in seq_along(genes)) {
+                        
+                        idx <- seq.int(from = i, to = length(p) - length(genes) + i, by = length(genes))
+                        
+                        if (gene_in_data(dataset, genes[i]) == 2) {
+                                val_up <- max(dataset@assays$integrated@data[genes[i],])
+                                val_down <- quantile(dataset@assays$integrated@data[genes[i],], 0.1)
+                        } else {
+                                val_up <- max(dataset@assays$RNA@data[genes[i],])
+                                val_down <- quantile(dataset@assays$RNA@data[genes[i],], 0.1)
+                        }
+                        
+                        p_list[[i]] <- p[idx]
+                        p_list[[i]] <- suppressMessages(purrr::map2(.x = p_list[[i]], 
+                                                   .y = levels(factor(dataset[[split.by]][[1]])), 
+                                                   .f = function(x, title) x + 
+                                                           labs(title = NULL) +
+                                                           ggtitle(title) +
+                                                           xlim(c(x_min - (x_max - x_min)/8, x_max + (x_max - x_min)/8)) +
+                                                           ylim(c(y_min - (y_max - y_min)/8, y_max + (y_max - y_min)/8)) +
+                                                           scale_color_viridis_c(option = "A", direction = -1) +
+                                                           theme(panel.border = element_rect(colour = "black", fill = NA, size = 1, linetype = 1),
+                                                                 plot.title = element_text(face = 'plain', size = 13),
+                                                                 axis.line = element_blank(),
+                                                                 axis.title.x = element_blank(),
+                                                                 axis.title.y = element_blank(),
+                                                                 axis.text = element_blank(),
+                                                                 axis.ticks = element_blank(),
+                                                                 legend.position = "none",
+                                                                 aspect.ratio = 1)))
+                        
+                        p_combined[[i]] <- grid.arrange(grobs = p_list[[i]], 
+                                                        ncol = floor(sqrt(l)), 
+                                                        top = grobTree(rectGrob(gp = gpar(fill = "lightgrey", lty = "blank"), 
+                                                                                height = 2), 
+                                                                       textGrob(genes[i], gp = gpar())))
+                }
+                grid.arrange(grobs = p_combined, ncol = length(genes), vp = viewport(width = 0.9, height = 0.9))
+        }
         
 }
 
