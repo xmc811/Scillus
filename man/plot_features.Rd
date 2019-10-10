@@ -4,14 +4,18 @@
 \alias{plot_features}
 \title{Single cell visualization - gene expression levels}
 \usage{
-plot_features(dataset, features, ncol)
+plot_features(dataset, genes, split.by = NULL, pt.size = 0.2, ...)
 }
 \arguments{
 \item{dataset}{A Seurat object.}
 
-\item{features}{A string vector -}
+\item{genes}{A string vector -}
 
-\item{ncol}{An integer -}
+\item{split.by}{A string -}
+
+\item{pt.size}{A double -}
+
+\item{...}{Additional arguments to be passed to the function \code{\link{FeaturePlot}}.}
 }
 \value{
 A plot.

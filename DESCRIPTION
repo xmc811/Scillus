@@ -3,12 +3,17 @@ Type: Package
 Title: Scillus is a wrapper package enhancing the visualization of single cell omics data
 Version: 0.1
 Date: 2019-08-24
-Authors@R: person("Mingchu", "Xu", email = "mxu.china@gmail.com",
-                  role = c("aut", "cre"))
+Authors@R: c(
+        person("Mingchu", "Xu", email = "mxu.china@gmail.com", role = c("aut", "cre")),
+        person("Zhongqi", "Ge", email = "zhongqi.ge@gmail.com", role = "aut")
+        )
 Description: Scillus is a wrapper package enhancing the visualization of single cell omics data.
 Depends: 
         R (>= 3.6),
+        clusterProfiler,
         dplyr,
+        grid,
+        gridExtra,
         magrittr,
         purrr,
         RColorBrewer,
@@ -23,7 +28,6 @@ Imports:
         cowplot,
         data.table,
         doParallel,
-        dplyr,
         fgsea,
         fields,
         forcats,
@@ -33,19 +37,13 @@ Imports:
         ggpubr,
         ggrepel,
         KernSmooth,
-        magrittr,
         Matrix,
         modes,
         plyr,
-        purrr,
         reshape2,
-        RColorBrewer,
         ROCR,
-        scales,
         sctransform,
-        Seurat,
         stringr,
-        tibble,
         tidyr,
         tidyverse,
         viridis

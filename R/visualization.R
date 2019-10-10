@@ -27,10 +27,8 @@ plot_qc <- function(data_list, metrics, plot_type = "combined") {
         }
         qc <- do.call(rbind, qc)
         
-        getPalette <- colorRampPalette(brewer.pal(12, "Set3"))
-        
         p <- ggplot(qc, mapping = aes(x = sample, y = value, fill = sample)) + 
-                scale_fill_manual(values = getPalette(length(data_list))) +
+                scale_fill_manual(values = get_spectrum(length(data_list))) +
                 scale_y_continuous(breaks = scales::pretty_breaks(n = 7)) +
                 labs(y = metrics) + {
                 if (!metrics %in% c("S.Score", "G2M.Score")) ylim(0, NA)
@@ -72,8 +70,15 @@ plot_scdata <- function(dataset, color_by = "seurat_clusters", colors = NULL, sp
         
         legend.title <- ifelse(color_by == "group", "Sample", "Cluster")
         
-        if (is.null(colors)) colors <- get_colors(seq(length(levels)), "Set3")
-        
+        if (is.null(colors)) {
+                if (color_by == "group") {
+                        colors <- get_spectrum(length(levels))
+                } else {
+                        colors <- get_palette(length(levels))
+                }
+                
+        }
+                
         thm <- theme(panel.border = element_rect(colour = "black", fill = NA, size = 1, linetype = 1),
                      axis.line=element_blank(),
                      aspect.ratio = 1)
@@ -98,36 +103,110 @@ plot_scdata <- function(dataset, color_by = "seurat_clusters", colors = NULL, sp
 #' Single cell visualization - gene expression levels
 #' 
 #' @param dataset A Seurat object.
-#' @param features A string vector -
-#' @param ncol An integer -
+#' @param genes A string vector -
+#' @param split.by A string -
+#' @param pt.size A double -
+#' @param ... Additional arguments to be passed to the function \code{\link{FeaturePlot}}.
 #' 
 #' @return A plot.
-#' @importFrom Seurat DefaultAssay DefaultAssay<- FeaturePlot CombinePlots
-#' @importFrom ggplot2 theme element_rect element_blank element_text
+#' @importFrom Seurat FeaturePlot
+#' @importFrom ggplot2 theme element_rect element_blank element_text xlim ylim ggtitle scale_color_viridis_c
+#' @importFrom grid grobTree rectGrob textGrob gpar viewport
+#' @importFrom stats quantile
 #' @importFrom colormap colormap
+#' @importFrom purrr map_dbl
 #' @export
 #' 
 
-plot_features <- function(dataset, features, ncol) {
+plot_features <- function(dataset, genes, split.by = NULL, pt.size = 0.2, ...) {
         
-        DefaultAssay(dataset) <- "RNA"
-        p_gene <- FeaturePlot(object = dataset, 
-                              features = features, 
-                              min.cutoff = "q9",
-                              cols = rev(colormap(colormap = colormaps$density, nshades = 72, format = "hex",
-                                                  alpha = 1, reverse = FALSE)), combine = F)
+        gene_in_data <- function(dataset, gene) {
+                
+                if (!(gene %in% dataset@assays$RNA@data@Dimnames[[1]])) {
+                        return(0)
+                } else if (!(gene %in% dataset@assays$integrated@data@Dimnames[[1]])) {
+                        return(1)
+                } else {
+                        return(2)
+                }
+        }
         
-        p_gene <- lapply(X = p_gene, 
-                         FUN = function(x) 
-                                 x + theme(plot.title = element_text(face = 'plain'),
-                                           panel.border = element_rect(colour = "black", fill=NA, size=1, linetype = 1),
-                                           axis.line=element_blank(),
-                                           axis.title.x=element_blank(),
-                                           axis.title.y=element_blank(),
-                                           legend.position = 'none',
-                                           aspect.ratio = 1)
-        )
-        CombinePlots(plots = p_gene, ncol = ncol)
+        genes <- genes[map_dbl(.x = genes, .f = gene_in_data, dataset = dataset) > 0]
+        
+        p <- FeaturePlot(object = dataset, 
+                         features = genes, 
+                         min.cutoff = "q10",
+                         pt.size = pt.size,
+                         split.by = split.by,
+                         combine = FALSE, ...)
+        
+        if (is.null(split.by)) {
+        
+                p <- suppressMessages(purrr::map(.x = p, .f = function(x) x +
+                                        scale_color_viridis_c(option = "A", direction = -1) +
+                                        theme(panel.border = element_rect(colour = "black", fill = NA, size = 1, linetype = 1),
+                                               plot.title = element_text(face = 'plain'),
+                                               axis.line = element_blank(),
+                                               axis.title.x = element_blank(),
+                                               axis.title.y = element_blank(),
+                                               axis.text = element_blank(),
+                                               axis.ticks = element_blank(),
+                                               aspect.ratio = 1)))
+                
+                do.call("grid.arrange", c(p, ncol = ceiling(sqrt(length(genes)))))
+                
+        } else {
+                
+                p_list <- list()
+                p_combined <- list()
+                l <- length(p)/length(genes)
+                
+                x_max <- max(dataset@reductions$umap@cell.embeddings[,1])
+                x_min <- min(dataset@reductions$umap@cell.embeddings[,1])
+                
+                y_max <- max(dataset@reductions$umap@cell.embeddings[,2])
+                y_min <- min(dataset@reductions$umap@cell.embeddings[,2])
+                
+                for (i in seq_along(genes)) {
+                        
+                        idx <- seq.int(from = i, to = length(p) - length(genes) + i, by = length(genes))
+                        
+                        if (gene_in_data(dataset, genes[i]) == 2) {
+                                val_up <- max(dataset@assays$integrated@data[genes[i],])
+                                val_down <- quantile(dataset@assays$integrated@data[genes[i],], 0.1)
+                        } else {
+                                val_up <- max(dataset@assays$RNA@data[genes[i],])
+                                val_down <- quantile(dataset@assays$RNA@data[genes[i],], 0.1)
+                        }
+                        
+                        p_list[[i]] <- p[idx]
+                        p_list[[i]] <- suppressMessages(purrr::map2(.x = p_list[[i]], 
+                                                   .y = levels(factor(dataset[[split.by]][[1]])), 
+                                                   .f = function(x, title) x + 
+                                                           labs(title = NULL) +
+                                                           ggtitle(title) +
+                                                           xlim(c(x_min - (x_max - x_min)/8, x_max + (x_max - x_min)/8)) +
+                                                           ylim(c(y_min - (y_max - y_min)/8, y_max + (y_max - y_min)/8)) +
+                                                           scale_color_viridis_c(option = "A", direction = -1) +
+                                                           theme(panel.border = element_rect(colour = "black", fill = NA, size = 1, linetype = 1),
+                                                                 plot.title = element_text(face = 'plain', size = 13),
+                                                                 axis.line = element_blank(),
+                                                                 axis.title.x = element_blank(),
+                                                                 axis.title.y = element_blank(),
+                                                                 axis.text = element_blank(),
+                                                                 axis.ticks = element_blank(),
+                                                                 legend.position = "none",
+                                                                 aspect.ratio = 1)))
+                        
+                        p_combined[[i]] <- grid.arrange(grobs = p_list[[i]], 
+                                                        ncol = floor(sqrt(l)), 
+                                                        top = grobTree(rectGrob(gp = gpar(fill = "lightgrey", lty = "blank"), 
+                                                                                height = 2), 
+                                                                       textGrob(genes[i], gp = gpar())))
+                }
+                grid.arrange(grobs = p_combined, ncol = length(genes), vp = viewport(width = 0.9, height = 0.9))
+        }
+        
 }
 
 
@@ -136,7 +215,7 @@ plot_features <- function(dataset, features, ncol) {
 #' @param dataset A Seurat object.
 #' @param markers A tibble -
 #' @param nfeatures An integer -
-#' @param cluster_pal A string vector -
+#' @param cluster_colors A string vector -
 #' @param group_colors A string vector -
 #' 
 #' @return A plot.
@@ -148,9 +227,13 @@ plot_features <- function(dataset, features, ncol) {
 #' @export
 #' 
 
-plot_heatmap <- function(dataset, markers, nfeatures,
-                         cluster_pal = c("Paired", "Set2", "Set1"),
-                         group_colors = c('#92c5de','#d6604d')) {
+plot_heatmap <- function(dataset, 
+                         markers, 
+                         nfeatures = 5,
+                         cluster_colors = NULL,
+                         group_colors = NULL) {
+        
+        dataset$group <- factor(dataset$group)
         
         df <- as_tibble(cbind(colnames(dataset), dataset$seurat_clusters, dataset$group))
         colnames(df) <- c("barcode","cluster","group")
@@ -166,17 +249,18 @@ plot_heatmap <- function(dataset, markers, nfeatures,
         p_pos_y <- ggplot_build(plot = p_heat)$layout$panel_params[[1]]$y.range
         
         ncol <- length(levels(Idents(dataset)))
+        ngroup <- length(levels(dataset$group))
         
-        pal1 <- get_palette(ncolor = ncol, palette = cluster_pal)
+        pal1 <- if (is.null(cluster_colors)) get_palette(ncol) else cluster_colors
         col1 <- pal1[as.numeric(df$cluster)]
         
-        pal2 <- group_colors
+        pal2 <- if (is.null(group_colors)) get_spectrum(ngroup) else group_colors
         col2 <- pal2[as.numeric(factor(df$group))]
         
         p_heat + 
-                annotation_raster(t(col2), -Inf, Inf, max(p_pos_y)+0.5, max(p_pos_y)+1.5) +
-                annotation_raster(t(col1), -Inf, Inf, max(p_pos_y)+2, max(p_pos_y)+3) +
-                coord_cartesian(ylim = c(0, max(p_pos_y)+4), clip = 'off') +
+                annotation_raster(t(col2), -Inf, Inf, max(p_pos_y) + 0.5, max(p_pos_y) + 1.5) +
+                annotation_raster(t(col1), -Inf, Inf, max(p_pos_y) + 2, max(p_pos_y) + 3) +
+                coord_cartesian(ylim = c(0, max(p_pos_y) + 4), clip = 'off') +
                 scale_fill_gradient2(low = '#377eb8', high = '#e41a1c', mid = 'white', midpoint = 0) +
                 guides(colour="none")
         
@@ -187,14 +271,11 @@ plot_heatmap <- function(dataset, markers, nfeatures,
 #' 
 #' @param dataset A Seurat object.
 #' @param plot_type A string -
-#' @param cluster_levels A string vector -
-#' @param group_levels A string vector -
-#' @param self_set_color A logical value -
-#' @param self_colors A string vector -
+#' @param cluster_colors A string vector -
 #' @param group_colors A string vector -
-#' @param palette A string vector - 
 #' @param plot_ratio A double -
 #' @param text_size A double -
+#' @param tilt_text A logical -
 #' 
 #' @return A plot.
 #' @importFrom tibble tibble
@@ -205,14 +286,21 @@ plot_heatmap <- function(dataset, markers, nfeatures,
 #' @export
 #' 
 
-plot_stat <- function(dataset, plot_type, 
-                      group_levels, cluster_levels,
-                      self_set_color = F,
-                      self_colors,
-                      group_colors = c('#92c5de','#d6604d'),
-                      palette = c("Set3", "Paired"),
+plot_stat <- function(dataset, 
+                      plot_type, 
+                      cluster_colors = NULL,
+                      group_colors = NULL,
                       plot_ratio = 1,
-                      text_size = 10) {
+                      text_size = 10,
+                      tilt_text = FALSE) {
+        
+        dataset$group <- factor(dataset$group)
+        
+        group_levels <- levels(dataset$group)
+        cluster_levels <- levels(dataset$seurat_clusters)
+        
+        if (is.null(group_colors)) group_colors <- get_spectrum(length(group_levels))
+        if (is.null(cluster_colors)) cluster_colors <- get_palette(length(cluster_levels))
         
         stat <- as_tibble(cbind(group = as.character(dataset$group), cluster = as.character(Idents(dataset))))
         stat %<>%
@@ -222,7 +310,6 @@ plot_stat <- function(dataset, plot_type,
                 summarise(n = n()) %>%
                 mutate(freq = n / sum(n))
         
-        cluster_colors <- if(self_set_color) self_colors else (get_palette(length(levels(Idents(dataset))), palette = palette))
         
         thm <- theme(aspect.ratio = plot_ratio,
                      legend.title = element_text(size = text_size),
@@ -231,6 +318,8 @@ plot_stat <- function(dataset, plot_type,
                      axis.text = element_text(size = text_size),
                      axis.title.x = element_blank()
         )
+        thm2 <- theme(legend.position = "none")
+        thm3 <- theme(axis.text.x = element_text(angle = 45, vjust = 0.5))
         
         switch(plot_type,
                group_count = stat %>%
@@ -240,8 +329,9 @@ plot_stat <- function(dataset, plot_type,
                        geom_col(aes(x = group, y = `sum(n)`, fill = group)) +
                        geom_text(aes(x = group, y = `sum(n)`, label = `sum(n)`), 
                                  vjust = -0.5, size = text_size * 0.35) +
-                       scale_fill_manual(values = group_colors, name = "Group") + 
-                       labs(y = "Counts") + thm,
+                       scale_fill_manual(values = group_colors) + 
+                       labs(y = "Number of Cells") + 
+                       thm + thm2 + if (tilt_text) {thm3},
                
                cluster_count = stat %>%
                        group_by(cluster) %>%
@@ -251,15 +341,15 @@ plot_stat <- function(dataset, plot_type,
                        geom_text(aes(x = cluster, y = `sum(n)`, label = `sum(n)`), 
                                  vjust = -0.5, size = text_size * 0.35) +
                        scale_fill_manual(values = cluster_colors, name = "Cluster") + 
-                       labs(y = "Counts") + 
-                       theme(axis.text.x = element_text(angle = 45, vjust = 0.5)) +
-                       thm,
+                       labs(y = "Number of Cells") + 
+                       thm + thm2 + if (tilt_text) {thm3},
                
                prop_fill = ggplot(stat) + 
                        geom_bar(aes(x = group, y = freq, fill = cluster), position = "fill", stat = "identity") +
                        scale_y_continuous(labels = scales::percent) +
                        scale_fill_manual(values = cluster_colors, name = "Cluster") +
-                       labs(y = "Proportion") + thm,
+                       labs(y = "Proportion") + 
+                       thm + if (tilt_text) {thm3},
                
                prop_diverge = stat %>%
                        mutate(cluster = fct_rev(cluster)) %>%
@@ -289,12 +379,77 @@ plot_stat <- function(dataset, plot_type,
                        facet_wrap(~cluster, ncol = 4, scales = "free") +
                        scale_fill_manual(values = group_colors, name = "Group") +
                        labs(x = NULL, y = "Proportion") + 
-                       theme(strip.text.x = element_text(size = text_size)) + thm,
+                       theme(strip.text.x = element_text(size = text_size)) + 
+                       thm + thm2 + if (tilt_text) {thm3},
                
                stop("Unknown plot type")
         )
+
+}
+
+
+#' plot the GO enrichment analysis of a cluster
+#' 
+#' @param markers A tibble -
+#' @param cluster_name A string -
+#' @param topn An integer -
+#' @param ... Additional arguments to be passed to the function \code{\link{enrichGO}}.
+#' 
+#' @return A plot.
+#' @importFrom clusterProfiler enrichGO
+#' @importFrom utils head
+#' @importFrom dplyr pull
+#' @importFrom forcats fct_reorder
+#' @importFrom ggplot2 facet_grid geom_hline xlab ylab
+#' @export
+#' 
+
+plot_cluster_go <- function(markers, cluster_name, topn = 100, ...) {
         
+        gene_list <- markers %>%
+                filter(cluster == cluster_name) %>%
+                arrange(p_val_adj) %>%
+                head(topn) %>%
+                pull(gene)
         
+        res <- enrichGO(gene = gene_list, OrgDb = org.Hs.eg.db, keyType = 'SYMBOL', ...)
+        
+        df <- as_tibble(res@result) %>%
+                arrange(p.adjust) %>%
+                head(10) %>%
+                mutate(cluster = cluster_name) %>%
+                mutate(Description = stringr::str_to_title(Description)) %>%
+                mutate(Description = fct_reorder(Description, desc(p.adjust)))
+        
+        ggplot(df, mapping = aes(x = Description, y = -log10(p.adjust))) + 
+                geom_bar(aes(fill = Count), stat = "identity") +
+                scale_fill_gradient2("Gene Count", low = "lightgrey", mid = "#feb24c", high = "#bd0026") +
+                coord_flip() +
+                geom_hline(yintercept = -log10(0.05), linetype = "dashed") +
+                xlab("Gene Ontology") + ylab(bquote("-log"[10]~" adjusted p-value")) +
+                facet_grid(. ~ cluster)
+}
+
+
+#' plot the GO enrichment analysis of all clusters of a dataset
+#' 
+#' @param markers A tibble -
+#' @param ... Additional arguments to be passed to the function \code{\link{plot_cluster_go}}.
+#' 
+#' @return A plot.
+#' @importFrom gridExtra grid.arrange
+#' @export
+#' 
+
+plot_all_cluster_go <- function(markers, ...) {
+        
+        lst <- list()
+        
+        clusters <- levels(markers$cluster)
+        
+        lst <- purrr::map(.x = clusters, .f = plot_cluster_go, markers = pdx_markers, ...)
+        
+        do.call("grid.arrange", c(lst, ncol = floor(sqrt(length(lst)))))
 }
 
 
@@ -335,43 +490,59 @@ plot_GSEA <- function(gsea_res, pattern = "HALLMARK_", p_cutoff = 0.05, levels) 
 #' @param dataset A Seurat object.
 #' @param measure A string -
 #' @param plot_type A string -
-#' @param group_levels A string vector -
-#' @param cluster_levels A string vector -
+#' @param group_colors A string vector -
+#' @param cluster_colors A string vector -
+#' @param show A string -
 #' 
 #' @return A plot.
 #' @export
 #' 
 
-plot_measure <- function(dataset, measure, plot_type, group_levels, cluster_levels) {
+plot_measure <- function(dataset, measure, plot_type, show = "combined",
+                         group_colors = NULL, 
+                         cluster_colors = NULL) {
+        
+        dataset$group <- factor(dataset$group)
+        
+        group_levels <- levels(dataset$group)
+        cluster_levels <- levels(dataset$seurat_clusters)
+        
+        if (is.null(group_colors)) group_colors <- get_spectrum(length(group_levels))
+        if (is.null(cluster_colors)) cluster_colors <- get_palette(length(cluster_levels))
         
         df <- tibble(group = as.character(dataset$group),
                      cluster = as.character(Idents(dataset)),
                      measure = as.numeric(dataset@meta.data[[measure]]))
         
-        thm <- theme(axis.title.x = element_blank(),
-                     axis.title.y = element_blank())
+        thm <- theme(axis.title.y = element_blank())
+        thm2 <- theme(legend.position = "none")
+        
+        a <- ifelse(show == "box", 1, 0.2)
         
         switch(plot_type,
                group = ggplot(df, aes(x = factor(group, levels = group_levels), 
                                       y = measure,
                                       fill = factor(group, levels = group_levels))) + 
-                       geom_boxplot() +
-                       scale_fill_manual(values = get_colors(1:length(group_levels)),
-                                         name = "Group") + thm,
+                       {if (show != "box") geom_violin()} +
+                       {if (show != "violin") geom_boxplot(alpha = a)} +
+                       xlab("Sample") +
+                       scale_fill_manual(values = group_colors) + thm + thm2,
                
                cluster = ggplot(df, aes(x = factor(cluster, levels = cluster_levels), 
                                         y = measure,
                                         fill = factor(cluster, levels = cluster_levels))) + 
-                       geom_boxplot() +
-                       scale_fill_manual(values = get_colors(1:length(cluster_levels)), 
-                                         name = "Cluster") + thm,
+                       {if (show != "box") geom_violin()} + 
+                       {if (show != "violin") geom_boxplot(alpha = a)} +
+                       xlab("Cluster") +
+                       scale_fill_manual(values = cluster_colors) + thm + thm2,
                
                cluster_group = ggplot(df, aes(x = factor(cluster, levels = cluster_levels), 
                                               y = measure,
                                               fill = factor(group, levels = group_levels))) + 
-                       geom_boxplot() +
-                       scale_fill_manual(values = get_colors(1:length(group_levels)), 
-                                         name = "Group") + thm,
+                       {if (show != "box") geom_violin(position = position_dodge(width = 0.8))} + 
+                       {if (show != "violin") geom_boxplot(alpha = a, width = 0.7, position = position_dodge(width = 0.8))} +
+                       xlab("Cluster") +
+                       scale_fill_manual(values = group_colors, name = "Sample") + thm,
                
                stop("Unknown plot type")
         )

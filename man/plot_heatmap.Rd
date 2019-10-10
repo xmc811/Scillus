@@ -4,8 +4,8 @@
 \alias{plot_heatmap}
 \title{Plot the heatmap of single cell dataset}
 \usage{
-plot_heatmap(dataset, markers, nfeatures, cluster_pal = c("Paired",
-  "Set2", "Set1"), group_colors = c("#92c5de", "#d6604d"))
+plot_heatmap(dataset, markers, nfeatures = 5, cluster_colors = NULL,
+  group_colors = NULL)
 }
 \arguments{
 \item{dataset}{A Seurat object.}
@@ -14,7 +14,7 @@ plot_heatmap(dataset, markers, nfeatures, cluster_pal = c("Paired",
 
 \item{nfeatures}{An integer -}
 
-\item{cluster_pal}{A string vector -}
+\item{cluster_colors}{A string vector -}
 
 \item{group_colors}{A string vector -}
 }

@@ -4,31 +4,24 @@
 \alias{plot_stat}
 \title{Plot the basic statistics after cell clustering and labeling}
 \usage{
-plot_stat(dataset, plot_type, group_levels, cluster_levels,
-  self_set_color = F, self_colors, group_colors = c("#92c5de",
-  "#d6604d"), palette = c("Set3", "Paired"), plot_ratio = 1,
-  text_size = 10)
+plot_stat(dataset, plot_type, cluster_colors = NULL,
+  group_colors = NULL, plot_ratio = 1, text_size = 10,
+  tilt_text = FALSE)
 }
 \arguments{
 \item{dataset}{A Seurat object.}
 
 \item{plot_type}{A string -}
 
-\item{group_levels}{A string vector -}
-
-\item{cluster_levels}{A string vector -}
-
-\item{self_set_color}{A logical value -}
-
-\item{self_colors}{A string vector -}
+\item{cluster_colors}{A string vector -}
 
 \item{group_colors}{A string vector -}
-
-\item{palette}{A string vector -}
 
 \item{plot_ratio}{A double -}
 
 \item{text_size}{A double -}
+
+\item{tilt_text}{A logical -}
 }
 \value{
 A plot.

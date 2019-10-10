@@ -61,13 +61,14 @@ get_top_genes <- function(dataset, markers, n) {
         return(df$gene)
 }
 
-#' Get an extended vector of colors
+#' Get a vector of colors for cluster coding
 #' 
 #' @param ncolor Number of colors to be generated
 #' @param palette A string vector describing the name of palette in \code{RColorBrewer}.
 #' @return A vector of colors.
 #' @importFrom RColorBrewer brewer.pal.info brewer.pal
 #' @importFrom purrr map2
+#' @importFrom grDevices colorRampPalette
 #' @export
 #' 
 #' @examples
@@ -88,6 +89,20 @@ get_palette <- function(ncolor, palette = c("Paired", "Set2", "Set1")) {
         return(pal)
         
 }
+
+#' Get a vector of colors for sample coding
+#' 
+#' @param n Number of colors to be generated.
+#' @return A vector of colors.
+#' @export
+#' 
+
+get_spectrum <- function(n) {
+        
+        colorRampPalette(brewer.pal(12, "Set3"))(n)
+
+}
+
 
 #' Get a vector of colors
 #' 
@@ -112,13 +127,4 @@ get_colors <- function(v, pal = "Paired") {
         
 }
 
-
-test_args <- function(...) {
-        
-        funs <- list(...)
-        arg_lists <- lapply(X = funs, FUN = formalArgs)
-        dup_args <- Reduce(intersect, arg_lists)
-        
-        return(dup_args)
-}
 

@@ -4,7 +4,8 @@
 \alias{plot_measure}
 \title{Boxplot of gene program scores}
 \usage{
-plot_measure(dataset, measure, plot_type, group_levels, cluster_levels)
+plot_measure(dataset, measure, plot_type, show = "combined",
+  group_colors = NULL, cluster_colors = NULL)
 }
 \arguments{
 \item{dataset}{A Seurat object.}
@@ -13,9 +14,11 @@ plot_measure(dataset, measure, plot_type, group_levels, cluster_levels)
 
 \item{plot_type}{A string -}
 
-\item{group_levels}{A string vector -}
+\item{show}{A string -}
 
-\item{cluster_levels}{A string vector -}
+\item{group_colors}{A string vector -}
+
+\item{cluster_colors}{A string vector -}
 }
 \value{
 A plot.
