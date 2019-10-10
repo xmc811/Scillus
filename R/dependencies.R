@@ -1,17 +1,10 @@
 
 # Load packages and resources
 
-library(tidyverse)
-
-library(Seurat)
 library(cowplot)
-library(RColorBrewer)
-library(viridis)
-library(colormap)
 library(ggrepel)
 library(reshape2)
 library(formattable)
-library(magrittr)
 library(sctransform)
 library(ggpubr)
 library(scales)

@@ -10,7 +10,7 @@
 #' 
 #' @return A plot.
 #' @importFrom tibble tibble
-#' @importFrom ggplot2 ggplot geom_boxplot aes scale_fill_brewer labs
+#' @importFrom ggplot2 ggplot geom_boxplot geom_violin aes scale_fill_brewer labs
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom scales pretty_breaks
 #' @importFrom grDevices colorRampPalette
