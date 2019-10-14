@@ -447,9 +447,49 @@ plot_all_cluster_go <- function(markers, ...) {
         
         clusters <- levels(markers$cluster)
         
-        lst <- purrr::map(.x = clusters, .f = plot_cluster_go, markers = pdx_markers, ...)
+        lst <- purrr::map(.x = clusters, .f = plot_cluster_go, markers = markers, ...)
         
         do.call("grid.arrange", c(lst, ncol = floor(sqrt(length(lst)))))
+}
+
+
+#' plot the GSVA scores of given gene signatures
+#' 
+#' @param dataset A Seurat object
+#' @param gene_list A list -
+#' @param pattern A string -
+#' @param ... Additional arguments to be passed to the function \code{\link{gsva}}.
+#' 
+#' @return A plot.
+#' @importFrom Seurat AverageExpression
+#' @importFrom stats dist hclust
+#' @importFrom GSVA gsva
+#' @importFrom ggplot2 geom_tile
+#' @export
+#' 
+
+plot_GSVA <- function(dataset, gene_list, pattern = "HALLMARK_", ...) {
+        
+        names(gene_list) <- str_remove(names(gene_list), pattern = pattern)
+        
+        mtx <- as.matrix(AverageExpression(dataset, assays = "RNA")[[1]])
+        
+        res <- gsva(expr = mtx, gset.idx.list = gene_list, ...)
+        
+        d <- dist(res)
+        
+        lvl <- hclust(d)$labels[hclust(d)$order]
+        
+        res2 <- res %>% 
+                as_tibble(rownames = "pathway") %>%
+                melt(id = "pathway")
+        
+        ggplot(res2, aes(x = factor(pathway, levels = rev(lvl)), y = variable)) + 
+                geom_tile(aes(fill = value), color = "black") +
+                scale_fill_gradient2(low = "#4575b4", mid = "white", high = "#d73027", midpoint = 0) +
+                coord_flip() +
+                labs(x = "Gene Signatures", y = "Clusters", fill = "GSVA score")
+        
 }
 
 
