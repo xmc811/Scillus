@@ -35,6 +35,70 @@ convert_symbol <- function(gene_list, hs_to_mm = TRUE) {
 }
 
 
+gene_in_data <- function(dataset, gene) {
+        
+        if (!(gene %in% dataset@assays$RNA@data@Dimnames[[1]])) {
+                return(0)
+        } else if (!(gene %in% dataset@assays$integrated@data@Dimnames[[1]])) {
+                return(1)
+        } else {
+                return(2)
+        }
+}
+
+
+get_gene_data <- function(dataset, genes) {
+        
+        genes <- genes[map_dbl(.x = genes, .f = gene_in_data, dataset = dataset) > 0]
+        
+        lst <- list()
+        
+        for (i in seq_along(genes)) {
+                
+                if (gene_in_data(dataset, genes[i]) == 2) {
+                        
+                        lst[[i]] <- tibble(group = as.character(dataset$group),
+                                           cluster = as.character(Idents(dataset)),
+                                           value = dataset@assays$integrated@data[genes[i],],
+                                           feature = genes[i])
+                } else {
+                        
+                        lst[[i]] <- tibble(group = as.character(dataset$group),
+                                           cluster = as.character(Idents(dataset)),
+                                           value = dataset@assays$RNA@data[genes[i],],
+                                           feature = genes[i])
+                }
+                
+        }
+        
+        df <- do.call("rbind", lst)
+        
+        return(df)
+}
+
+
+get_meta_data <- function(dataset, measures) {
+        
+        measures <- measures[measures %in% colnames(dataset@meta.data)]
+        
+        lst <- list()
+        
+        for (i in seq_along(measures)) {
+                        
+                lst[[i]] <- tibble(group = as.character(dataset$group),
+                                   cluster = as.character(Idents(dataset)),
+                                   value = as.numeric(dataset@meta.data[[measures[i]]]),
+                                   feature = measures[i])
+                
+        }
+        
+        df <- do.call("rbind", lst)
+        
+        return(df)
+}
+
+
+
 #' Get top genes of each cluster
 #' 
 #' @param dataset A Seurat object.

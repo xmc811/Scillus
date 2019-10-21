@@ -525,11 +525,12 @@ plot_GSEA <- function(gsea_res, pattern = "HALLMARK_", p_cutoff = 0.05, levels) 
 }
 
 
-#' Boxplot of gene program scores
+#' Box plot/Violin plot of gene expressions or meta measures
 #' 
 #' @param dataset A Seurat object.
 #' @param measure A string -
 #' @param plot_type A string -
+#' @param meta A logical value -
 #' @param group_colors A string vector -
 #' @param cluster_colors A string vector -
 #' @param show A string -
@@ -538,7 +539,11 @@ plot_GSEA <- function(gsea_res, pattern = "HALLMARK_", p_cutoff = 0.05, levels) 
 #' @export
 #' 
 
-plot_measure <- function(dataset, measure, plot_type, show = "combined",
+plot_measure <- function(dataset, 
+                         features, 
+                         plot_type, 
+                         show = "combined",
+                         meta = FALSE,
                          group_colors = NULL, 
                          cluster_colors = NULL) {
         
@@ -550,9 +555,11 @@ plot_measure <- function(dataset, measure, plot_type, show = "combined",
         if (is.null(group_colors)) group_colors <- get_spectrum(length(group_levels))
         if (is.null(cluster_colors)) cluster_colors <- get_palette(length(cluster_levels))
         
-        df <- tibble(group = as.character(dataset$group),
-                     cluster = as.character(Idents(dataset)),
-                     measure = as.numeric(dataset@meta.data[[measure]]))
+        df <- if (meta) get_meta_data(dataset, features) else get_gene_data(dataset, features)
+        
+        print (df)
+       
+        n <- ceiling(sqrt(length(unique(df$feature))))
         
         thm <- theme(axis.title.y = element_blank())
         thm2 <- theme(legend.position = "none")
@@ -561,28 +568,31 @@ plot_measure <- function(dataset, measure, plot_type, show = "combined",
         
         switch(plot_type,
                group = ggplot(df, aes(x = factor(group, levels = group_levels), 
-                                      y = measure,
+                                      y = value,
                                       fill = factor(group, levels = group_levels))) + 
                        {if (show != "box") geom_violin()} +
                        {if (show != "violin") geom_boxplot(alpha = a)} +
                        xlab("Sample") +
-                       scale_fill_manual(values = group_colors) + thm + thm2,
+                       scale_fill_manual(values = group_colors) + thm + thm2 +
+                       facet_wrap( ~ feature, scales = "free", ncol = n),
                
                cluster = ggplot(df, aes(x = factor(cluster, levels = cluster_levels), 
-                                        y = measure,
+                                        y = value,
                                         fill = factor(cluster, levels = cluster_levels))) + 
                        {if (show != "box") geom_violin()} + 
                        {if (show != "violin") geom_boxplot(alpha = a)} +
                        xlab("Cluster") +
-                       scale_fill_manual(values = cluster_colors) + thm + thm2,
+                       scale_fill_manual(values = cluster_colors) + thm + thm2 +
+                       facet_wrap( ~ feature, scales = "free", ncol = n),
                
                cluster_group = ggplot(df, aes(x = factor(cluster, levels = cluster_levels), 
-                                              y = measure,
+                                              y = value,
                                               fill = factor(group, levels = group_levels))) + 
                        {if (show != "box") geom_violin(position = position_dodge(width = 0.8))} + 
                        {if (show != "violin") geom_boxplot(alpha = a, width = 0.7, position = position_dodge(width = 0.8))} +
                        xlab("Cluster") +
-                       scale_fill_manual(values = group_colors, name = "Sample") + thm,
+                       scale_fill_manual(values = group_colors, name = "Sample") + thm +
+                       facet_wrap( ~ feature, scales = "free", ncol = n),
                
                stop("Unknown plot type")
         )

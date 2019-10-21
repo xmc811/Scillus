@@ -2,27 +2,29 @@
 % Please edit documentation in R/visualization.R
 \name{plot_measure}
 \alias{plot_measure}
-\title{Boxplot of gene program scores}
+\title{Box plot/Violin plot of gene expressions or meta measures}
 \usage{
-plot_measure(dataset, measure, plot_type, show = "combined",
-  group_colors = NULL, cluster_colors = NULL)
+plot_measure(dataset, features, plot_type, show = "combined",
+  meta = FALSE, group_colors = NULL, cluster_colors = NULL)
 }
 \arguments{
 \item{dataset}{A Seurat object.}
-
-\item{measure}{A string -}
 
 \item{plot_type}{A string -}
 
 \item{show}{A string -}
 
+\item{meta}{A logical value -}
+
 \item{group_colors}{A string vector -}
 
 \item{cluster_colors}{A string vector -}
+
+\item{measure}{A string -}
 }
 \value{
 A plot.
 }
 \description{
-Boxplot of gene program scores
+Box plot/Violin plot of gene expressions or meta measures
 }
