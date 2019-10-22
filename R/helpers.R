@@ -59,12 +59,16 @@ get_gene_data <- function(dataset, genes) {
                         
                         lst[[i]] <- tibble(group = as.character(dataset$group),
                                            cluster = as.character(Idents(dataset)),
+                                           x_cor = dataset@reductions$umap@cell.embeddings[,1],
+                                           y_cor = dataset@reductions$umap@cell.embeddings[,2],
                                            value = dataset@assays$integrated@data[genes[i],],
                                            feature = genes[i])
                 } else {
                         
                         lst[[i]] <- tibble(group = as.character(dataset$group),
                                            cluster = as.character(Idents(dataset)),
+                                           x_cor = dataset@reductions$umap@cell.embeddings[,1],
+                                           y_cor = dataset@reductions$umap@cell.embeddings[,2],
                                            value = dataset@assays$RNA@data[genes[i],],
                                            feature = genes[i])
                 }
@@ -87,6 +91,8 @@ get_meta_data <- function(dataset, measures) {
                         
                 lst[[i]] <- tibble(group = as.character(dataset$group),
                                    cluster = as.character(Idents(dataset)),
+                                   x_cor = dataset@reductions$umap@cell.embeddings[,1],
+                                   y_cor = dataset@reductions$umap@cell.embeddings[,2],
                                    value = as.numeric(dataset@meta.data[[measures[i]]]),
                                    feature = measures[i])
                 
