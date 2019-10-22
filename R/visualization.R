@@ -124,11 +124,12 @@ plot_measure_cluster <- function(dataset,
                                  meta = FALSE) {
         
         dataset$group <- factor(dataset$group)
-        
-        group_levels <- levels(dataset$group)
-        cluster_levels <- levels(dataset$seurat_clusters)
+        Idents(dataset) <- factor(Idents(dataset))
         
         df <- if (meta) get_meta_data(dataset, features) else get_gene_data(dataset, features)
+        
+        df$group <- factor(df$group, levels = levels(dataset$group))
+        df$cluster <- factor(df$cluster, levels = levels(Idents(dataset)))
         
         lst <- df %>% group_by(feature) %>% nest()
         
@@ -500,9 +501,10 @@ plot_measure <- function(dataset,
                          cluster_colors = NULL) {
         
         dataset$group <- factor(dataset$group)
+        Idents(dataset) <- factor(Idents(dataset))
         
         group_levels <- levels(dataset$group)
-        cluster_levels <- levels(dataset$seurat_clusters)
+        cluster_levels <- levels(Idents(dataset))
         
         if (is.null(group_colors)) group_colors <- get_spectrum(length(group_levels))
         if (is.null(cluster_colors)) cluster_colors <- get_palette(length(cluster_levels))
@@ -510,7 +512,7 @@ plot_measure <- function(dataset,
         df <- if (meta) get_meta_data(dataset, features) else get_gene_data(dataset, features)
         
         df$feature <- factor(df$feature, levels = features)
-        
+
         n <- ceiling(sqrt(length(unique(df$feature))))
         
         thm <- theme(axis.title.y = element_blank())
