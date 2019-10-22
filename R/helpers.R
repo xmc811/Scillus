@@ -35,6 +35,15 @@ convert_symbol <- function(gene_list, hs_to_mm = TRUE) {
 }
 
 
+#' Test whether a gene waas in the dataset
+#' 
+#' @param dataset A Seurat object -
+#' @param gene A string -
+#' 
+#' @return A double
+#' @export
+#' 
+
 gene_in_data <- function(dataset, gene) {
         
         if (!(gene %in% dataset@assays$RNA@data@Dimnames[[1]])) {
@@ -45,6 +54,16 @@ gene_in_data <- function(dataset, gene) {
                 return(2)
         }
 }
+
+
+#' Obtain the expression data for genes
+#' 
+#' @param dataset A Seurat object -
+#' @param genes A string vector -
+#' 
+#' @return A tibble
+#' @export
+#' 
 
 
 get_gene_data <- function(dataset, genes) {
@@ -80,6 +99,15 @@ get_gene_data <- function(dataset, genes) {
         return(df)
 }
 
+
+#' Obtain the meta data for features
+#' 
+#' @param dataset A Seurat object -
+#' @param measures A string vector -
+#' 
+#' @return A tibble
+#' @export
+#' 
 
 get_meta_data <- function(dataset, measures) {
         

@@ -10,6 +10,8 @@ plot_measure(dataset, features, plot_type, show = "combined",
 \arguments{
 \item{dataset}{A Seurat object.}
 
+\item{features}{A string vector -}
+
 \item{plot_type}{A string -}
 
 \item{show}{A string -}
@@ -19,8 +21,6 @@ plot_measure(dataset, features, plot_type, show = "combined",
 \item{group_colors}{A string vector -}
 
 \item{cluster_colors}{A string vector -}
-
-\item{measure}{A string -}
 }
 \value{
 A plot.

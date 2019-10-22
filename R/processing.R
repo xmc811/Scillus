@@ -71,6 +71,7 @@ filter_scdata <- function(dataset,
 #' @importFrom purrr map
 #' @importFrom reshape2 melt
 #' @importFrom ggplot2 position_dodge
+#' @importFrom graphics plot
 #' @export
 #' 
 
