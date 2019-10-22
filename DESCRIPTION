@@ -28,6 +28,7 @@ Imports:
         cowplot,
         data.table,
         doParallel,
+        GSVA,
         fgsea,
         fields,
         forcats,

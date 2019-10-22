@@ -35,6 +35,104 @@ convert_symbol <- function(gene_list, hs_to_mm = TRUE) {
 }
 
 
+#' Test whether a gene waas in the dataset
+#' 
+#' @param dataset A Seurat object -
+#' @param gene A string -
+#' 
+#' @return A double
+#' @export
+#' 
+
+gene_in_data <- function(dataset, gene) {
+        
+        if (!(gene %in% dataset@assays$RNA@data@Dimnames[[1]])) {
+                return(0)
+        } else if (!(gene %in% dataset@assays$integrated@data@Dimnames[[1]])) {
+                return(1)
+        } else {
+                return(2)
+        }
+}
+
+
+#' Obtain the expression data for genes
+#' 
+#' @param dataset A Seurat object -
+#' @param genes A string vector -
+#' 
+#' @return A tibble
+#' @export
+#' 
+
+
+get_gene_data <- function(dataset, genes) {
+        
+        genes <- genes[map_dbl(.x = genes, .f = gene_in_data, dataset = dataset) > 0]
+        
+        lst <- list()
+        
+        for (i in seq_along(genes)) {
+                
+                if (gene_in_data(dataset, genes[i]) == 2) {
+                        
+                        lst[[i]] <- tibble(group = as.character(dataset$group),
+                                           cluster = as.character(Idents(dataset)),
+                                           x_cor = dataset@reductions$umap@cell.embeddings[,1],
+                                           y_cor = dataset@reductions$umap@cell.embeddings[,2],
+                                           value = dataset@assays$integrated@data[genes[i],],
+                                           feature = genes[i])
+                } else {
+                        
+                        lst[[i]] <- tibble(group = as.character(dataset$group),
+                                           cluster = as.character(Idents(dataset)),
+                                           x_cor = dataset@reductions$umap@cell.embeddings[,1],
+                                           y_cor = dataset@reductions$umap@cell.embeddings[,2],
+                                           value = dataset@assays$RNA@data[genes[i],],
+                                           feature = genes[i])
+                }
+                
+        }
+        
+        df <- do.call("rbind", lst)
+        
+        return(df)
+}
+
+
+#' Obtain the meta data for features
+#' 
+#' @param dataset A Seurat object -
+#' @param measures A string vector -
+#' 
+#' @return A tibble
+#' @export
+#' 
+
+get_meta_data <- function(dataset, measures) {
+        
+        measures <- measures[measures %in% colnames(dataset@meta.data)]
+        
+        lst <- list()
+        
+        for (i in seq_along(measures)) {
+                        
+                lst[[i]] <- tibble(group = as.character(dataset$group),
+                                   cluster = as.character(Idents(dataset)),
+                                   x_cor = dataset@reductions$umap@cell.embeddings[,1],
+                                   y_cor = dataset@reductions$umap@cell.embeddings[,2],
+                                   value = as.numeric(dataset@meta.data[[measures[i]]]),
+                                   feature = measures[i])
+                
+        }
+        
+        df <- do.call("rbind", lst)
+        
+        return(df)
+}
+
+
+
 #' Get top genes of each cluster
 #' 
 #' @param dataset A Seurat object.
