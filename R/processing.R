@@ -28,7 +28,7 @@ load_scfile <- function(dir = NULL, gcol = 2, file = NULL, project, ...) {
         
         data <- CreateSeuratObject(counts = mtx, project = project, ...)
         
-        data[["percent.mt"]] <- PercentageFeatureSet(data, pattern = "^(MT|mt)-")
+        data[["percent.mt"]] <- PercentageFeatureSet(data, pattern = "(^(hg19|mm10)-(MT|mt)-|^(MT|mt)-)")
         
         data$group <- data@project.name
         
