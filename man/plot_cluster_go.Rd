@@ -4,7 +4,7 @@
 \alias{plot_cluster_go}
 \title{plot the GO enrichment analysis of a cluster}
 \usage{
-plot_cluster_go(markers, cluster_name, topn = 100, ...)
+plot_cluster_go(markers, cluster_name, topn = 100, org, ...)
 }
 \arguments{
 \item{markers}{A tibble -}
@@ -12,6 +12,8 @@ plot_cluster_go(markers, cluster_name, topn = 100, ...)
 \item{cluster_name}{A string -}
 
 \item{topn}{An integer -}
+
+\item{org}{A string -}
 
 \item{...}{Additional arguments to be passed to the function \code{\link{enrichGO}}.}
 }

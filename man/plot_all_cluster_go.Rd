@@ -4,10 +4,12 @@
 \alias{plot_all_cluster_go}
 \title{plot the GO enrichment analysis of all clusters of a dataset}
 \usage{
-plot_all_cluster_go(markers, ...)
+plot_all_cluster_go(markers, org = "human", ...)
 }
 \arguments{
 \item{markers}{A tibble -}
+
+\item{org}{A string -}
 
 \item{...}{Additional arguments to be passed to the function \code{\link{plot_cluster_go}}.}
 }
