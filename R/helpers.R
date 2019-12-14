@@ -190,15 +190,20 @@ get_palette <- function(ncolor, palette = c("Paired", "Set2", "Set1")) {
 
 #' Get a vector of colors for sample coding
 #' 
-#' @param n Number of colors to be generated.
-#' @return A vector of colors.
+#' @param n Number of colors to be generated
+#' @palette A string
+#' @return A vector of colors
 #' @export
 #' 
 
-get_spectrum <- function(n) {
+get_spectrum <- function(n, palette = "Set2") {
         
-        colorRampPalette(brewer.pal(12, "Set3"))(n)
-
+        if (n <= brewer.pal.info[palette,]['maxcolors'][[1]]) {
+                return(brewer.pal(n, name = palette))
+        } else {
+                warning("Number of colors exceeds palette capacity", immediate. = TRUE)
+                return(colorRampPalette(brewer.pal(11, "RdYlBu"))(n))
+        }
 }
 
 
