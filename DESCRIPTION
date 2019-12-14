@@ -17,6 +17,7 @@ Depends:
         magrittr,
         purrr,
         RColorBrewer,
+        rlang,
         scales,
         Seurat,
         tibble

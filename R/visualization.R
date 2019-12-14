@@ -11,10 +11,9 @@
 #' 
 #' @return A plot.
 #' @importFrom tibble tibble
-#' @importFrom ggplot2 ggplot geom_boxplot geom_violin aes scale_fill_brewer labs
-#' @importFrom RColorBrewer brewer.pal
+#' @importFrom ggplot2 ggplot geom_boxplot geom_violin aes labs theme_bw waiver
 #' @importFrom scales pretty_breaks
-#' @importFrom grDevices colorRampPalette
+#' @importFrom rlang .data
 #' @export
 #' 
 
@@ -33,14 +32,19 @@ plot_qc <- function(data_list,
         qc <- do.call(rbind, qc)
         
         p <- ggplot(qc, 
-                    mapping = aes(x = sample, 
-                                  y = value, 
+                    mapping = aes(x = .data$sample, 
+                                  y = .data$value, 
                                   fill = sample)) + 
                 scale_fill_manual(values = get_spectrum(n = length(data_list), palette = palette)) +
-                scale_y_continuous(breaks = scales::pretty_breaks(n = 7)) +
-                labs(y = metrics) + {
-                        if (!metrics %in% c("S.Score", "G2M.Score")) ylim(0, NA)
-                } + theme(legend.position = "none")
+                scale_y_continuous(labels = if (metrics == "percent.mt") function(x) paste0(x, "%") else waiver(),
+                                   breaks = scales::pretty_breaks(n = 5),
+                                   limits = if (!metrics %in% c("S.Score", "G2M.Score")) c(0, NA)) +
+                labs(y = metrics) +
+                theme_bw() +
+                theme(legend.position = "none",
+                      axis.text = element_text(size = 12),
+                      axis.title.y = element_text(size = 12),
+                      axis.title.x = element_blank())
         
         switch(plot_type,
                box = p + geom_boxplot(),

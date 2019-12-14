@@ -8,6 +8,8 @@ get_spectrum(n, palette = "Set2")
 }
 \arguments{
 \item{n}{Number of colors to be generated}
+
+\item{palette}{A string}
 }
 \value{
 A vector of colors
