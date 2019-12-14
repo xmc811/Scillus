@@ -166,7 +166,6 @@ get_top_genes <- function(dataset, markers, n) {
 #' @return A vector of colors.
 #' @importFrom RColorBrewer brewer.pal.info brewer.pal
 #' @importFrom purrr map2
-#' @importFrom grDevices colorRampPalette
 #' @export
 #' 
 #' @examples
