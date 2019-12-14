@@ -4,7 +4,7 @@
 #' Load single cell RNA-seq data from directory or file
 #' 
 #' @param metadata A dataframe - must contain a column named "sample", and a column named "folder" or "file".
-#' @param ... Additional arguments to be passed to the function \code{\link{CreateSeuratObject}}.
+#' @param ... Additional arguments to be passed to the function \code{\link{CreateSeuratObject}}
 #' 
 #' @return A list of Seurat object
 #' 
@@ -45,51 +45,22 @@ load_scfile <- function(metadata, ...) {
         return(data)
 }
 
-#' Filter Seurat object
+#' Filter a list of Seurat objects
 #' 
-#' @param dataset A Seurat object.
-#' @param range_nFeature An integer vector - the range of nFeature_RNA for filtering. Default value is \code{c(500, Inf)}. 
-#' @param range_nCount An integer vector - the range of nCount_RNA for filtering. Default value is \code{c(500, Inf)}.
-#' @param range_mt An numeric vector - the range of percent.mt for filtering. Default value is \code{c(-Inf, 10)}.
+#' @param data_list A list of Seurat objects
+#' @param ... Additional arguments to be passed to the function \code{\link{subset.Seurat}}
 #' 
-#' @return A Seurat object.
-#' @importFrom Seurat FetchData
-#' @importFrom purrr map
-#' @export
+#' @return A list of Seurat objects
 #' 
-
-filter_scdata <- function(dataset, 
-                          range_nFeature = c(500, Inf), 
-                          range_nCount = c(500, Inf), 
-                          range_mt = c(-Inf, 10)) {
-        
-        expr <- purrr::map(.x = c("nFeature_RNA", "nCount_RNA", "percent.mt"), .f = Seurat::FetchData, object = dataset)
-        
-        dataset <- dataset[, which(x = expr[[1]] >= range_nFeature[1] & expr[[1]] <= range_nFeature[2] &
-                                           expr[[2]] >= range_nCount[1] & expr[[2]] <= range_nCount[2] &
-                                           expr[[3]] >= range_mt[1] & expr[[3]] <= range_mt[2])]
-        
-        return(dataset)
-}
-
-#' Filter Seurat object list
-#' 
-#' @param data_list A list of Seurat objects.
-#' @param ... Arguments passed to \code{filter_scdata}. 
-#' 
-#' @return A list of Seurat objects.
-#' @importFrom purrr map
-#' @importFrom reshape2 melt
 #' @importFrom ggplot2 position_dodge
-#' @importFrom graphics plot
 #' @export
 #' 
 
-filter_scdata_list <- function(data_list, ...) {
+filter_scdata <- function(data_list, ...) {
         
         sample <- purrr::map_chr(.x = data_list, .f = function(x) x@project.name)
         pre <- purrr::map_int(.x = data_list, .f = function(x) nrow(x[["nCount_RNA"]]))
-        data_list <- purrr::map(.x = data_list, .f = filter_scdata, ...)
+        data_list <- purrr::map(.x = data_list, .f = subset, ...)
         post <- purrr::map_int(.x = data_list, .f = function(x) nrow(x[["nCount_RNA"]]))
         
         df <- tibble::tibble(sample = sample,
@@ -99,48 +70,32 @@ filter_scdata_list <- function(data_list, ...) {
         df <- reshape2::melt(df, id = "sample")
         
         p <- ggplot(df) +
-                geom_bar(aes(x = sample, fill = variable, y = value), stat = "identity", position = "dodge") +
-                scale_fill_manual(values = c("#fbb4ae","#b3cde3"), labels = c("Pre-QC", "Post-QC"), name = NULL) +
-                geom_text(aes(x = sample, y = value, label = value, group = variable), position = position_dodge(width = 1), vjust = -0.5, size = 3.5) +
+                geom_bar(aes(x = sample,
+                             y = .data$value,
+                             fill = .data$variable), 
+                         stat = "identity", 
+                         position = "dodge") +
+                scale_fill_manual(values = c("#fbb4ae","#b3cde3"), 
+                                  labels = c("Pre-QC", "Post-QC"), 
+                                  name = NULL) +
+                geom_text(aes(x = sample, 
+                              y = .data$value, 
+                              label = .data$value, 
+                              group = .data$variable), 
+                          position = position_dodge(width = 1), 
+                          vjust = -0.5, 
+                          size = 3.5) +
                 labs(y = "Number of Cells") +
-                theme(legend.title = element_text(size = 10),
-                      legend.text = element_text(size = 10),
-                      axis.title = element_text(size = 10),
-                      axis.text = element_text(size = 10),
+                theme(legend.title = element_text(size = 12),
+                      legend.text = element_text(size = 12),
+                      axis.title = element_text(size = 12),
+                      axis.text = element_text(size = 12),
                       axis.title.x = element_blank())
         
-        plot(p)
+        graphics::plot(p)
         return(data_list)
 }
 
-
-
-find_doublets <- function(dataset, dims = 1:20, ratio = 0.05, resolution = 0.4, txt) {
-        
-        dataset %<>%
-                ScaleData(vars.to.regress = c("percent.mt","nCount_RNA","S.Score","G2M.Score"), verbose = T) %>%
-                RunPCA(features = VariableFeatures(dataset)) %>%
-                RunUMAP(dims = dims) %>%
-                FindNeighbors(dims = dims) %>%
-                FindClusters(resolution = resolution)
-        
-        ## pK Identification
-        sweep.res <- paramSweep_v3(dataset, PCs = dims)
-        sweep.stats <- summarizeSweep(sweep.res, GT = FALSE)
-        bcmvn <- find.pK(sweep.stats)
-        
-        ## Homotypic Doublet Proportion Estimate
-        homotypic.prop <- modelHomotypic(dataset$seurat_clusters)
-        nExp_poi <- round(ratio*length(Idents(dataset)))
-        nExp_poi.adj <- round(nExp_poi*(1-homotypic.prop))
-        
-        dataset <- doubletFinder_v3(dataset, PCs = dims, pN = 0.25, pK = 0.1, nExp = nExp_poi.adj, reuse.pANN = F)
-        
-        barcodes <- names(dataset@active.ident)[dataset[[paste("DF.classifications_0.25_0.1_", as.character(nExp_poi.adj), sep = "")]] == "Doublet"]
-        
-        paste(barcodes, txt, sep = "")
-        
-}
 
 #' Streamlined analysis of Seurat object after integration
 #' 
@@ -327,51 +282,6 @@ add_program_score <- function(dataset, features, org = "human", nbin = 20, ctrl 
                                   name = name)
         
         return(dataset)
-}
-
-
-seurat_to_monocle <- function(dataset, subset = F, clusters = NULL) {
-        
-        dataset$cluster <- Idents(dataset)
-        
-        data <- GetAssayData(dataset, assay = 'RNA', slot = 'counts')
-        pd <- new('AnnotatedDataFrame', data = dataset@meta.data)
-        fd <- new('AnnotatedDataFrame', 
-                      data = data.frame(gene_short_name = row.names(data), row.names = rownames(data)))
-        
-        cds <- newCellDataSet(data,
-                                  phenoData = pd,
-                                  featureData = fd,
-                                  lowerDetectionLimit = 0.5,
-                                  expressionFamily = negbinomial.size())
-        cds %<>% 
-                estimateSizeFactors() %>%
-                estimateDispersions() %>%
-                detectGenes(min_expr = 0.1)
-        
-        if (subset) {
-                cds <- cds[,row.names(subset(pData(cds), cluster %in% clusters))]
-        }
-        
-        return(cds)
-
-}
-
-analyze_monocle <- function(cds, rev = F) {
-        
-        expressed_genes <- row.names(subset(fData(cds), num_cells_expressed >= 10))
-        
-        diff_test_res <- differentialGeneTest(cds[expressed_genes,], fullModelFormulaStr = "~group")
-        
-        ordering_genes <- row.names(subset(diff_test_res, qval < 10E-70))
-        
-        cds %<>% 
-                setOrderingFilter(ordering_genes) %>%
-                reduceDimension(max_components = 2, method = 'DDRTree') %>%
-                orderCells(reverse = rev)
-        
-        return(cds)
-
 }
 
 

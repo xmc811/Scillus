@@ -2,27 +2,18 @@
 % Please edit documentation in R/processing.R
 \name{filter_scdata}
 \alias{filter_scdata}
-\title{Filter Seurat object}
+\title{Filter a list of Seurat objects}
 \usage{
-filter_scdata(
-  dataset,
-  range_nFeature = c(500, Inf),
-  range_nCount = c(500, Inf),
-  range_mt = c(-Inf, 10)
-)
+filter_scdata(data_list, ...)
 }
 \arguments{
-\item{dataset}{A Seurat object.}
+\item{data_list}{A list of Seurat objects}
 
-\item{range_nFeature}{An integer vector - the range of nFeature_RNA for filtering. Default value is \code{c(500, Inf)}.}
-
-\item{range_nCount}{An integer vector - the range of nCount_RNA for filtering. Default value is \code{c(500, Inf)}.}
-
-\item{range_mt}{An numeric vector - the range of percent.mt for filtering. Default value is \code{c(-Inf, 10)}.}
+\item{...}{Additional arguments to be passed to the function \code{\link{subset.Seurat}}}
 }
 \value{
-A Seurat object.
+A list of Seurat objects
 }
 \description{
-Filter Seurat object
+Filter a list of Seurat objects
 }

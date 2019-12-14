@@ -9,7 +9,7 @@ load_scfile(metadata, ...)
 \arguments{
 \item{metadata}{A dataframe - must contain a column named "sample", and a column named "folder" or "file".}
 
-\item{...}{Additional arguments to be passed to the function \code{\link{CreateSeuratObject}}.}
+\item{...}{Additional arguments to be passed to the function \code{\link{CreateSeuratObject}}}
 }
 \value{
 A list of Seurat object
