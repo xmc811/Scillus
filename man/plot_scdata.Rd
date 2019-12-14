@@ -4,8 +4,13 @@
 \alias{plot_scdata}
 \title{Single cell visualization - merged and colored by biological sample}
 \usage{
-plot_scdata(dataset, color_by = "seurat_clusters", colors = NULL,
-  split = NULL, ...)
+plot_scdata(
+  dataset,
+  color_by = "seurat_clusters",
+  colors = NULL,
+  split = NULL,
+  ...
+)
 }
 \arguments{
 \item{dataset}{A Seurat object.}

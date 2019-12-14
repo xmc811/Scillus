@@ -4,8 +4,15 @@
 \alias{plot_measure}
 \title{Box plot/Violin plot of gene expressions or meta measures}
 \usage{
-plot_measure(dataset, features, plot_type, show = "combined",
-  meta = FALSE, group_colors = NULL, cluster_colors = NULL)
+plot_measure(
+  dataset,
+  features,
+  plot_type,
+  show = "combined",
+  meta = FALSE,
+  group_colors = NULL,
+  cluster_colors = NULL
+)
 }
 \arguments{
 \item{dataset}{A Seurat object.}

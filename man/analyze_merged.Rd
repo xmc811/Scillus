@@ -4,9 +4,20 @@
 \alias{analyze_merged}
 \title{Streamlined analysis of Seurat object after integration}
 \usage{
-analyze_merged(dataset, group.levels, verbose = T, npcs = 50,
-  reduction = "umap", dims = 1:20, nnei = 30, min.dist = 0.3,
-  spread = 1, n.epochs = 500, k.param = 20, resolution = 0.8)
+analyze_merged(
+  dataset,
+  group.levels,
+  verbose = T,
+  npcs = 50,
+  reduction = "umap",
+  dims = 1:20,
+  nnei = 30,
+  min.dist = 0.3,
+  spread = 1,
+  n.epochs = 500,
+  k.param = 20,
+  resolution = 0.8
+)
 }
 \arguments{
 \item{dataset}{A Seurat object.}

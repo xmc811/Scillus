@@ -3,7 +3,7 @@
 
 #' Load single cell RNA-seq data from directory or file
 #' 
-#' @param meta A dataframe - must contain a column named "sample", and a column named "folder" or "file".
+#' @param metadata A dataframe - must contain a column named "sample", and a column named "folder" or "file".
 #' @param ... Additional arguments to be passed to the function \code{\link{CreateSeuratObject}}.
 #' 
 #' @return A list of Seurat object

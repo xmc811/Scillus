@@ -191,7 +191,7 @@ get_palette <- function(ncolor, palette = c("Paired", "Set2", "Set1")) {
 #' Get a vector of colors for sample coding
 #' 
 #' @param n Number of colors to be generated
-#' @palette A string
+#' @param palette A string
 #' @return A vector of colors
 #' @export
 #' 

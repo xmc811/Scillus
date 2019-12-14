@@ -4,9 +4,15 @@
 \alias{plot_stat}
 \title{Plot the basic statistics after cell clustering and labeling}
 \usage{
-plot_stat(dataset, plot_type, cluster_colors = NULL,
-  group_colors = NULL, plot_ratio = 1, text_size = 10,
-  tilt_text = FALSE)
+plot_stat(
+  dataset,
+  plot_type,
+  cluster_colors = NULL,
+  group_colors = NULL,
+  plot_ratio = 1,
+  text_size = 10,
+  tilt_text = FALSE
+)
 }
 \arguments{
 \item{dataset}{A Seurat object.}

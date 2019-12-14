@@ -4,8 +4,13 @@
 \alias{plot_heatmap}
 \title{Plot the heatmap of single cell dataset}
 \usage{
-plot_heatmap(dataset, markers, nfeatures = 5, cluster_colors = NULL,
-  group_colors = NULL)
+plot_heatmap(
+  dataset,
+  markers,
+  nfeatures = 5,
+  cluster_colors = NULL,
+  group_colors = NULL
+)
 }
 \arguments{
 \item{dataset}{A Seurat object.}

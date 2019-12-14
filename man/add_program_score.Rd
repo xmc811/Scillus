@@ -4,8 +4,7 @@
 \alias{add_program_score}
 \title{Add gene program scores}
 \usage{
-add_program_score(dataset, features, org = "human", nbin = 20,
-  ctrl = 10, name)
+add_program_score(dataset, features, org = "human", nbin = 20, ctrl = 10, name)
 }
 \arguments{
 \item{dataset}{A Seurat object.}

@@ -4,8 +4,12 @@
 \alias{filter_scdata}
 \title{Filter Seurat object}
 \usage{
-filter_scdata(dataset, range_nFeature = c(500, Inf),
-  range_nCount = c(500, Inf), range_mt = c(-Inf, 10))
+filter_scdata(
+  dataset,
+  range_nFeature = c(500, Inf),
+  range_nCount = c(500, Inf),
+  range_mt = c(-Inf, 10)
+)
 }
 \arguments{
 \item{dataset}{A Seurat object.}

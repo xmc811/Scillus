@@ -4,9 +4,10 @@
 
 #' Plot the QC metrics of an individual biological sample
 #' 
-#' @param data_list A list of Seurat objects.
-#' @param metrics A string - the name of the QC metrics.
-#' @param plot_type A string -the type of the plot. Default value is \code{"box"}.
+#' @param data_list A list of Seurat objects
+#' @param metrics A string - the name of the QC metrics
+#' @param plot_type A string - the type of the plot. Default value is \code{"combined"}.
+#' @param palette A string - the \code{RColorBrewer} palette to be used. Default value is \code{"Set2"}.
 #' 
 #' @return A plot.
 #' @importFrom tibble tibble
@@ -17,7 +18,10 @@
 #' @export
 #' 
 
-plot_qc <- function(data_list, metrics, plot_type = "combined") {
+plot_qc <- function(data_list, 
+                    metrics, 
+                    plot_type = "combined",
+                    palette = "Set2") {
         
         qc <- list()
         
@@ -25,15 +29,18 @@ plot_qc <- function(data_list, metrics, plot_type = "combined") {
                 qc[[i]] <- tibble(value = data_list[[i]][[metrics]][[1]],
                                   sample = data_list[[i]]@project.name)
         }
+        
         qc <- do.call(rbind, qc)
         
-        p <- ggplot(qc, mapping = aes(x = sample, y = value, fill = sample)) + 
-                scale_fill_manual(values = get_spectrum(length(data_list))) +
+        p <- ggplot(qc, 
+                    mapping = aes(x = sample, 
+                                  y = value, 
+                                  fill = sample)) + 
+                scale_fill_manual(values = get_spectrum(n = length(data_list), palette = palette)) +
                 scale_y_continuous(breaks = scales::pretty_breaks(n = 7)) +
                 labs(y = metrics) + {
-                if (!metrics %in% c("S.Score", "G2M.Score")) ylim(0, NA)
-                } +
-                theme(legend.position = "none")
+                        if (!metrics %in% c("S.Score", "G2M.Score")) ylim(0, NA)
+                } + theme(legend.position = "none")
         
         switch(plot_type,
                box = p + geom_boxplot(),

@@ -4,13 +4,13 @@
 \alias{get_spectrum}
 \title{Get a vector of colors for sample coding}
 \usage{
-get_spectrum(n)
+get_spectrum(n, palette = "Set2")
 }
 \arguments{
-\item{n}{Number of colors to be generated.}
+\item{n}{Number of colors to be generated}
 }
 \value{
-A vector of colors.
+A vector of colors
 }
 \description{
 Get a vector of colors for sample coding

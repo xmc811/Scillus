@@ -4,8 +4,7 @@
 \alias{plot_measure_cluster}
 \title{Single cell visualization - gene expression levels}
 \usage{
-plot_measure_cluster(dataset, features, plot_type = "none",
-  meta = FALSE)
+plot_measure_cluster(dataset, features, plot_type = "none", meta = FALSE)
 }
 \arguments{
 \item{dataset}{A Seurat object.}
