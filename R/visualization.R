@@ -35,7 +35,8 @@ plot_qc <- function(data_list,
                     mapping = aes(x = .data$sample, 
                                   y = .data$value, 
                                   fill = sample)) + 
-                scale_fill_manual(values = get_spectrum(n = length(data_list), palette = palette)) +
+                scale_fill_manual(values = get_spectrum(n = length(data_list), 
+                                                        palette = palette)) +
                 scale_y_continuous(labels = if (metrics == "percent.mt") function(x) paste0(x, "%") else waiver(),
                                    breaks = scales::pretty_breaks(n = 5),
                                    limits = if (!metrics %in% c("S.Score", "G2M.Score")) c(0, NA)) +
@@ -69,7 +70,11 @@ plot_qc <- function(data_list,
 #' @export
 #' 
 
-plot_scdata <- function(dataset, color_by = "seurat_clusters", colors = NULL, split = NULL, ...) {
+plot_scdata <- function(dataset, 
+                        color_by = "seurat_clusters", 
+                        colors = NULL, 
+                        split = NULL, 
+                        ...) {
         
         dataset$sample <- factor(dataset$sample)
         
@@ -89,24 +94,38 @@ plot_scdata <- function(dataset, color_by = "seurat_clusters", colors = NULL, sp
                 }
                 
         }
-                
-        thm <- theme(panel.border = element_rect(colour = "black", fill = NA, size = 1, linetype = 1),
+        
+        thm <- theme(panel.border = element_rect(colour = "black", 
+                                                 fill = NA, 
+                                                 size = 1, 
+                                                 linetype = 1),
                      axis.line=element_blank(),
                      aspect.ratio = 1)
         
         if (is.null(split)) {
-                p <- DimPlot(object = dataset, reduction = "umap", group.by = color_by, ...)
+                p <- DimPlot(object = dataset, 
+                             reduction = "umap", 
+                             group.by = color_by, ...)
                 
-                p + scale_color_manual(values = colors, name = legend.title, labels = levels) + thm
-                        
+                p + scale_color_manual(values = colors, 
+                                       name = legend.title, 
+                                       labels = levels) + thm
+                
         } else {
-                p <- DimPlot(object = dataset, reduction = "umap", split.by = split, group.by = color_by, 
+                p <- DimPlot(object = dataset, 
+                             reduction = "umap", 
+                             split.by = split, 
+                             group.by = color_by, 
                              ncol = ceiling(sqrt(length(levels(dataset$sample)))), ...)
                 
-                p  + scale_color_manual(values = colors, name = legend.title, labels = levels) + thm + 
-                        theme(strip.text.x = element_text(face = "plain", vjust = 1))
+                p  + scale_color_manual(values = colors, 
+                                        name = legend.title, 
+                                        labels = levels) + 
+                        thm + 
+                        theme(strip.text.x = element_text(face = "plain", 
+                                                          vjust = 1))
         }
-                
+        
 }
 
 
@@ -375,7 +394,7 @@ plot_stat <- function(dataset,
                
                stop("Unknown plot type")
         )
-
+        
 }
 
 
@@ -549,7 +568,7 @@ plot_measure <- function(dataset,
         df <- if (meta) get_meta_data(dataset, features) else get_gene_data(dataset, features)
         
         df$feature <- factor(df$feature, levels = features)
-
+        
         n <- ceiling(sqrt(length(unique(df$feature))))
         
         thm <- theme(axis.title.y = element_blank())

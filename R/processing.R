@@ -29,17 +29,21 @@ load_scfile <- function(metadata, ...) {
         }
         
         if ("folder" %in% colnames(metadata)) {
-                mat_list <- purrr::map(.x = metadata[['folder']], .f = Read10X)
+                mat_list <- purrr::map(.x = metadata[['folder']], 
+                                       .f = Read10X)
         } else {
-                mat_list <- purrr::map(.x = metadata[['file']], .f = function(x) data.frame(data.table::fread(file = x), row.names = T))
+                mat_list <- purrr::map(.x = metadata[['file']], 
+                                       .f = function(x) data.frame(data.table::fread(file = x), row.names = T))
         }
         
         data <- list()
         
         for (i in seq_along(1:length(mat_list))) {
                 
-                data[[i]] <- CreateSeuratObject(counts = mat_list[[i]], project = metadata[['sample']][i], ...)
-                data[[i]][['percent.mt']] <- PercentageFeatureSet(data[[i]], pattern = "(^(hg19|mm10)-(MT|mt)-|^(MT|mt)-)")
+                data[[i]] <- CreateSeuratObject(counts = mat_list[[i]], 
+                                                project = metadata[['sample']][i], ...)
+                data[[i]][['percent.mt']] <- PercentageFeatureSet(data[[i]], 
+                                                                  pattern = "(^(hg19|mm10)-(MT|mt)-|^(MT|mt)-)")
                 data[[i]][['sample']] <- data[[i]]@project.name
         }
         return(data)
@@ -58,10 +62,14 @@ load_scfile <- function(metadata, ...) {
 
 filter_scdata <- function(data_list, ...) {
         
-        sample <- purrr::map_chr(.x = data_list, .f = function(x) x@project.name)
-        pre <- purrr::map_int(.x = data_list, .f = function(x) nrow(x[["nCount_RNA"]]))
-        data_list <- purrr::map(.x = data_list, .f = subset, ...)
-        post <- purrr::map_int(.x = data_list, .f = function(x) nrow(x[["nCount_RNA"]]))
+        sample <- purrr::map_chr(.x = data_list, 
+                                 .f = function(x) x@project.name)
+        pre <- purrr::map_int(.x = data_list, 
+                              .f = function(x) nrow(x[["nCount_RNA"]]))
+        data_list <- purrr::map(.x = data_list, 
+                                .f = subset, ...)
+        post <- purrr::map_int(.x = data_list, 
+                               .f = function(x) nrow(x[["nCount_RNA"]]))
         
         df <- tibble::tibble(sample = sample,
                              pre = pre,
