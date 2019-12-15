@@ -8,7 +8,7 @@ plot_stat(
   dataset,
   plot_type,
   cluster_colors = NULL,
-  group_colors = NULL,
+  sample_colors = NULL,
   plot_ratio = 1,
   text_size = 10,
   tilt_text = FALSE
@@ -21,7 +21,7 @@ plot_stat(
 
 \item{cluster_colors}{A string vector -}
 
-\item{group_colors}{A string vector -}
+\item{sample_colors}{A string vector -}
 
 \item{plot_ratio}{A double -}
 

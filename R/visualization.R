@@ -180,7 +180,7 @@ plot_measure_cluster <- function(dataset,
 #' @param markers A tibble -
 #' @param nfeatures An integer -
 #' @param cluster_colors A string vector -
-#' @param group_colors A string vector -
+#' @param sample_colors A string vector -
 #' 
 #' @return A plot.
 #' @importFrom Seurat DoHeatmap Idents
@@ -236,7 +236,7 @@ plot_heatmap <- function(dataset,
 #' @param dataset A Seurat object.
 #' @param plot_type A string -
 #' @param cluster_colors A string vector -
-#' @param group_colors A string vector -
+#' @param sample_colors A string vector -
 #' @param plot_ratio A double -
 #' @param text_size A double -
 #' @param tilt_text A logical -
@@ -268,9 +268,9 @@ plot_stat <- function(dataset,
         
         stat <- as_tibble(cbind(sample = as.character(dataset$sample), cluster = as.character(Idents(dataset))))
         stat %<>%
-                mutate(sample = factor(sample, levels = sample_levels),
-                       cluster = factor(cluster, levels = cluster_levels)) %>%
-                group_by(sample, cluster) %>%
+                mutate(sample = factor(.data$sample, levels = sample_levels),
+                       cluster = factor(.data$cluster, levels = cluster_levels)) %>%
+                group_by(.data$sample, .data$cluster) %>%
                 summarise(n = n()) %>%
                 mutate(freq = n / sum(n))
         
@@ -287,41 +287,61 @@ plot_stat <- function(dataset,
         
         switch(plot_type,
                sample_count = stat %>%
-                       group_by(sample) %>%
+                       group_by(.data$sample) %>%
                        summarise(sum(n)) %>%
                        ggplot() +
-                       geom_col(aes(x = sample, y = `sum(n)`, fill = sample)) +
-                       geom_text(aes(x = sample, y = `sum(n)`, label = `sum(n)`), 
-                                 vjust = -0.5, size = text_size * 0.35) +
+                       geom_col(aes(x = .data$sample, 
+                                    y = .data$`sum(n)`, 
+                                    fill = .data$sample)) +
+                       geom_text(aes(x = .data$sample, 
+                                     y = .data$`sum(n)`, 
+                                     label = .data$`sum(n)`), 
+                                 vjust = -0.5, 
+                                 size = text_size * 0.35) +
                        scale_fill_manual(values = sample_colors) + 
                        labs(y = "Number of Cells") + 
                        thm + thm2 + if (tilt_text) {thm3},
                
                cluster_count = stat %>%
-                       group_by(cluster) %>%
+                       group_by(.data$cluster) %>%
                        summarise(sum(n)) %>%
                        ggplot() +
-                       geom_col(aes(x = cluster, y = `sum(n)`, fill = cluster)) +
-                       geom_text(aes(x = cluster, y = `sum(n)`, label = `sum(n)`), 
-                                 vjust = -0.5, size = text_size * 0.35) +
+                       geom_col(aes(x = .data$cluster, 
+                                    y = .data$`sum(n)`, 
+                                    fill = .data$cluster)) +
+                       geom_text(aes(x = .data$cluster, 
+                                     y = .data$`sum(n)`, 
+                                     label = .data$`sum(n)`), 
+                                 vjust = -0.5, 
+                                 size = text_size * 0.35) +
                        scale_fill_manual(values = cluster_colors, name = "Cluster") + 
                        labs(y = "Number of Cells") + 
                        thm + thm2 + if (tilt_text) {thm3},
                
                prop_fill = ggplot(stat) + 
-                       geom_bar(aes(x = sample, y = freq, fill = cluster), position = "fill", stat = "identity") +
+                       geom_bar(aes(x = .data$sample, 
+                                    y = .data$freq, 
+                                    fill = .data$cluster), 
+                                position = "fill", 
+                                stat = "identity") +
                        scale_y_continuous(labels = scales::percent) +
                        scale_fill_manual(values = cluster_colors, name = "Cluster") +
                        labs(y = "Proportion") + 
                        thm + if (tilt_text) {thm3},
                
                prop_diverge = stat %>%
-                       mutate(cluster = fct_rev(cluster)) %>%
-                       mutate(freq = ifelse(sample == sample_levels[1], -freq, freq)) %>%
-                       mutate(freq = round(freq, 3)) %>%
+                       mutate(cluster = fct_rev(.data$cluster)) %>%
+                       mutate(freq = ifelse(sample == sample_levels[1], -.data$freq, .data$freq)) %>%
+                       mutate(freq = round(.data$freq, 3)) %>%
                        ggplot() + 
-                       geom_bar(aes(x=cluster, y = freq, fill = sample), stat = "identity") +
-                       geom_text(aes(x=cluster, y = freq + 0.03 * sign(freq), label = percent(abs(freq), digits = 1)), size = text_size * 0.35) +
+                       geom_bar(aes(x = .data$cluster, 
+                                    y = .data$freq, 
+                                    fill = .data$sample), 
+                                stat = "identity") +
+                       geom_text(aes(x = .data$cluster, 
+                                     y = .data$freq + 0.03 * sign(.data$freq), 
+                                     label = percent(abs(.data$freq), digits = 1)), 
+                                 size = text_size * 0.35) +
                        coord_flip() +
                        scale_fill_manual(values = sample_colors, name = "Sample") +
                        scale_y_continuous(breaks = pretty(c(stat$freq, -stat$freq)),
@@ -335,10 +355,17 @@ plot_stat <- function(dataset,
                        ),
                
                prop_multi = stat %>%
-                       mutate(freq = round(freq, 3)) %>%
+                       mutate(freq = round(.data$freq, 3)) %>%
                        ggplot() + 
-                       geom_bar(aes(x = sample, y = freq, fill = sample), stat = "identity") +
-                       geom_text(aes(x = sample, y = freq, label = scales::percent(freq)), vjust = -0.5, size = text_size * 0.35) +
+                       geom_bar(aes(x = .data$sample,
+                                    y = .data$freq, 
+                                    fill = .data$sample), 
+                                stat = "identity") +
+                       geom_text(aes(x = .data$sample, 
+                                     y = .data$freq, 
+                                     label = scales::percent(.data$freq)), 
+                                 vjust = -0.5, 
+                                 size = text_size * 0.35) +
                        scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)), labels = scales::percent_format()) +
                        facet_wrap(~cluster, ncol = 4, scales = "free") +
                        scale_fill_manual(values = sample_colors, name = "Sample") +

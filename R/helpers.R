@@ -150,11 +150,11 @@ get_top_genes <- function(dataset, markers, n) {
         int_features <- rownames(dataset@assays$integrated@scale.data)
         
         df <- markers %>%
-                filter(gene %in% int_features) %>%
-                arrange(desc(avg_logFC)) %>%
-                group_by(cluster) %>%
+                filter(.data$gene %in% int_features) %>%
+                arrange(desc(.data$avg_logFC)) %>%
+                group_by(.data$cluster) %>%
                 filter(row_number() <= n) %>%
-                arrange(cluster)
+                arrange(.data$cluster)
         
         return(df$gene)
 }

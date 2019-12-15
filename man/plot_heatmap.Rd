@@ -9,7 +9,7 @@ plot_heatmap(
   markers,
   nfeatures = 5,
   cluster_colors = NULL,
-  group_colors = NULL
+  sample_colors = NULL
 )
 }
 \arguments{
@@ -21,7 +21,7 @@ plot_heatmap(
 
 \item{cluster_colors}{A string vector -}
 
-\item{group_colors}{A string vector -}
+\item{sample_colors}{A string vector -}
 }
 \value{
 A plot.
