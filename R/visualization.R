@@ -454,33 +454,47 @@ plot_stat <- function(dataset,
 #' @importFrom utils head
 #' @importFrom dplyr pull
 #' @importFrom forcats fct_reorder
-#' @importFrom ggplot2 facet_grid geom_hline xlab ylab
+#' @importFrom ggplot2 facet_grid geom_hline xlab ylab scale_fill_gradient2
+#' @importFrom org.Hs.eg.db org.Hs.eg.db
+#' @importFrom org.Mm.eg.db org.Mm.eg.db
 #' @export
 #' 
 
 plot_cluster_go <- function (markers, cluster_name, topn = 100, org, ...) {
         
-        gene_list <- markers %>% filter(cluster == cluster_name) %>% 
-                arrange(p_val_adj) %>% head(topn) %>% pull(gene)
+        gene_list <- markers %>% 
+                filter(.data$cluster == cluster_name) %>% 
+                arrange(.data$p_val_adj) %>% 
+                head(topn) %>% 
+                pull(.data$gene)
         
-        db <- if (org == "human") org.Hs.eg.db else org.Mm.eg.db
+        db <- if (org == "human") org.Hs.eg.db::org.Hs.eg.db else org.Mm.eg.db::org.Mm.eg.db
         
-        res <- enrichGO(gene = gene_list, OrgDb = db, keyType = "SYMBOL", ...)
+        res <- enrichGO(gene = gene_list, 
+                        OrgDb = db, 
+                        keyType = "SYMBOL", ...)
         
         df <- as_tibble(res@result) %>% 
-                arrange(p.adjust) %>% 
+                arrange(.data$p.adjust) %>% 
                 head(10) %>% 
                 mutate(cluster = cluster_name) %>% 
-                mutate(Description = stringr::str_to_title(Description)) %>% 
-                mutate(Description = fct_reorder(Description, dplyr::desc(p.adjust)))
+                mutate(Description = stringr::str_to_title(.data$Description)) %>% 
+                mutate(Description = fct_reorder(.data$Description, dplyr::desc(.data$p.adjust)))
         
-        ggplot(df, mapping = aes(x = Description, y = -log10(p.adjust))) + 
-                geom_bar(aes(fill = Count), stat = "identity") + 
-                scale_fill_gradient2("Gene Count", low = "lightgrey", mid = "#feb24c", high = "#bd0026") + 
+        ggplot(df, 
+               mapping = aes(x = .data$Description, 
+                             y = -log10(.data$p.adjust))) + 
+                geom_bar(aes(fill = .data$Count), 
+                         stat = "identity") + 
+                scale_fill_gradient2("Gene Count", 
+                                     low = "lightgrey", 
+                                     mid = "#feb24c", 
+                                     high = "#bd0026") + 
                 coord_flip() + 
-                geom_hline(yintercept = -log10(0.05), linetype = "dashed") + 
+                geom_hline(yintercept = -log10(0.05), 
+                           linetype = "dashed") + 
                 xlab("Gene Ontology") + 
-                ylab(bquote("-log"[10] ~ " adjusted p-value")) + facet_grid(. ~ cluster)
+                ylab(bquote("-log"[10] ~ " adjusted p-value")) + facet_grid(. ~ .data$cluster)
 }
 
 

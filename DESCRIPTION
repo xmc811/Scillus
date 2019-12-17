@@ -9,7 +9,7 @@ Authors@R: c(
         )
 Description: Scillus is a wrapper package enhancing the visualization of single cell omics data.
 Depends: 
-        R (>= 3.6),
+        R (>= 3.6)
 License: GPL-3 | file LICENSE
 LazyData: TRUE
 biocViews:
@@ -37,6 +37,8 @@ Imports:
         Matrix,
         magrittr,
         modes,
+        org.Hs.eg.db,
+        org.Mm.eg.db,
         plyr,
         purrr,
         RColorBrewer,
@@ -45,8 +47,8 @@ Imports:
         ROCR,
         scales,
         sctransform,
-        stringr,
         Seurat,
+        stringr,
         tibble,
         tidyr,
         tidyverse,

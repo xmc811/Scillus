@@ -192,6 +192,7 @@ get_palette <- function(ncolor, palette = c("Paired", "Set2", "Set1")) {
 #' @param n Number of colors to be generated
 #' @param palette A string
 #' @return A vector of colors
+#' @importFrom grDevices colorRampPalette
 #' @export
 #' 
 
