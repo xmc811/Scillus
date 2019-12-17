@@ -66,7 +66,7 @@ plot_qc <- function(data_list,
 #' 
 #' @return A plot.
 #' @importFrom Seurat DimPlot
-#' @importFrom ggplot2 scale_color_manual theme scale_color_manual element_rect element_blank
+#' @importFrom ggplot2 scale_color_manual theme element_rect element_blank
 #' @export
 #' 
 
@@ -139,7 +139,7 @@ plot_scdata <- function(dataset,
 #' 
 #' @return A plot.
 #' @importFrom Seurat FeaturePlot
-#' @importFrom ggplot2 theme element_rect element_blank element_text xlim ylim ggtitle scale_color_viridis_c
+#' @importFrom ggplot2 element_text xlim ylim ggtitle scale_color_viridis_c
 #' @importFrom grid grobTree rectGrob textGrob gpar viewport
 #' @importFrom stats quantile
 #' @importFrom colormap colormap
@@ -304,8 +304,7 @@ plot_heatmap <- function(dataset,
 #' @param tilt_text A logical -
 #' 
 #' @return A plot.
-#' @importFrom tibble tibble
-#' @importFrom ggplot2 ggplot geom_col geom_text geom_bar scale_fill_manual scale_y_continuous coord_flip facet_wrap expand_scale
+#' @importFrom ggplot2 geom_col geom_text geom_bar scale_fill_manual scale_y_continuous coord_flip facet_wrap expand_scale
 #' @importFrom dplyr mutate summarise n
 #' @importFrom forcats fct_rev
 #' @importFrom formattable percent
@@ -343,7 +342,7 @@ plot_stat <- function(dataset,
                      axis.title = element_text(size = text_size),
                      axis.text = element_text(size = text_size),
                      axis.title.x = element_blank()
-        )
+        ) + theme_bw()
         thm2 <- theme(legend.position = "none")
         thm3 <- theme(axis.text.x = element_text(angle = 45, vjust = 0.5))
         
@@ -437,7 +436,6 @@ plot_stat <- function(dataset,
                
                stop("Unknown plot type")
         )
-        
 }
 
 
