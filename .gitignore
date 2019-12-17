@@ -3,7 +3,6 @@
 .Rhistory
 .RData
 .Ruserdata
-*.Rproj
 CODE_OF_CONDUCT.md
 sample/
 tests/testdata/
