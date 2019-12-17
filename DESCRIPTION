@@ -14,7 +14,9 @@ License: GPL-3 | file LICENSE
 LazyData: TRUE
 biocViews:
 Imports:
+        circlize,
         colormap,
+        ComplexHeatmap,
         cowplot,
         clusterProfiler,
         data.table,
@@ -58,6 +60,6 @@ Collate:
         "visualization.R"
         "deprecated.R"
 Suggests:
-    testthat
-RoxygenNote: 7.0.0
+        testthat
+RoxygenNote: 7.0.2
 Encoding: UTF-8

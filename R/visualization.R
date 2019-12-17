@@ -197,55 +197,98 @@ plot_measure_cluster <- function(dataset,
 #' 
 #' @param dataset A Seurat object.
 #' @param markers A tibble -
-#' @param nfeatures An integer -
-#' @param cluster_colors A string vector -
-#' @param sample_colors A string vector -
+#' @param sort_var A string vector -
+#' @param n An integer -
+#' @param anno_var A string vector -
+#' @param anno_colors A string vector -
 #' 
 #' @return A plot.
-#' @importFrom Seurat DoHeatmap Idents
-#' @importFrom ggplot2 ggplot_build annotation_raster coord_cartesian scale_fill_gradient2 guides
-#' @importFrom magrittr %<>%
-#' @importFrom tibble as_tibble
-#' @importFrom dplyr arrange
+#' @importFrom Seurat GetAssayData
+#' @importFrom tibble rownames_to_column
+#' @importFrom rlang syms
+#' @importFrom circlize colorRamp2
+#' @importFrom ggplot2 unit
+#' @importFrom ComplexHeatmap Heatmap draw HeatmapAnnotation
 #' @export
 #' 
 
 plot_heatmap <- function(dataset, 
-                         markers, 
-                         nfeatures = 5,
-                         cluster_colors = NULL,
-                         sample_colors = NULL) {
+                         markers,
+                         sort_var = c('seurat_clusters', 'sample'),
+                         n = 8, 
+                         anno_var, 
+                         anno_colors) {
         
-        dataset$sample <- factor(dataset$sample)
+        mat <- GetAssayData(object = dataset, assay = "integrated", slot = "scale.data")
+        genes <- get_top_genes(dataset, markers, n)
         
-        df <- as_tibble(cbind(colnames(dataset), dataset$seurat_clusters, dataset$sample))
-        colnames(df) <- c("barcode","cluster","sample")
-        df$cluster <- as.numeric(df$cluster)
-        df %<>%
-                arrange(cluster, sample)
+        mat <- mat[match(genes, rownames(mat)),]
         
-        genes <- get_top_genes(dataset, markers, nfeatures)
+        anno <- dataset@meta.data %>%
+                rownames_to_column(var = "barcode") %>%
+                arrange(!!!syms(sort_var))
         
-        p_heat <- DoHeatmap(object = dataset, assay = 'integrated', features = genes, 
-                            group.bar = F, cells = df$barcode, raster = F, draw.lines = F)
+        mat <- t(mat)
+        mat <- mat[match(anno$barcode, rownames(mat)),]
+        mat <- t(mat)
         
-        p_pos_y <- ggplot_build(plot = p_heat)$layout$panel_params[[1]]$y.range
         
-        ncol <- length(levels(Idents(dataset)))
-        nsample <- length(levels(dataset$sample))
+        annos <- list()
         
-        pal1 <- if (is.null(cluster_colors)) get_palette(ncol) else cluster_colors
-        col1 <- pal1[as.numeric(df$cluster)]
+        for (i in seq_along(1:length(anno_var))) {
+                
+                value <- anno[[anno_var[i]]]
+                
+                if (is.numeric(value)) {
+                        
+                        n <- brewer.pal.info[anno_colors[i],]['maxcolors'][[1]]
+                        pal <- brewer.pal(n = n, name = anno_colors[i])
+                        
+                        col_fun <- colorRamp2(c(min(value), stats::median(value), max(value)), 
+                                              c(pal[2], pal[(n+1)/2], pal[n-1]))
+                        
+                        ha <- HeatmapAnnotation(a = anno[[anno_var[i]]],
+                                                col = list(a = col_fun),
+                                                border = TRUE)
+                } else {
+                        
+                        l <- levels(factor(anno[[anno_var[i]]]))
+                        col <- get_palette(ncolor = length(l), 
+                                           palette = anno_colors[i])
+                        names(col) <- l
+                        col <- list(a = col)
+                        
+                        ha <- HeatmapAnnotation(a = anno[[anno_var[i]]],
+                                                col = col,
+                                                border = TRUE)
+                }
+                
+                names(ha) <- anno_var[i]
+                names(ha@anno_list) <- anno_var[i]
+                ha@anno_list[[1]]@color_mapping@name <- anno_var[i]
+                ha@anno_list[[1]]@name_param$label <- anno_var[i]
+                
+                annos[[i]] <- ha
+        }
         
-        pal2 <- if (is.null(sample_colors)) get_spectrum(nsample) else sample_colors
-        col2 <- pal2[as.numeric(factor(df$sample))]
+        annos <- do.call(c, annos)
         
-        p_heat + 
-                annotation_raster(t(col2), -Inf, Inf, max(p_pos_y) + 0.5, max(p_pos_y) + 1.5) +
-                annotation_raster(t(col1), -Inf, Inf, max(p_pos_y) + 2, max(p_pos_y) + 3) +
-                coord_cartesian(ylim = c(0, max(p_pos_y) + 4), clip = 'off') +
-                scale_fill_gradient2(low = '#377eb8', high = '#e41a1c', mid = 'white', midpoint = 0) +
-                guides(colour="none")
+        annos@gap <- rep(unit(1,"mm"), length(annos))
+        
+        ht <- Heatmap(mat,
+                      cluster_rows = FALSE,
+                      cluster_columns = FALSE,
+                      heatmap_legend_param = list(direction = "horizontal",
+                                                  legend_width = unit(6, "cm"),
+                                                  title = "Expression"),
+                      col = colorRamp2(c(-2, 0, 2), c("#4575b4", "white", "#d73027")),
+                      show_column_names = FALSE,
+                      row_names_side = "left",
+                      top_annotation = annos)
+        
+        draw(ht, 
+             heatmap_legend_side = "bottom",
+             annotation_legend_side = "right")
         
 }
 

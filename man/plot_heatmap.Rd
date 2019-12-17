@@ -7,9 +7,10 @@
 plot_heatmap(
   dataset,
   markers,
-  nfeatures = 5,
-  cluster_colors = NULL,
-  sample_colors = NULL
+  sort_var = c("seurat_clusters", "sample"),
+  n = 8,
+  anno_var,
+  anno_colors
 )
 }
 \arguments{
@@ -17,11 +18,13 @@ plot_heatmap(
 
 \item{markers}{A tibble -}
 
-\item{nfeatures}{An integer -}
+\item{sort_var}{A string vector -}
 
-\item{cluster_colors}{A string vector -}
+\item{n}{An integer -}
 
-\item{sample_colors}{A string vector -}
+\item{anno_var}{A string vector -}
+
+\item{anno_colors}{A string vector -}
 }
 \value{
 A plot.
