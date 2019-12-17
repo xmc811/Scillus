@@ -38,6 +38,9 @@ load_scfile <- function(metadata, ...) {
         
         data <- list()
         
+        meta_var <- colnames(m1)
+        meta_var <- meta_var[!meta_var %in% c("sample", "folder", "file")]
+        
         for (i in seq_along(1:length(mat_list))) {
                 
                 data[[i]] <- CreateSeuratObject(counts = mat_list[[i]], 
@@ -45,6 +48,13 @@ load_scfile <- function(metadata, ...) {
                 data[[i]][['percent.mt']] <- PercentageFeatureSet(data[[i]], 
                                                                   pattern = "(^(hg19|mm10)-(MT|mt)-|^(MT|mt)-)")
                 data[[i]][['sample']] <- data[[i]]@project.name
+                
+                if (length(meta_var) > 0) {
+                        
+                        for (j in seq_along(1:length(meta_var))) {
+                                data[[i]][[meta_var[j]]] <- m1[[meta_var[j]]][i]
+                        }
+                }
         }
         return(data)
 }

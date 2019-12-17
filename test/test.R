@@ -2,7 +2,10 @@ library(magrittr)
 library(Seurat)
 
 a1 <- list.files("./test/GSE128531_RAW", full.names = TRUE)
-m1 <- tibble::tibble(file = a1, sample = stringr::str_remove(basename(a1), ".csv.gz"))
+m1 <- tibble::tibble(file = a1, 
+                     sample = stringr::str_remove(basename(a1), ".csv.gz"),
+                     group = rep(c("CTCL", "Normal"), each = 3),
+                     sex = rep(c("M","F"),3))
 
 scRNA_1 <- load_scfile(m1)
 
