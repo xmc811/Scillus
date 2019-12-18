@@ -4,16 +4,24 @@
 \alias{plot_qc}
 \title{Plot the QC metrics of an individual biological sample}
 \usage{
-plot_qc(data_list, metrics, plot_type = "combined", palette = "Set2")
+plot_qc(
+  data_list,
+  metrics,
+  group_by = "sample",
+  plot_type = "combined",
+  pal_setup = NULL
+)
 }
 \arguments{
 \item{data_list}{A list of Seurat objects}
 
 \item{metrics}{A string - the name of the QC metrics}
 
+\item{group_by}{A string - the grouping variable for plot in the metadata. Default value is \code{"sample"}.}
+
 \item{plot_type}{A string - the type of the plot. Default value is \code{"combined"}.}
 
-\item{palette}{A string - the \code{RColorBrewer} palette to be used. Default value is \code{"Set2"}.}
+\item{pal_setup}{A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used. Default value is \code{NULL}.}
 }
 \value{
 A plot.

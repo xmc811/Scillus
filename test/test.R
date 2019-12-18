@@ -4,14 +4,18 @@ library(Seurat)
 a1 <- list.files("./test/GSE128531_RAW", full.names = TRUE)
 m1 <- tibble::tibble(file = a1, 
                      sample = stringr::str_remove(basename(a1), ".csv.gz"),
-                     group = rep(c("CTCL", "Normal"), each = 3),
-                     sex = rep(c("M","F"),3))
+                     group = factor(rep(c("CTCL", "Normal"), each = 3), levels = c("Normal", "CTCL")))
+
+pal <- tibble::tibble(var = c("sample", "group"),
+                      pal = c("Set2","Set1")) 
+
 
 scRNA_1 <- load_scfile(m1)
 
 plot_qc(scRNA_1, metrics = "percent.mt")
 plot_qc(scRNA_1, metrics = "nFeature_RNA")
 plot_qc(scRNA_1, metrics = "nCount_RNA")
+plot_qc(scRNA_1, metrics = "nCount_RNA", group_by = "group", pal_setup = pal)
 
 
 scRNA_1 <- filter_scdata(scRNA_1, subset = nFeature_RNA > 500 & percent.mt < 10)

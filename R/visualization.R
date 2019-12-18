@@ -6,8 +6,9 @@
 #' 
 #' @param data_list A list of Seurat objects
 #' @param metrics A string - the name of the QC metrics
+#' @param group_by A string - the grouping variable for plot in the metadata. Default value is \code{"sample"}.
 #' @param plot_type A string - the type of the plot. Default value is \code{"combined"}.
-#' @param palette A string - the \code{RColorBrewer} palette to be used. Default value is \code{"Set2"}.
+#' @param pal_setup A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used. Default value is \code{NULL}.
 #' 
 #' @return A plot.
 #' @importFrom tibble tibble
@@ -17,24 +18,31 @@
 #' @export
 #' 
 
-plot_qc <- function(data_list, 
-                    metrics, 
+plot_qc <- function(data_list,
+                    metrics,
+                    group_by = "sample",
                     plot_type = "combined",
-                    palette = "Set2") {
+                    pal_setup = NULL) {
         
         qc <- list()
         
         for (i in seq(length(data_list))) {
                 qc[[i]] <- tibble(value = data_list[[i]][[metrics]][[1]],
-                                  sample = data_list[[i]]@project.name)
+                                  group = data_list[[i]][[group_by]][[1]])
         }
         
         qc <- do.call(rbind, qc)
         
+        if(!is.null(pal_setup)) {
+                palette <- pal_setup[pal_setup[[1]] == group_by,][[2]]
+        } else {
+                palette <- "Set2"
+        }
+        
         p <- ggplot(qc, 
-                    mapping = aes(x = .data$sample, 
+                    mapping = aes(x = .data$group, 
                                   y = .data$value, 
-                                  fill = sample)) + 
+                                  fill = .data$group)) + 
                 scale_fill_manual(values = get_spectrum(n = length(data_list), 
                                                         palette = palette)) +
                 scale_y_continuous(labels = if (metrics == "percent.mt") function(x) paste0(x, "%") else waiver(),
