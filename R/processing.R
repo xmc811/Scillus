@@ -44,10 +44,10 @@ load_scfile <- function(metadata, ...) {
         for (i in seq_along(1:length(mat_list))) {
                 
                 data[[i]] <- CreateSeuratObject(counts = mat_list[[i]], 
-                                                project = metadata[['sample']][i], ...)
+                                                project = as.character(metadata[['sample']][i]), ...)
                 data[[i]][['percent.mt']] <- PercentageFeatureSet(data[[i]], 
                                                                   pattern = "(^(hg19|mm10)-(MT|mt)-|^(MT|mt)-)")
-                data[[i]][['sample']] <- data[[i]]@project.name
+                data[[i]][['sample']] <- metadata[['sample']][i]
                 
                 if (length(meta_var) > 0) {
                         
@@ -113,6 +113,28 @@ filter_scdata <- function(data_list, ...) {
         graphics::plot(p)
         return(data_list)
 }
+
+#' Refactor grouping variables in Seurat object
+#' 
+#' @param dataset A Seurat object.
+#' @param metadata A dataframe - should be the same as the one used during loading. Default value is \code{NULL}.
+#' 
+#' @return A Seurat object.
+#' @export
+#' 
+
+refactor_seurat <- function(dataset, metadata) {
+        
+        fct_variable <- colnames(metadata)[sapply(metadata, is.factor)]
+        
+        for (i in seq_along(1:length(fct_variable))) {
+                
+                dataset[[fct_variable[i]]][[1]] <- factor(dataset[[fct_variable[i]]][[1]], levels = levels(metadata[[fct_variable[[i]]]]))
+        }
+        
+        return(dataset)
+}
+
 
 
 #' Rename clusters in Seurat object

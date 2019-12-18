@@ -7,8 +7,8 @@
 plot_stat(
   dataset,
   plot_type,
-  cluster_colors = NULL,
-  sample_colors = NULL,
+  group_by = "sample",
+  pal_setup = NULL,
   plot_ratio = 1,
   text_size = 10,
   tilt_text = FALSE
@@ -19,9 +19,9 @@ plot_stat(
 
 \item{plot_type}{A string -}
 
-\item{cluster_colors}{A string vector -}
+\item{group_by}{A string - the grouping variable for plot in the metadata. Default value is \code{"sample"}.}
 
-\item{sample_colors}{A string vector -}
+\item{pal_setup}{A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used. Default value is \code{NULL}.}
 
 \item{plot_ratio}{A double -}
 
