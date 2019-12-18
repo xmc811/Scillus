@@ -38,7 +38,7 @@ load_scfile <- function(metadata, ...) {
         
         data <- list()
         
-        meta_var <- colnames(m1)
+        meta_var <- colnames(metadata)
         meta_var <- meta_var[!meta_var %in% c("sample", "folder", "file")]
         
         for (i in seq_along(1:length(mat_list))) {
@@ -52,7 +52,7 @@ load_scfile <- function(metadata, ...) {
                 if (length(meta_var) > 0) {
                         
                         for (j in seq_along(1:length(meta_var))) {
-                                data[[i]][[meta_var[j]]] <- m1[[meta_var[j]]][i]
+                                data[[i]][[meta_var[j]]] <- metadata[[meta_var[j]]][i]
                         }
                 }
         }
@@ -112,43 +112,6 @@ filter_scdata <- function(data_list, ...) {
         
         graphics::plot(p)
         return(data_list)
-}
-
-
-#' Streamlined analysis of Seurat object after integration
-#' 
-#' @param dataset A Seurat object.
-#' @param group.levels A string vector - factor levels of biological samples. 
-#' @param verbose A logical value -  
-#' @param npcs An integer - 
-#' @param reduction A string -
-#' @param dims An integer vector -
-#' @param nnei An integer -
-#' @param min.dist A double -
-#' @param spread A double -
-#' @param n.epochs An integer -
-#' @param k.param An integer -
-#' @param resolution A double -
-#' 
-#' @return A Seurat object.
-#' @importFrom Seurat RunPCA RunUMAP FindNeighbors FindClusters
-#' @importFrom magrittr %>% %<>%
-#' @export
-#' 
-
-analyze_merged <- function(dataset, group.levels,
-                           verbose = T, npcs = 50,
-                           reduction = "umap", dims = 1:20, nnei = 30, min.dist = 0.3, spread = 1, n.epochs = 500, 
-                           k.param = 20,
-                           resolution = 0.8) {
-        
-        dataset$group <- factor(dataset$group, levels = group.levels)
-        dataset %<>% 
-                RunPCA(npcs = npcs, verbose = verbose) %>%
-                RunUMAP(reduction = "pca", dims = dims, n.neighbors = nnei, min.dist = min.dist, spread = spread, n.epochs = n.epochs) %>%
-                FindNeighbors(reduction = reduction, dims = 1:2, k.param = k.param) %>%
-                FindClusters(resolution = resolution, algorithm = 3)
-        
 }
 
 

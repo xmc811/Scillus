@@ -57,7 +57,6 @@ Collate:
         "helpers.R"
         "processing.R"
         "visualization.R"
-        "deprecated.R"
 Suggests:
         testthat
 RoxygenNote: 7.0.2
