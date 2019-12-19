@@ -66,6 +66,10 @@ plot_heatmap(dataset = scRNA_1,
               anno_colors = c("Set2","Dark2","Reds","Blues","Greens"))
 
 
-scRNA_1[['sample']][[1]]
+scRNA_1 %<>% refactor_seurat()
+
+test <- refactor_seurat(scRNA_1)
+
+test[['Phase']][[1]] <- factor(test[['Phase']][[1]])
 
 

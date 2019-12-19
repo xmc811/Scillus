@@ -25,7 +25,13 @@ load_scfile <- function(metadata, ...) {
         if (a == 0) {
                 stop("No file or folder names in the metadata")
         } else if (a > 1) {
-                warning("Both file and folder names are provided in the metadata. Only folder names will be processed")
+                warning("Both file and folder names are provided in the metadata. Only folder names will be processed", 
+                        immediate. = TRUE)
+        }
+        
+        if (any(duplicated(metadata[['sample']]))) {
+                warning("Sample names are not unique", 
+                        immediate. = TRUE)
         }
         
         if ("folder" %in% colnames(metadata)) {
@@ -33,7 +39,8 @@ load_scfile <- function(metadata, ...) {
                                        .f = Read10X)
         } else {
                 mat_list <- purrr::map(.x = metadata[['file']], 
-                                       .f = function(x) data.frame(data.table::fread(file = x), row.names = T))
+                                       .f = function(x) data.frame(data.table::fread(file = x), 
+                                                                   row.names = T))
         }
         
         data <- list()
@@ -123,15 +130,27 @@ filter_scdata <- function(data_list, ...) {
 #' @export
 #' 
 
-refactor_seurat <- function(dataset, metadata) {
+refactor_seurat <- function(dataset, 
+                            metadata = NULL) {
         
-        fct_variable <- colnames(metadata)[sapply(metadata, is.factor)]
-        
-        for (i in seq_along(1:length(fct_variable))) {
+        if (is.null(metadata)) {
                 
-                dataset[[fct_variable[i]]][[1]] <- factor(dataset[[fct_variable[i]]][[1]], levels = levels(metadata[[fct_variable[[i]]]]))
+                message("No metadata provided. All the metadata of 'character' type will be factored.")
+                fct_variable <- colnames(dataset@meta.data)[sapply(dataset@meta.data, is.character)]
+                
+                for (i in seq_along(1:length(fct_variable))) {
+                        
+                        dataset[[fct_variable[i]]][[1]] <- factor(dataset[[fct_variable[i]]][[1]])
+                }
+        } else {
+                fct_variable <- colnames(metadata)[sapply(metadata, is.factor)]
+                
+                for (i in seq_along(1:length(fct_variable))) {
+                        
+                        dataset[[fct_variable[i]]][[1]] <- factor(dataset[[fct_variable[i]]][[1]], 
+                                                                  levels = levels(metadata[[fct_variable[[i]]]]))
+                }
         }
-        
         return(dataset)
 }
 
