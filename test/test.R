@@ -55,7 +55,7 @@ plot_scdata(scRNA_1, color_by = "sample", split = "sample")
 plot_stat(scRNA_1, "group_count", group_by = "group")
 plot_stat(scRNA_1, "cluster_count")
 plot_stat(scRNA_1, "prop_fill", group_by = "group")
-plot_stat(scRNA_1, "prop_multi")
+plot_stat(scRNA_1, "prop_multi", group_by = "group")
 
 markers_1 <- FindAllMarkers(scRNA_1, logfc.threshold = 0.1, min.pct = 0, only.pos = T)
 

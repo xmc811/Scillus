@@ -199,7 +199,7 @@ get_palette <- function(ncolor, palette = c("Paired", "Set2", "Set1")) {
 get_spectrum <- function(n, palette = "Set2") {
         
         if (n <= brewer.pal.info[palette,]['maxcolors'][[1]]) {
-                return(brewer.pal(n, name = palette))
+                return(suppressWarnings(brewer.pal(n, name = palette)))
         } else {
                 warning("Number of colors exceeds palette capacity. RdYlBu spectrum will be used instead.", immediate. = TRUE)
                 return(colorRampPalette(brewer.pal(11, "RdYlBu"))(n))

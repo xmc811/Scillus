@@ -358,7 +358,8 @@ plot_stat <- function(dataset,
         ) + theme_bw()
         
         thm2 <- theme(legend.position = "none")
-        thm3 <- theme(axis.text.x = element_text(angle = 45, vjust = 0.5))
+        thm3 <- theme(axis.text.x = element_text(angle = 45, 
+                                                 vjust = 0.5))
         
         switch(plot_type,
                group_count = stat %>%
@@ -389,7 +390,8 @@ plot_stat <- function(dataset,
                                      label = .data$`sum(n)`), 
                                  vjust = -0.5, 
                                  size = text_size * 0.35) +
-                       scale_fill_manual(values = cluster_colors, name = "Cluster") + 
+                       scale_fill_manual(values = cluster_colors, 
+                                         name = "Cluster") + 
                        labs(y = "Number of Cells") + 
                        thm + thm2 + if (tilt_text) {thm3},
                
@@ -400,7 +402,8 @@ plot_stat <- function(dataset,
                                 position = "fill", 
                                 stat = "identity") +
                        scale_y_continuous(labels = scales::percent) +
-                       scale_fill_manual(values = cluster_colors, name = "Cluster") +
+                       scale_fill_manual(values = cluster_colors, 
+                                         name = "Cluster") +
                        labs(y = "Proportion") + 
                        thm + if (tilt_text) {thm3},
                
@@ -415,13 +418,15 @@ plot_stat <- function(dataset,
                                 stat = "identity") +
                        geom_text(aes(x = .data$cluster, 
                                      y = .data$freq + 0.03 * sign(.data$freq), 
-                                     label = percent(abs(.data$freq), digits = 1)), 
+                                     label = percent(abs(.data$freq), 
+                                                     digits = 1)), 
                                  size = text_size * 0.35) +
                        coord_flip() +
                        scale_fill_manual(values = group_colors, name = "Group") +
                        scale_y_continuous(breaks = pretty(c(stat$freq, -stat$freq)),
                                           labels = scales::percent(abs(pretty(c(stat$freq, -stat$freq))))) +
-                       labs(x = NULL, y = "Proportion") +
+                       labs(x = NULL, 
+                            y = "Proportion") +
                        theme(aspect.ratio = plot_ratio,
                              legend.title = element_text(size = text_size),
                              legend.text = element_text(size = text_size),
@@ -441,10 +446,15 @@ plot_stat <- function(dataset,
                                      label = scales::percent(.data$freq)), 
                                  vjust = -0.5, 
                                  size = text_size * 0.35) +
-                       scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)), labels = scales::percent_format()) +
-                       facet_wrap(~cluster, ncol = 4, scales = "free") +
-                       scale_fill_manual(values = group_colors, name = "Group") +
-                       labs(x = NULL, y = "Proportion") + 
+                       scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)), 
+                                          labels = scales::percent_format()) +
+                       facet_wrap(~ cluster, 
+                                  ncol = 4, 
+                                  scales = "free") +
+                       scale_fill_manual(values = group_colors, 
+                                         name = "Group") +
+                       labs(x = NULL, 
+                            y = "Proportion") + 
                        theme(strip.text.x = element_text(size = text_size)) + 
                        thm + thm2 + if (tilt_text) {thm3},
                
