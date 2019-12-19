@@ -7,9 +7,8 @@
 plot_scdata(
   dataset,
   color_by = "seurat_clusters",
-  colors = NULL,
-  split = NULL,
-  ...
+  split_by = NULL,
+  pal_setup = NULL
 )
 }
 \arguments{
@@ -17,11 +16,9 @@ plot_scdata(
 
 \item{color_by}{A string - by which metadata the colors will be applied. Default value is \code{"seurat_clusters"}.}
 
-\item{colors}{A string vector - the colors used for samples. Default value is \code{NULL}.}
+\item{split_by}{A string - by which metadata the plot will be split. Default value is \code{NULL}.}
 
-\item{split}{A string - by which metadata the plot will be split. Default value is \code{NULL}.}
-
-\item{...}{Arguments passed to \code{DimPlot}.}
+\item{pal_setup}{A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used. Default value is \code{NULL}.}
 }
 \value{
 A plot.

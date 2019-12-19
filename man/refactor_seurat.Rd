@@ -4,7 +4,7 @@
 \alias{refactor_seurat}
 \title{Refactor grouping variables in Seurat object}
 \usage{
-refactor_seurat(dataset, metadata)
+refactor_seurat(dataset, metadata = NULL)
 }
 \arguments{
 \item{dataset}{A Seurat object.}

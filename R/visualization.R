@@ -67,73 +67,49 @@ plot_qc <- function(data_list,
 #' Single cell visualization - merged and colored by biological sample
 #' 
 #' @param dataset A Seurat object.
-#' @param colors A string vector - the colors used for samples. Default value is \code{NULL}.
 #' @param color_by A string - by which metadata the colors will be applied. Default value is \code{"seurat_clusters"}.
-#' @param split A string - by which metadata the plot will be split. Default value is \code{NULL}.
-#' @param ... Arguments passed to \code{DimPlot}.
+#' @param split_by A string - by which metadata the plot will be split. Default value is \code{NULL}.
+#' @param pal_setup A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used. Default value is \code{NULL}.
 #' 
 #' @return A plot.
-#' @importFrom Seurat DimPlot
-#' @importFrom ggplot2 scale_color_manual theme element_rect element_blank
+#' @importFrom ggplot2 theme element_rect element_blank facet_wrap scale_color_brewer
+#' @importFrom stats as.formula
 #' @export
 #' 
 
 plot_scdata <- function(dataset, 
-                        color_by = "seurat_clusters", 
-                        colors = NULL, 
-                        split = NULL, 
-                        ...) {
+                        color_by = "seurat_clusters",
+                        split_by = NULL,
+                        pal_setup = NULL) {
         
-        dataset$sample <- factor(dataset$sample)
-        
-        if (color_by == "sample") {
-                levels <- levels(dataset$sample)
+        if (!is.null(pal_setup)) {
+                pal <- pal_setup[pal_setup[[1]] == color_by,][[2]]
         } else {
-                levels <- levels(dataset$seurat_clusters)
+                pal <- "Set2"
         }
         
-        legend.title <- ifelse(color_by == "sample", "Sample", "Cluster")
-        
-        if (is.null(colors)) {
-                if (color_by == "sample") {
-                        colors <- get_spectrum(length(levels))
-                } else {
-                        colors <- get_palette(length(levels))
-                }
-                
-        }
-        
-        thm <- theme(panel.border = element_rect(colour = "black", 
-                                                 fill = NA, 
-                                                 size = 1, 
-                                                 linetype = 1),
-                     axis.line=element_blank(),
-                     aspect.ratio = 1)
-        
-        if (is.null(split)) {
-                p <- DimPlot(object = dataset, 
-                             reduction = "umap", 
-                             group.by = color_by, ...)
-                
-                p + scale_color_manual(values = colors, 
-                                       name = legend.title, 
-                                       labels = levels) + thm
-                
-        } else {
-                p <- DimPlot(object = dataset, 
-                             reduction = "umap", 
-                             split.by = split, 
-                             group.by = color_by, 
-                             ncol = ceiling(sqrt(length(levels(dataset$sample)))), ...)
-                
-                p  + scale_color_manual(values = colors, 
-                                        name = legend.title, 
-                                        labels = levels) + 
-                        thm + 
-                        theme(strip.text.x = element_text(face = "plain", 
-                                                          vjust = 1))
-        }
-        
+        df <- dataset@reductions$umap@cell.embeddings %>%
+                as.data.frame() %>%
+                cbind(dataset@meta.data) %>%
+                rownames_to_column(var = "barcode")
+
+        ggplot(df) +
+                geom_point(aes(x = .data$UMAP_1,
+                               y = .data$UMAP_2,
+                               color = .data[[color_by]])) +
+                scale_color_brewer(palette = pal) +
+                theme(panel.grid.major = element_blank(),
+                      panel.grid.minor = element_blank(),
+                      panel.background = element_blank(),
+                      axis.text = element_text(size = 12),
+                      axis.title = element_text(size = 12),
+                      panel.border = element_rect(colour = "black", 
+                                                  fill = NA, 
+                                                  size = 1, 
+                                                  linetype = 1),
+                      axis.line = element_blank(),
+                      aspect.ratio = 1) +
+                if (!is.null(split_by)) {facet_wrap(as.formula(paste("~", split_by)))}
 }
 
 
@@ -329,7 +305,7 @@ plot_stat <- function(dataset,
         
         if (!is.null(pal_setup)) {
                 group_palette <- pal_setup[pal_setup[[1]] == group_by,][[2]]
-                cluster_palette <- pal_setup[pal_setup[[1]] == "cluster",][[2]]
+                cluster_palette <- pal_setup[pal_setup[[1]] == "seurat_clusters",][[2]]
         } else {
                 group_palette <- "Set2"
                 cluster_palette <- "Paired"

@@ -6,8 +6,8 @@ m1 <- tibble::tibble(file = a1,
                      sample = factor(stringr::str_remove(basename(a1), ".csv.gz")),
                      group = factor(rep(c("CTCL", "Normal"), each = 3), levels = c("Normal", "CTCL")))
 
-pal <- tibble::tibble(var = c("sample", "group"),
-                      pal = c("Set2","Set1")) 
+pal <- tibble::tibble(var = c("sample", "group","seurat_clusters"),
+                      pal = c("Set2","Set1","Paired")) 
 
 scRNA_1 <- load_scfile(m1)
 
@@ -47,10 +47,10 @@ scRNA_1 %<>%
 scRNA_1 %<>%
         refactor_seurat(metadata = m1)
 
-plot_scdata(scRNA_1)
+plot_scdata(scRNA_1, pal_setup = pal)
 plot_scdata(scRNA_1, color_by = "sample")
-plot_scdata(scRNA_1, split = "sample")
-plot_scdata(scRNA_1, color_by = "sample", split = "sample")
+plot_scdata(scRNA_1, split_by = "sample")
+plot_scdata(scRNA_1, color_by = "group", split_by = "seurat_clusters", pal_setup = pal)
 
 plot_stat(scRNA_1, "group_count", group_by = "group")
 plot_stat(scRNA_1, "cluster_count")
@@ -68,8 +68,48 @@ plot_heatmap(dataset = scRNA_1,
 
 scRNA_1 %<>% refactor_seurat()
 
-test <- refactor_seurat(scRNA_1)
 
-test[['Phase']][[1]] <- factor(test[['Phase']][[1]])
+
+df <- scRNA_1@reductions$umap@cell.embeddings %>%
+        as.data.frame() %>%
+        cbind(scRNA_1@meta.data) %>%
+        rownames_to_column(var = "barcode")
+
+
+ggplot(df) +
+        geom_point(aes(x = UMAP_1,
+                       y = UMAP_2,
+                       color = .data[['seurat_clusters']])) +
+        scale_color_brewer(palette = "Paired") +
+        theme(panel.grid.major = element_blank(),
+              panel.grid.minor = element_blank(),
+              panel.background = element_blank(),
+              axis.text = element_text(size = 12),
+              axis.title = element_text(size = 12),
+              panel.border = element_rect(colour = "black", 
+                                          fill = NA, 
+                                          size = 1, 
+                                          linetype = 1),
+              axis.line = element_blank(),
+              aspect.ratio = 1)
+
+ggplot(df) +
+        geom_point(aes(x = UMAP_1,
+                       y = UMAP_2,
+                       color = .data[['Phase']])) +
+        scale_color_brewer(palette = "Set1") +
+        theme(panel.grid.major = element_blank(),
+              panel.grid.minor = element_blank(),
+              panel.background = element_blank(),
+              axis.text = element_text(size = 12),
+              axis.title = element_text(size = 12),
+              panel.border = element_rect(colour = "black", 
+                                          fill = NA, 
+                                          size = 1, 
+                                          linetype = 1),
+              axis.line = element_blank(),
+              aspect.ratio = 1)
+
+
 
 
