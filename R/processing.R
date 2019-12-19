@@ -92,7 +92,9 @@ filter_scdata <- function(data_list, ...) {
                              pre = pre,
                              post = post)
         
-        df <- reshape2::melt(df, id = "sample")
+        df %<>%
+                tidyr::gather(.data$variable, .data$value, -sample) %>%
+                mutate(variable = factor(.data$variable, levels = c("pre","post")))
         
         p <- ggplot(df) +
                 geom_bar(aes(x = sample,
@@ -234,11 +236,15 @@ find_diff_genes <- function(dataset, clusters, groups, logfc = 0.25) {
 #' @importFrom tidyr replace_na
 #' @importFrom tibble add_column as_tibble
 #' @importFrom magrittr %>% %<>%
-#' @importFrom fgsea fgsea
 #' @export
 #' 
 
 test_GSEA <- function(diff, clusters, pathway) {
+        
+        if (!requireNamespace("fgsea", quietly = TRUE)) {
+                stop(paste("Package \"fgsea\" needed for this function to work. Please install it."),
+                     call. = FALSE)
+        }
         
         gsea_res <- list()
         
@@ -254,7 +260,7 @@ test_GSEA <- function(diff, clusters, pathway) {
                 l <- data$avg_logFC
                 names(l) <- data$human
                 
-                res <- fgsea(pathways = pathway, l, minSize = 15, maxSize = 500, nperm = 100000)
+                res <- fgsea::fgsea(pathways = pathway, l, minSize = 15, maxSize = 500, nperm = 100000)
                 
                 res %<>%
                         add_column(cluster = clusters[i], .before = 1)

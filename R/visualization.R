@@ -445,20 +445,29 @@ plot_stat <- function(dataset,
 #' @param cluster_name A string -
 #' @param topn An integer -
 #' @param org A string -
-#' @param ... Additional arguments to be passed to the function \code{\link{enrichGO}}.
+#' @param ... Additional arguments to be passed to the function \code{\link[clusterProfiler]{enrichGO}}
 #' 
 #' @return A plot.
-#' @importFrom clusterProfiler enrichGO
 #' @importFrom utils head
 #' @importFrom dplyr pull
 #' @importFrom forcats fct_reorder
 #' @importFrom ggplot2 facet_grid geom_hline xlab ylab scale_fill_gradient2
-#' @importFrom org.Hs.eg.db org.Hs.eg.db
-#' @importFrom org.Mm.eg.db org.Mm.eg.db
 #' @export
 #' 
 
 plot_cluster_go <- function (markers, cluster_name, topn = 100, org, ...) {
+        
+        pkg_name <- ifelse(org == "human", "org.Hs.eg.db", "org.Mm.eg.db")
+        
+        if (!requireNamespace(pkg_name, quietly = TRUE)) {
+                stop(paste("Package", pkg_name, "needed for this function to work. Please install it."),
+                     call. = FALSE)
+        }
+        
+        if (!requireNamespace("clusterProfiler", quietly = TRUE)) {
+                stop(paste("Package \"clusterProfiler\" needed for this function to work. Please install it."),
+                     call. = FALSE)
+        }
         
         gene_list <- markers %>% 
                 filter(.data$cluster == cluster_name) %>% 
@@ -468,16 +477,17 @@ plot_cluster_go <- function (markers, cluster_name, topn = 100, org, ...) {
         
         db <- if (org == "human") org.Hs.eg.db::org.Hs.eg.db else org.Mm.eg.db::org.Mm.eg.db
         
-        res <- enrichGO(gene = gene_list, 
-                        OrgDb = db, 
-                        keyType = "SYMBOL", ...)
+        res <- clusterProfiler::enrichGO(gene = gene_list, 
+                                         OrgDb = db, 
+                                         keyType = "SYMBOL", ...)
         
         df <- as_tibble(res@result) %>% 
                 arrange(.data$p.adjust) %>% 
                 head(10) %>% 
                 mutate(cluster = cluster_name) %>% 
                 mutate(Description = stringr::str_to_title(.data$Description)) %>% 
-                mutate(Description = fct_reorder(.data$Description, dplyr::desc(.data$p.adjust)))
+                mutate(Description = fct_reorder(.data$Description, 
+                                                 dplyr::desc(.data$p.adjust)))
         
         ggplot(df, 
                mapping = aes(x = .data$Description, 
@@ -492,7 +502,7 @@ plot_cluster_go <- function (markers, cluster_name, topn = 100, org, ...) {
                 geom_hline(yintercept = -log10(0.05), 
                            linetype = "dashed") + 
                 xlab("Gene Ontology") + 
-                ylab(bquote("-log"[10] ~ " adjusted p-value")) + facet_grid(. ~ .data$cluster)
+                ylab(bquote("-log"[10] ~ " adjusted p-value")) + facet_grid(. ~ cluster)
 }
 
 
@@ -511,8 +521,13 @@ plot_all_cluster_go <- function (markers, org = "human", ...) {
         
         lst <- list()
         clusters <- levels(markers$cluster)
-        lst <- purrr::map(.x = clusters, .f = plot_cluster_go, markers = markers, org = org, ...)
-        do.call("grid.arrange", c(lst, ncol = floor(sqrt(length(lst)))))
+        lst <- purrr::map(.x = clusters, 
+                          .f = plot_cluster_go, 
+                          markers = markers, 
+                          org = org, ...)
+        do.call("grid.arrange", 
+                c(lst, 
+                  ncol = floor(sqrt(length(lst)))))
         
 }
 
@@ -522,23 +537,27 @@ plot_all_cluster_go <- function (markers, org = "human", ...) {
 #' @param dataset A Seurat object
 #' @param gene_list A list -
 #' @param pattern A string -
-#' @param ... Additional arguments to be passed to the function \code{\link{gsva}}.
+#' @param ... Additional arguments to be passed to the function \code{\link[GSVA]{gsva}}
 #' 
 #' @return A plot.
 #' @importFrom Seurat AverageExpression
 #' @importFrom stats dist hclust
-#' @importFrom GSVA gsva
 #' @importFrom ggplot2 geom_tile
 #' @export
 #' 
 
 plot_GSVA <- function(dataset, gene_list, pattern = "HALLMARK_", ...) {
         
+        if (!requireNamespace("GSVA", quietly = TRUE)) {
+                stop(paste("Package \"GSVA\" needed for this function to work. Please install it."),
+                     call. = FALSE)
+        }
+        
         names(gene_list) <- str_remove(names(gene_list), pattern = pattern)
         
         mtx <- as.matrix(AverageExpression(dataset, assays = "RNA")[[1]])
         
-        res <- gsva(expr = mtx, gset.idx.list = gene_list, ...)
+        res <- GSVA::gsva(expr = mtx, gset.idx.list = gene_list, ...)
         
         d <- dist(res)
         

@@ -66,50 +66,45 @@ plot_heatmap(dataset = scRNA_1,
               anno_colors = c("Set2","Dark2","Reds","Blues","Greens"))
 
 
-scRNA_1 %<>% refactor_seurat()
+plot_all_cluster_go(markers_1, org = 'human', ont = "BP")
 
 
 
-df <- scRNA_1@reductions$umap@cell.embeddings %>%
-        as.data.frame() %>%
-        cbind(scRNA_1@meta.data) %>%
-        rownames_to_column(var = "barcode")
-
-
-ggplot(df) +
-        geom_point(aes(x = UMAP_1,
-                       y = UMAP_2,
-                       color = .data[['seurat_clusters']])) +
-        scale_color_brewer(palette = "Paired") +
-        theme(panel.grid.major = element_blank(),
-              panel.grid.minor = element_blank(),
-              panel.background = element_blank(),
-              axis.text = element_text(size = 12),
-              axis.title = element_text(size = 12),
-              panel.border = element_rect(colour = "black", 
-                                          fill = NA, 
-                                          size = 1, 
-                                          linetype = 1),
-              axis.line = element_blank(),
-              aspect.ratio = 1)
-
-ggplot(df) +
-        geom_point(aes(x = UMAP_1,
-                       y = UMAP_2,
-                       color = .data[['Phase']])) +
-        scale_color_brewer(palette = "Set1") +
-        theme(panel.grid.major = element_blank(),
-              panel.grid.minor = element_blank(),
-              panel.background = element_blank(),
-              axis.text = element_text(size = 12),
-              axis.title = element_text(size = 12),
-              panel.border = element_rect(colour = "black", 
-                                          fill = NA, 
-                                          size = 1, 
-                                          linetype = 1),
-              axis.line = element_blank(),
-              aspect.ratio = 1)
-
-
+circlize,
+colormap,
+ComplexHeatmap,
+cowplot,
+clusterProfiler,
+data.table,
+dplyr,
+GSVA,
+fgsea,
+fields,
+forcats,
+foreach,
+formattable,
+grid,
+gridExtra,
+ggplot2,
+ggpubr,
+ggrepel,
+Matrix,
+magrittr,
+modes,
+org.Hs.eg.db,
+org.Mm.eg.db,
+plyr,
+purrr,
+RColorBrewer,
+reshape2,
+rlang,
+ROCR,
+scales,
+Seurat,
+stringr,
+tibble,
+tidyr,
+tidyverse,
+viridis
 
 

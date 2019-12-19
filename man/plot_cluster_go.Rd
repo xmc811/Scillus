@@ -15,7 +15,7 @@ plot_cluster_go(markers, cluster_name, topn = 100, org, ...)
 
 \item{org}{A string -}
 
-\item{...}{Additional arguments to be passed to the function \code{\link{enrichGO}}.}
+\item{...}{Additional arguments to be passed to the function \code{\link[clusterProfiler]{enrichGO}}}
 }
 \value{
 A plot.

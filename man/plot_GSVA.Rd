@@ -13,7 +13,7 @@ plot_GSVA(dataset, gene_list, pattern = "HALLMARK_", ...)
 
 \item{pattern}{A string -}
 
-\item{...}{Additional arguments to be passed to the function \code{\link{gsva}}.}
+\item{...}{Additional arguments to be passed to the function \code{\link[GSVA]{gsva}}}
 }
 \value{
 A plot.
