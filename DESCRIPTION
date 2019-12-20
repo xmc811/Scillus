@@ -15,7 +15,6 @@ LazyData: TRUE
 biocViews:
 Imports:
         circlize,
-        colormap,
         ComplexHeatmap,
         data.table,
         dplyr,
@@ -24,6 +23,7 @@ Imports:
         ggplot2,
         gridExtra,
         magrittr,
+        patchwork,
         plyr,
         purrr,
         RColorBrewer,

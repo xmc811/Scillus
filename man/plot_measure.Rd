@@ -4,30 +4,18 @@
 \alias{plot_measure}
 \title{Box plot/Violin plot of gene expressions or meta measures}
 \usage{
-plot_measure(
-  dataset,
-  features,
-  plot_type,
-  show = "combined",
-  meta = FALSE,
-  group_colors = NULL,
-  cluster_colors = NULL
-)
+plot_measure(dataset, measures, group_by, pal_setup = NULL, show = "combined")
 }
 \arguments{
 \item{dataset}{A Seurat object.}
 
-\item{features}{A string vector -}
+\item{measures}{A string vector -}
 
-\item{plot_type}{A string -}
+\item{group_by}{A string -}
+
+\item{pal_setup}{A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used. Default value is \code{NULL}.}
 
 \item{show}{A string -}
-
-\item{meta}{A logical value -}
-
-\item{group_colors}{A string vector -}
-
-\item{cluster_colors}{A string vector -}
 }
 \value{
 A plot.

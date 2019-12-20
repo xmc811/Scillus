@@ -68,4 +68,16 @@ plot_heatmap(dataset = scRNA_1,
 
 plot_all_cluster_go(markers_1, org = 'human', ont = "BP")
 
+plot_measure(dataset = test, measures = c("KRT14","S100A8","FAM138A","percent.mt"), 
+             group_by = "group", 
+             pal_setup = pal)
+
+plot_measure_dim(dataset = test,
+                 measures = c("nFeature_RNA","nCount_RNA","percent.mt"))
+
+
+
+
+
+
 

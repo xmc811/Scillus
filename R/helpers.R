@@ -59,78 +59,52 @@ gene_in_data <- function(dataset, gene) {
 #' Obtain the expression data for genes
 #' 
 #' @param dataset A Seurat object -
-#' @param genes A string vector -
-#' 
-#' @return A tibble
-#' @export
-#' 
-
-
-get_gene_data <- function(dataset, genes) {
-        
-        genes <- genes[map_dbl(.x = genes, .f = gene_in_data, dataset = dataset) > 0]
-        
-        lst <- list()
-        
-        for (i in seq_along(genes)) {
-                
-                if (gene_in_data(dataset, genes[i]) == 2) {
-                        
-                        lst[[i]] <- tibble(group = as.character(dataset$group),
-                                           cluster = as.character(Idents(dataset)),
-                                           x_cor = dataset@reductions$umap@cell.embeddings[,1],
-                                           y_cor = dataset@reductions$umap@cell.embeddings[,2],
-                                           value = dataset@assays$integrated@data[genes[i],],
-                                           feature = genes[i])
-                } else {
-                        
-                        lst[[i]] <- tibble(group = as.character(dataset$group),
-                                           cluster = as.character(Idents(dataset)),
-                                           x_cor = dataset@reductions$umap@cell.embeddings[,1],
-                                           y_cor = dataset@reductions$umap@cell.embeddings[,2],
-                                           value = dataset@assays$RNA@data[genes[i],],
-                                           feature = genes[i])
-                }
-                
-        }
-        
-        df <- do.call("rbind", lst)
-        
-        return(df)
-}
-
-
-#' Obtain the meta data for features
-#' 
-#' @param dataset A Seurat object -
 #' @param measures A string vector -
+#' @param return_df A logical - if \code{TRUE}, return the dataframe; if \code{FALSE}, return a list of the dataframe and valid measure names. Default value is \code{TRUE}.
 #' 
 #' @return A tibble
 #' @export
 #' 
 
-get_meta_data <- function(dataset, measures) {
+get_measure_data <- function(dataset, 
+                             measures,
+                             return_df = TRUE) {
         
-        measures <- measures[measures %in% colnames(dataset@meta.data)]
+        meta_vars <- colnames(dataset@meta.data)
         
-        lst <- list()
+        var_genes <- rownames(dataset@assays$integrated@scale.data)
+        all_genes <- dataset@assays$RNA@data@Dimnames[[1]]
         
-        for (i in seq_along(measures)) {
-                        
-                lst[[i]] <- tibble(group = as.character(dataset$group),
-                                   cluster = as.character(Idents(dataset)),
-                                   x_cor = dataset@reductions$umap@cell.embeddings[,1],
-                                   y_cor = dataset@reductions$umap@cell.embeddings[,2],
-                                   value = as.numeric(dataset@meta.data[[measures[i]]]),
-                                   feature = measures[i])
+        df <- dataset@reductions$umap@cell.embeddings %>%
+                as.data.frame() %>%
+                cbind(dataset@meta.data) %>%
+                rownames_to_column(var = "barcode")
+        
+        idx <- c() 
+        
+        for (i in seq_along(1:length(measures))) {
                 
+                if (measures[i] %in% meta_vars) {
+                        next
+                } else if (measures[i] %in% var_genes) {
+                        df[[measures[i]]] <- as.numeric(dataset@assays$integrated@scale.data[measures[i],])
+                } else if (measures[i] %in% all_genes) {
+                        df[[measures[i]]] <- as.numeric(dataset@assays$RNA@data[measures[i],])
+                } else {
+                        warning(paste("Measure name not found:", measures[i]),  
+                                immediate. = TRUE)
+                        idx <- append(idx, i)
+                }
         }
         
-        df <- do.call("rbind", lst)
+        measures <- measures[-idx]
         
-        return(df)
+        if (return_df) {
+                return(df)
+        } else {
+                return(list(df, measures))
+        }
 }
-
 
 
 #' Get top genes of each cluster

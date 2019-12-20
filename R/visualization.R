@@ -117,63 +117,60 @@ plot_scdata <- function(dataset,
 #' Single cell visualization - gene expression levels
 #' 
 #' @param dataset A Seurat object.
-#' @param features A string vector -
-#' @param plot_type A string -
-#' @param meta A logical value -
+#' @param measures A string vector -
+#' @param split_by A string -
+#' @param point.size A double -
 #' 
 #' @return A plot.
-#' @importFrom Seurat FeaturePlot
 #' @importFrom ggplot2 element_text xlim ylim ggtitle scale_color_viridis_c
-#' @importFrom grid grobTree rectGrob textGrob gpar viewport
 #' @importFrom stats quantile
-#' @importFrom colormap colormap
 #' @importFrom purrr map_dbl
-#' @importFrom tidyr nest
 #' @export
 #' 
 
-plot_measure_cluster <- function(dataset, 
-                                 features, 
-                                 plot_type = "none", 
-                                 meta = FALSE) {
+plot_measure_dim <- function(dataset, 
+                             measures,
+                             split_by = NULL,
+                             point.size = 1) {
         
-        dataset$group <- factor(dataset$group)
-        Idents(dataset) <- factor(Idents(dataset))
+        l <- get_measure_data(dataset = dataset,
+                              measures = measures,
+                              return_df = FALSE)
         
-        df <- if (meta) get_meta_data(dataset, features) else get_gene_data(dataset, features)
+        df <- l[[1]]
+        measures <- l[[2]]
         
-        df$group <- factor(df$group, levels = levels(dataset$group))
-        df$cluster <- factor(df$cluster, levels = levels(Idents(dataset)))
+        p <- list()
         
-        lst <- df %>% group_by(feature) %>% nest()
-        
-        plt_func <- function(df, title, type) {
-                ggplot(df, aes(x = x_cor, y = y_cor, color = value)) + 
-                        geom_point(size = 0.2) +
+        for (i in seq_along(1:length(measures))) {
+                
+                p[[i]] <- ggplot(df) +
+                        geom_point(aes(x = .data$UMAP_1,
+                                       y = .data$UMAP_2,
+                                       color = .data[[measures[i]]]),
+                                   size = point.size) +
                         scale_color_viridis_c(option = "A",
                                               name = "",
                                               direction = -1, 
-                                              limits = c(quantile(df$value, probs = 0.1), max(df$value)), 
+                                              limits = c(quantile(.data[[measures[i]]], 
+                                                                  probs = 0.1), 
+                                                         quantile(.data[[measures[i]]], 
+                                                                  probs = 0.9)), 
                                               oob = scales::squish) +
-                        ggtitle(title) +
-                        theme(panel.background = element_rect(fill = 'white', colour = 'black'),
-                              panel.border = element_rect(colour = "black", fill = NA, size = 1, linetype = 1),
-                              aspect.ratio = 1,
-                              plot.title = element_text(hjust = 0.5),
-                              axis.title = element_blank()
-                        ) +
-                        if (type == "group") {
-                                facet_wrap( ~ group)
-                        } else if (type == "cluster") {
-                                facet_wrap( ~ cluster)
-                        } else {}
-                
+                        theme(panel.grid.major = element_blank(),
+                              panel.grid.minor = element_blank(),
+                              panel.background = element_blank(),
+                              axis.text = element_text(size = 12),
+                              axis.title = element_text(size = 12),
+                              panel.border = element_rect(colour = "black", 
+                                                          fill = NA, 
+                                                          size = 1, 
+                                                          linetype = 1),
+                              axis.line = element_blank(),
+                              aspect.ratio = 1) +
+                        if (!is.null(split_by)) {facet_wrap(as.formula(paste("~", split_by)))}
         }
-        
-        l <- map2(.x = lst$data, .y = lst$feature, type = plot_type, .f = plt_func)
-        
-        grid.arrange(grobs = l, ncol = ceiling(sqrt(length(l))))
-        
+        patchwork::wrap_plots(p)
 }
 
 
@@ -475,7 +472,7 @@ plot_cluster_go <- function (markers, cluster_name, topn = 100, org, ...) {
                 head(topn) %>% 
                 pull(.data$gene)
         
-        db <- if (org == "human") org.Hs.eg.db::org.Hs.eg.db else org.Mm.eg.db::org.Mm.eg.db
+        db <- ifelse(org == "human", org.Hs.eg.db::org.Hs.eg.db, org.Mm.eg.db::org.Mm.eg.db)
         
         res <- clusterProfiler::enrichGO(gene = gene_list, 
                                          OrgDb = db, 
@@ -611,73 +608,48 @@ plot_GSEA <- function(gsea_res, pattern = "HALLMARK_", p_cutoff = 0.05, levels) 
 #' Box plot/Violin plot of gene expressions or meta measures
 #' 
 #' @param dataset A Seurat object.
-#' @param features A string vector -
-#' @param plot_type A string -
-#' @param meta A logical value -
-#' @param group_colors A string vector -
-#' @param cluster_colors A string vector -
+#' @param measures A string vector -
+#' @param group_by A string -
+#' @param pal_setup A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used. Default value is \code{NULL}.
 #' @param show A string -
 #' 
 #' @return A plot.
+#' @importFrom ggplot2 scale_fill_brewer
+#' @importFrom patchwork wrap_plots
 #' @export
 #' 
 
 plot_measure <- function(dataset, 
-                         features, 
-                         plot_type, 
-                         show = "combined",
-                         meta = FALSE,
-                         group_colors = NULL, 
-                         cluster_colors = NULL) {
+                         measures, 
+                         group_by,
+                         pal_setup = NULL,
+                         show = "combined") {
         
-        dataset$group <- factor(dataset$group)
-        Idents(dataset) <- factor(Idents(dataset))
+        if (!is.null(pal_setup)) {
+                pal <- pal_setup[pal_setup[[1]] == group_by,][[2]]
+        } else {
+                pal <- "Set2"
+        }
         
-        group_levels <- levels(dataset$group)
-        cluster_levels <- levels(Idents(dataset))
+        l <- get_measure_data(dataset = dataset,
+                              measures = measures,
+                              return_df = FALSE)
         
-        if (is.null(group_colors)) group_colors <- get_spectrum(length(group_levels))
-        if (is.null(cluster_colors)) cluster_colors <- get_palette(length(cluster_levels))
+        df <- l[[1]]
+        measures <- l[[2]]
         
-        df <- if (meta) get_meta_data(dataset, features) else get_gene_data(dataset, features)
-        
-        df$feature <- factor(df$feature, levels = features)
-        
-        n <- ceiling(sqrt(length(unique(df$feature))))
-        
-        thm <- theme(axis.title.y = element_blank())
-        thm2 <- theme(legend.position = "none")
+        p <- list()
         
         a <- ifelse(show == "box", 1, 0.2)
         
-        switch(plot_type,
-               group = ggplot(df, aes(x = factor(group, levels = group_levels), 
-                                      y = value,
-                                      fill = factor(group, levels = group_levels))) + 
-                       {if (show != "box") geom_violin()} +
-                       {if (show != "violin") geom_boxplot(alpha = a)} +
-                       xlab("Sample") +
-                       scale_fill_manual(values = group_colors) + thm + thm2 +
-                       facet_wrap( ~ feature, scales = "free", ncol = n),
-               
-               cluster = ggplot(df, aes(x = factor(cluster, levels = cluster_levels), 
-                                        y = value,
-                                        fill = factor(cluster, levels = cluster_levels))) + 
-                       {if (show != "box") geom_violin()} + 
-                       {if (show != "violin") geom_boxplot(alpha = a)} +
-                       xlab("Cluster") +
-                       scale_fill_manual(values = cluster_colors) + thm + thm2 +
-                       facet_wrap( ~ feature, scales = "free", ncol = n),
-               
-               cluster_group = ggplot(df, aes(x = factor(cluster, levels = cluster_levels), 
-                                              y = value,
-                                              fill = factor(group, levels = group_levels))) + 
-                       {if (show != "box") geom_violin(position = position_dodge(width = 0.8))} + 
-                       {if (show != "violin") geom_boxplot(alpha = a, width = 0.7, position = position_dodge(width = 0.8))} +
-                       xlab("Cluster") +
-                       scale_fill_manual(values = group_colors, name = "Sample") + thm +
-                       facet_wrap( ~ feature, scales = "free", ncol = n),
-               
-               stop("Unknown plot type")
-        )
+        for (i in seq_along(1:length(measures))) {
+                
+                p[[i]] <- ggplot(df, aes(x = .data[[group_by]],
+                                         y = .data[[measures[i]]],
+                                         fill = .data[[group_by]])) +
+                        scale_fill_brewer(palette = pal) +
+                        {if (show != "box") geom_violin()} +
+                        {if (show != "violin") geom_boxplot(alpha = a)}
+        }
+        patchwork::wrap_plots(p)
 }
