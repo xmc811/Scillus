@@ -1,5 +1,6 @@
 library(magrittr)
 library(Seurat)
+library(future)
 
 a1 <- list.files("./test/GSE128531_RAW", full.names = TRUE)
 m1 <- tibble::tibble(file = a1, 
@@ -70,16 +71,35 @@ plot_cluster_go(markers_1, cluster_name = '1', org = "human", ont = "CC")
 
 plot_all_cluster_go(markers_1, org = 'human', ont = "CC")
 
-plot_measure(dataset = test, measures = c("KRT14","S100A8","FAM138A","percent.mt"), 
+plot_measure(dataset = scRNA_1, measures = c("KRT14","S100A8","FAM138A","percent.mt"), 
              group_by = "group", 
              pal_setup = pal)
 
-plot_measure_dim(dataset = test,
+plot_measure_dim(dataset = scRNA_1,
                  measures = c("nFeature_RNA","nCount_RNA","percent.mt"))
 
+plan("multiprocess", workers = 2)
+de <- find_diff_genes(dataset = scRNA_1, 
+                      clusters = as.character(0:6),
+                      comparison = c("group", "CTCL", "Normal"),
+                      logfc = 0)
+
+gsea_res <- test_GSEA(de, 
+                      pathway = pathways.hallmark)
+
+plot_GSEA(gsea_res)
+
+# test
+
+Idents(test) <- paste(as.character(Idents(test)), test[['group']][[1]], sep = "_")
+Idents(test)
+
+a <- FindMarkers(test, ident.1 = '0_CTCL', ident.2 = '0_Normal')
 
 
+test <- load_scfile(m1)
+test <- filter_scdata(test, subset = nFeature_RNA > 500 & percent.mt < 10)
 
-
-
-
+df <- de %>%
+        filter(cluster == '0') %>%
+        arrange(desc(avg_logFC))

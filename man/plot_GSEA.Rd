@@ -4,7 +4,7 @@
 \alias{plot_GSEA}
 \title{plot the results of GSEA}
 \usage{
-plot_GSEA(gsea_res, pattern = "HALLMARK_", p_cutoff = 0.05, levels)
+plot_GSEA(gsea_res, pattern = "HALLMARK_", p_cutoff = 0.05)
 }
 \arguments{
 \item{gsea_res}{A tibble -}
@@ -12,8 +12,6 @@ plot_GSEA(gsea_res, pattern = "HALLMARK_", p_cutoff = 0.05, levels)
 \item{pattern}{A string -}
 
 \item{p_cutoff}{A double -}
-
-\item{levels}{A string vector -}
 }
 \value{
 A plot.

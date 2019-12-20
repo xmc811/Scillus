@@ -4,12 +4,12 @@
 \alias{test_GSEA}
 \title{GSEA analysis of differential gene expression in each cluster}
 \usage{
-test_GSEA(diff, clusters, pathway)
+test_GSEA(diff, clusters = NULL, pathway)
 }
 \arguments{
 \item{diff}{A tibble -}
 
-\item{clusters}{A string vector - clusters to investigate.}
+\item{clusters}{A string vector - clusters to investigate. Default value is \code{NULL}.}
 
 \item{pathway}{A vector list - group of gene lists}
 }

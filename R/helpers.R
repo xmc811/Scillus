@@ -97,7 +97,7 @@ get_measure_data <- function(dataset,
                 }
         }
         
-        measures <- measures[-idx]
+        if(!is.null(idx)) measures <- measures[-idx]
         
         if (return_df) {
                 return(df)

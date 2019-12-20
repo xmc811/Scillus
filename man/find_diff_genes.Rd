@@ -4,14 +4,14 @@
 \alias{find_diff_genes}
 \title{Find differential expressed genes between two groups in each cluster}
 \usage{
-find_diff_genes(dataset, clusters, groups, logfc = 0.25)
+find_diff_genes(dataset, clusters, comparison, logfc = 0.25)
 }
 \arguments{
 \item{dataset}{A Seurat object.}
 
 \item{clusters}{A string vector - clusters to investigate.}
 
-\item{groups}{A string vector -}
+\item{comparison}{A string vector of length 3 -}
 
 \item{logfc}{A double -}
 }

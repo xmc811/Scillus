@@ -552,7 +552,6 @@ plot_GSVA <- function(dataset, gene_list, pattern = "HALLMARK_", ...) {
 #' @param gsea_res A tibble -
 #' @param pattern A string -
 #' @param p_cutoff A double -
-#' @param levels A string vector -
 #' 
 #' @return A plot.
 #' @importFrom stringr str_remove
@@ -560,22 +559,30 @@ plot_GSVA <- function(dataset, gene_list, pattern = "HALLMARK_", ...) {
 #' @export
 #' 
 
-plot_GSEA <- function(gsea_res, pattern = "HALLMARK_", p_cutoff = 0.05, levels) {
+plot_GSEA <- function(gsea_res, 
+                      pattern = "HALLMARK_", 
+                      p_cutoff = 0.05) {
         
         gsea_res %>%
-                mutate(pathway = str_remove(string = pathway, pattern = pattern)) %>%
-                mutate(color = -log10(padj) * sign(NES)) %>%
-                mutate(sig = as.factor(ifelse(padj < p_cutoff, 1, 0))) %>%
-                ggplot(aes(x = factor(pathway), y = factor(cluster, levels = levels))) + 
-                geom_point(aes(size = abs(NES), color = color)) +
+                filter(.data$padj <= 0.05) %>%
+                mutate(pathway = str_remove(string = .data$pathway, 
+                                            pattern = pattern)) %>%
+                mutate(color = -log10(.data$padj) * sign(.data$NES)) %>%
+                ggplot() + 
+                geom_point(aes(x = factor(.data$pathway), 
+                               y = factor(.data$cluster),
+                               size = abs(.data$NES), 
+                               color = .data$color)) +
                 scale_size(name = "Normalized\nEnrichment\nScore Size") +
-                scale_color_gradient2(name = bquote(-log[10]~"Adj. p-value"), low = 'dodgerblue1', mid = 'grey', high = 'red', midpoint = 0) +
+                scale_color_gradient2(name = bquote(-log[10]~"Adj. p-value"), 
+                                      low = '#0570b0', 
+                                      mid = 'grey', 
+                                      high = '#d7301f', 
+                                      midpoint = 0) +
                 coord_flip() +
-                geom_point(aes(shape = sig), size = 5.5, stroke = 1) +
-                scale_shape_manual(name = "Adj. p-value", values=c(NA, 0), labels = c(paste0("\u2265 ",p_cutoff), paste0("< ",p_cutoff))) +
+                theme_bw() +
                 theme(axis.title.x = element_blank(),
                       axis.title.y = element_blank())
-        
 }
 
 

@@ -177,7 +177,7 @@ rename_cluster <- function(dataset, labels) {
                 current.name <- levels(Idents(dataset))
                 new.name <- labels
                 
-                Idents(dataset) <- plyr::mapvalues(x = Idents(dataset), from = current.name, to = new.name)
+                Seurat::Idents(dataset) <- plyr::mapvalues(x = Idents(dataset), from = current.name, to = new.name)
                 return(dataset)
         }
 }
@@ -186,7 +186,7 @@ rename_cluster <- function(dataset, labels) {
 #' 
 #' @param dataset A Seurat object.
 #' @param clusters A string vector - clusters to investigate.
-#' @param groups A string vector -
+#' @param comparison A string vector of length 3 -
 #' @param logfc A double -
 #' 
 #' @return A Seurat object.
@@ -196,38 +196,34 @@ rename_cluster <- function(dataset, labels) {
 #' @export
 #' 
 
-find_diff_genes <- function(dataset, clusters, groups, logfc = 0.25) {
+find_diff_genes <- function(dataset, 
+                            clusters, 
+                            comparison, 
+                            logfc = 0.25) {
         
-        dataset$celltype.group <- paste(Idents(object = dataset), dataset$group, sep = "_")
-        Idents(object = dataset) <- "celltype.group"
-        
-        
+        Seurat::Idents(dataset) <- paste(as.character(Idents(dataset)), dataset[[comparison[1]]][[1]], sep = "_")
+
         de <- list()
         
-        for (i in seq(length(clusters))) {
+        for (i in seq_along(1:length(clusters))) {
                 
                 d <- FindMarkers(dataset, 
-                                 ident.1 = paste(clusters[i], groups[2], sep = "_"),
-                                 ident.2 = paste(clusters[i], groups[1], sep = "_"),
+                                 ident.1 = paste(clusters[i], comparison[3], sep = "_"),
+                                 ident.2 = paste(clusters[i], comparison[2], sep = "_"),
                                  logfc.threshold = logfc,
                                  assay = "RNA")
-                d %<>%
-                        add_column(feature = rownames(d), .before = 1) %>%
-                        add_column(cluster = clusters[i], .after = 1)
-                
-                de[[i]] <- as_tibble(d)
+                de[[i]] <- d %>%
+                        rownames_to_column(var = "feature") %>%
+                        add_column(cluster = clusters[i], .after = 1) %>%
+                        as_tibble()
         }
-        
-        de <- do.call("rbind", de)
-        
-        de
-        
+        return(do.call("rbind", de))
 }
 
 #' GSEA analysis of differential gene expression in each cluster
 #' 
 #' @param diff A tibble -
-#' @param clusters A string vector - clusters to investigate.
+#' @param clusters A string vector - clusters to investigate. Default value is \code{NULL}.
 #' @param pathway A vector list - group of gene lists 
 #' 
 #' @return A Seurat object.
@@ -239,39 +235,41 @@ find_diff_genes <- function(dataset, clusters, groups, logfc = 0.25) {
 #' @export
 #' 
 
-test_GSEA <- function(diff, clusters, pathway) {
+test_GSEA <- function(diff, 
+                      clusters = NULL, 
+                      pathway) {
         
         if (!requireNamespace("fgsea", quietly = TRUE)) {
                 stop(paste("Package \"fgsea\" needed for this function to work. Please install it."),
                      call. = FALSE)
         }
         
+        if (is.null(clusters)) clusters <- unique(diff$cluster)
+        
         gsea_res <- list()
         
         for (i in seq(length(clusters))) {
                 
                 data <- diff %>%
-                        filter(cluster == clusters[i]) %>%
-                        right_join(mm_hs, by = c("feature" = "mouse")) %>%
-                        replace_na(list(avg_logFC = 0)) %>%
-                        distinct(human, .keep_all = T) %>%
-                        arrange(desc(avg_logFC))
+                        filter(.data$cluster == clusters[i]) %>%
+                        arrange(desc(.data$avg_logFC))
                 
                 l <- data$avg_logFC
-                names(l) <- data$human
+                names(l) <- data$feature
                 
-                res <- fgsea::fgsea(pathways = pathway, l, minSize = 15, maxSize = 500, nperm = 100000)
+                res <- fgsea::fgsea(pathways = pathway, 
+                                    stats = l, 
+                                    minSize = 15, 
+                                    maxSize = 500, 
+                                    nperm = 10000)
                 
                 res %<>%
-                        add_column(cluster = clusters[i], .before = 1)
+                        add_column(cluster = clusters[i],
+                                   .before = 1)
                 
                 gsea_res[[i]] <- res
         }
-        
-        gsea_res <- do.call("rbind", gsea_res)
-        
-        return(as_tibble(gsea_res))
-        
+        return(as_tibble(do.call("rbind", gsea_res)))
 }
 
 #' Add gene program scores
