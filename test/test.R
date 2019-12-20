@@ -75,8 +75,7 @@ plot_measure(dataset = scRNA_1, measures = c("KRT14","S100A8","FAM138A","percent
              group_by = "group", 
              pal_setup = pal)
 
-plot_measure_dim(dataset = scRNA_1,
-                 measures = c("nFeature_RNA","nCount_RNA","percent.mt"))
+plot_measure_dim(dataset = scRNA_1, measures = c("nFeature_RNA","nCount_RNA","percent.mt"))
 
 plan("multiprocess", workers = 2)
 de <- find_diff_genes(dataset = scRNA_1, 
@@ -88,18 +87,3 @@ gsea_res <- test_GSEA(de,
                       pathway = pathways.hallmark)
 
 plot_GSEA(gsea_res)
-
-# test
-
-Idents(test) <- paste(as.character(Idents(test)), test[['group']][[1]], sep = "_")
-Idents(test)
-
-a <- FindMarkers(test, ident.1 = '0_CTCL', ident.2 = '0_Normal')
-
-
-test <- load_scfile(m1)
-test <- filter_scdata(test, subset = nFeature_RNA > 500 & percent.mt < 10)
-
-df <- de %>%
-        filter(cluster == '0') %>%
-        arrange(desc(avg_logFC))
