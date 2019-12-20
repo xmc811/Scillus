@@ -66,7 +66,9 @@ plot_heatmap(dataset = scRNA_1,
               anno_colors = c("Set2","Dark2","Reds","Blues","Greens"))
 
 
-plot_all_cluster_go(markers_1, org = 'human', ont = "BP")
+plot_cluster_go(markers_1, cluster_name = '1', org = "human", ont = "CC")
+
+plot_all_cluster_go(markers_1, org = 'human', ont = "CC")
 
 plot_measure(dataset = test, measures = c("KRT14","S100A8","FAM138A","percent.mt"), 
              group_by = "group", 

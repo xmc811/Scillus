@@ -380,33 +380,6 @@ plot_stat <- function(dataset,
                        labs(y = "Proportion") + 
                        thm + if (tilt_text) {thm3},
                
-               prop_diverge = stat %>%
-                       mutate(cluster = fct_rev(.data$cluster)) %>%
-                       mutate(freq = ifelse(group == group_levels[1], -.data$freq, .data$freq)) %>%
-                       mutate(freq = round(.data$freq, 3)) %>%
-                       ggplot() + 
-                       geom_bar(aes(x = .data$cluster, 
-                                    y = .data$freq, 
-                                    fill = .data$group), 
-                                stat = "identity") +
-                       geom_text(aes(x = .data$cluster, 
-                                     y = .data$freq + 0.03 * sign(.data$freq), 
-                                     label = percent(abs(.data$freq), 
-                                                     digits = 1)), 
-                                 size = text_size * 0.35) +
-                       coord_flip() +
-                       scale_fill_manual(values = group_colors, name = "Group") +
-                       scale_y_continuous(breaks = pretty(c(stat$freq, -stat$freq)),
-                                          labels = scales::percent(abs(pretty(c(stat$freq, -stat$freq))))) +
-                       labs(x = NULL, 
-                            y = "Proportion") +
-                       theme(aspect.ratio = plot_ratio,
-                             legend.title = element_text(size = text_size),
-                             legend.text = element_text(size = text_size),
-                             axis.title = element_text(size = text_size),
-                             axis.text = element_text(size = text_size),
-                       ),
-               
                prop_multi = stat %>%
                        mutate(freq = round(.data$freq, 3)) %>%
                        ggplot() + 
@@ -472,7 +445,7 @@ plot_cluster_go <- function (markers, cluster_name, topn = 100, org, ...) {
                 head(topn) %>% 
                 pull(.data$gene)
         
-        db <- ifelse(org == "human", org.Hs.eg.db::org.Hs.eg.db, org.Mm.eg.db::org.Mm.eg.db)
+        db <- if(org == "human") org.Hs.eg.db::org.Hs.eg.db else org.Mm.eg.db::org.Mm.eg.db
         
         res <- clusterProfiler::enrichGO(gene = gene_list, 
                                          OrgDb = db, 
@@ -499,7 +472,11 @@ plot_cluster_go <- function (markers, cluster_name, topn = 100, org, ...) {
                 geom_hline(yintercept = -log10(0.05), 
                            linetype = "dashed") + 
                 xlab("Gene Ontology") + 
-                ylab(bquote("-log"[10] ~ " adjusted p-value")) + facet_grid(. ~ cluster)
+                ylab(bquote("-log"[10] ~ " adjusted p-value")) +
+                theme_bw() +
+                theme(axis.text = element_text(size = 10),
+                      axis.title = element_text(size = 12)) +
+                ggtitle(cluster_name)
 }
 
 
@@ -509,8 +486,7 @@ plot_cluster_go <- function (markers, cluster_name, topn = 100, org, ...) {
 #' @param org A string -
 #' @param ... Additional arguments to be passed to the function \code{\link{plot_cluster_go}}.
 #' 
-#' @return A plot.
-#' @importFrom gridExtra grid.arrange
+#' @return A plot
 #' @export
 #' 
 
@@ -522,10 +498,8 @@ plot_all_cluster_go <- function (markers, org = "human", ...) {
                           .f = plot_cluster_go, 
                           markers = markers, 
                           org = org, ...)
-        do.call("grid.arrange", 
-                c(lst, 
-                  ncol = floor(sqrt(length(lst)))))
         
+        patchwork::wrap_plots(lst, ncol = 2)
 }
 
 

@@ -53,3 +53,31 @@ analyze_merged <- function(dataset, group.levels,
                 FindClusters(resolution = resolution, algorithm = 3)
         
 }
+
+
+prop_diverge = stat %>%
+        mutate(cluster = fct_rev(.data$cluster)) %>%
+        mutate(freq = ifelse(group == group_levels[1], -.data$freq, .data$freq)) %>%
+        mutate(freq = round(.data$freq, 3)) %>%
+        ggplot() + 
+        geom_bar(aes(x = .data$cluster, 
+                     y = .data$freq, 
+                     fill = .data$group), 
+                 stat = "identity") +
+        geom_text(aes(x = .data$cluster, 
+                      y = .data$freq + 0.03 * sign(.data$freq), 
+                      label = percent(abs(.data$freq), 
+                                      digits = 1)), 
+                  size = text_size * 0.35) +
+        coord_flip() +
+        scale_fill_manual(values = group_colors, name = "Group") +
+        scale_y_continuous(breaks = pretty(c(stat$freq, -stat$freq)),
+                           labels = scales::percent(abs(pretty(c(stat$freq, -stat$freq))))) +
+        labs(x = NULL, 
+             y = "Proportion") +
+        theme(aspect.ratio = plot_ratio,
+              legend.title = element_text(size = text_size),
+              legend.text = element_text(size = text_size),
+              axis.title = element_text(size = text_size),
+              axis.text = element_text(size = text_size),
+        )

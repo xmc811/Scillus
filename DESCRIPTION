@@ -21,7 +21,6 @@ Imports:
         forcats,
         formattable,
         ggplot2,
-        gridExtra,
         magrittr,
         patchwork,
         plyr,
