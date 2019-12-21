@@ -2,7 +2,7 @@ library(magrittr)
 library(Seurat)
 library(future)
 
-a1 <- list.files("./test/GSE128531_RAW", full.names = TRUE)
+a <- list.files("./test/GSE128531_RAW", full.names = TRUE)
 m1 <- tibble::tibble(file = a1, 
                      sample = factor(stringr::str_remove(basename(a1), ".csv.gz")),
                      group = factor(rep(c("CTCL", "Normal"), each = 3), levels = c("Normal", "CTCL")))
