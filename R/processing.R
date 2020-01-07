@@ -113,6 +113,7 @@ filter_scdata <- function(data_list, ...) {
                           vjust = -0.5, 
                           size = 3.5) +
                 labs(y = "Number of Cells") +
+                theme_bw() +
                 theme(legend.title = element_text(size = 12),
                       legend.text = element_text(size = 12),
                       axis.title = element_text(size = 12),
