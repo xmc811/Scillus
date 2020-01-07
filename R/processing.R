@@ -93,7 +93,7 @@ filter_scdata <- function(data_list, ...) {
                              post = post)
         
         df %<>%
-                tidyr::gather(.data$variable, .data$value, -sample) %>%
+                tidyr::gather(variable, value, -sample) %>%
                 mutate(variable = factor(.data$variable, levels = c("pre","post")))
         
         p <- ggplot(df) +

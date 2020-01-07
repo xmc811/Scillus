@@ -1,24 +1,22 @@
-library(magrittr)
-library(Seurat)
-library(future)
+library(Scillus)
 
 a <- list.files("./test/GSE128531_RAW", full.names = TRUE)
-m1 <- tibble::tibble(file = a1, 
-                     sample = factor(stringr::str_remove(basename(a1), ".csv.gz")),
+m <- tibble::tibble(file = a, 
+                     sample = factor(stringr::str_remove(basename(a), ".csv.gz")),
                      group = factor(rep(c("CTCL", "Normal"), each = 3), levels = c("Normal", "CTCL")))
 
 pal <- tibble::tibble(var = c("sample", "group","seurat_clusters"),
                       pal = c("Set2","Set1","Paired")) 
 
-scRNA_1 <- load_scfile(m1)
+scRNA <- load_scfile(m)
 
-plot_qc(scRNA_1, metrics = "percent.mt")
-plot_qc(scRNA_1, metrics = "nFeature_RNA")
-plot_qc(scRNA_1, metrics = "nCount_RNA")
-plot_qc(scRNA_1, metrics = "nCount_RNA", group_by = "group", pal_setup = pal)
+plot_qc(scRNA, metrics = "percent.mt")
+plot_qc(scRNA, metrics = "nFeature_RNA")
+plot_qc(scRNA, metrics = "nCount_RNA")
+plot_qc(scRNA, metrics = "nCount_RNA", group_by = "group", pal_setup = pal)
 
 
-scRNA_1 <- filter_scdata(scRNA_1, subset = nFeature_RNA > 500 & percent.mt < 10)
+scRNA <- filter_scdata(scRNA, subset = nFeature_RNA > 500 & percent.mt < 10)
 
 scRNA_1 %<>% 
         purrr::map(.f = NormalizeData) %>%
