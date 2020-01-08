@@ -277,12 +277,12 @@ plot_heatmap <- function(dataset,
 #' Plot the basic statistics after cell clustering and labeling
 #' 
 #' @param dataset A Seurat object.
-#' @param plot_type A string -
+#' @param plot_type A string - one of \code{"group_count"}, \code{"cluster_count"}, \code{"prop_fill"}, and \code{"prop_multi"}.
 #' @param group_by A string - the grouping variable for plot in the metadata. Default value is \code{"sample"}.
 #' @param pal_setup A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used. Default value is \code{NULL}.
-#' @param plot_ratio A double -
-#' @param text_size A double -
-#' @param tilt_text A logical -
+#' @param plot_ratio A double - the aspect ratio of the plot. Default value is \code{1}.
+#' @param text_size A double - the text size of the plot. Default value is \code{10}.
+#' @param tilt_text A logical - whether the x axis label text is tilted. Default value is \code{FALSE}.
 #' 
 #' @return A plot.
 #' @importFrom ggplot2 geom_col geom_text geom_bar scale_fill_manual scale_y_continuous coord_flip facet_wrap expand_scale
@@ -308,10 +308,10 @@ plot_stat <- function(dataset,
                 cluster_palette <- "Paired"
         }
               
-        group_colors <- get_spectrum(n = length(levels(dataset[[group_by]][[1]])), 
+        group_colors <- get_spectrum(n = length(unique(dataset[[group_by]][[1]])), 
                                      palette = group_palette)
         
-        cluster_colors <- get_spectrum(n = length(levels(Idents(dataset))), 
+        cluster_colors <- get_spectrum(n = length(unique(Idents(dataset))), 
                                        palette = cluster_palette)
         
         stat <- tibble::tibble(group = dataset[[group_by]][[1]], 

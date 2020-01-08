@@ -17,17 +17,17 @@ plot_stat(
 \arguments{
 \item{dataset}{A Seurat object.}
 
-\item{plot_type}{A string -}
+\item{plot_type}{A string - one of \code{"group_count"}, \code{"cluster_count"}, \code{"prop_fill"}, and \code{"prop_multi"}.}
 
 \item{group_by}{A string - the grouping variable for plot in the metadata. Default value is \code{"sample"}.}
 
 \item{pal_setup}{A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used. Default value is \code{NULL}.}
 
-\item{plot_ratio}{A double -}
+\item{plot_ratio}{A double - the aspect ratio of the plot. Default value is \code{1}.}
 
-\item{text_size}{A double -}
+\item{text_size}{A double - the text size of the plot. Default value is \code{10}.}
 
-\item{tilt_text}{A logical -}
+\item{tilt_text}{A logical - whether the x axis label text is tilted. Default value is \code{FALSE}.}
 }
 \value{
 A plot.

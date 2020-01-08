@@ -18,43 +18,43 @@ plot_qc(scRNA, metrics = "nCount_RNA", group_by = "group", pal_setup = pal)
 
 scRNA <- filter_scdata(scRNA, subset = nFeature_RNA > 500 & percent.mt < 10)
 
-scRNA_1 %<>% 
+scRNA %<>% 
         purrr::map(.f = NormalizeData) %>%
         purrr::map(.f = FindVariableFeatures) %>%
         purrr::map(.f = CellCycleScoring, 
                    s.features = cc.genes$s.genes, 
                    g2m.features = cc.genes$g2m.genes)
 
-plot_qc(scRNA_1, metrics = "S.Score", group_by = "group")
-plot_qc(scRNA_1, metrics = "G2M.Score", group_by = "group")
+plot_qc(scRNA, metrics = "S.Score", group_by = "group")
+plot_qc(scRNA, metrics = "G2M.Score", group_by = "group")
 
-scRNA_1 <- IntegrateData(anchorset = FindIntegrationAnchors(object.list = scRNA_1, dims = 1:30, k.filter = 50), dims = 1:30)
+scRNA <- IntegrateData(anchorset = FindIntegrationAnchors(object.list = scRNA, dims = 1:30, k.filter = 50), dims = 1:30)
 
-scRNA_1 %<>%
+scRNA %<>%
         ScaleData(vars.to.regress = c("nCount_RNA", "percent.mt", "S.Score", "G2M.Score"))
 
-scRNA_1 %<>%
+scRNA %<>%
         RunPCA(npcs = 50, verbose = TRUE)
 
-ElbowPlot(scRNA_1, ndims = 50)
+ElbowPlot(scRNA, ndims = 50)
 
-scRNA_1 %<>%
+scRNA %<>%
         RunUMAP(reduction = "pca", dims = 1:20, n.neighbors = 30) %>%
         FindNeighbors(reduction = "pca", dims = 1:20) %>%
         FindClusters(resolution = 0.2)
 
-scRNA_1 %<>%
-        refactor_seurat(metadata = m1)
+scRNA %<>%
+        refactor_seurat(metadata = m)
 
-plot_scdata(scRNA_1, pal_setup = pal)
-plot_scdata(scRNA_1, color_by = "sample")
-plot_scdata(scRNA_1, split_by = "sample")
-plot_scdata(scRNA_1, color_by = "group", split_by = "seurat_clusters", pal_setup = pal)
+plot_scdata(scRNA, pal_setup = pal)
+plot_scdata(scRNA, color_by = "sample")
+plot_scdata(scRNA, split_by = "sample")
+plot_scdata(scRNA, color_by = "group", split_by = "seurat_clusters", pal_setup = pal)
 
-plot_stat(scRNA_1, "group_count", group_by = "group")
-plot_stat(scRNA_1, "cluster_count")
-plot_stat(scRNA_1, "prop_fill", group_by = "group")
-plot_stat(scRNA_1, "prop_multi", group_by = "group")
+plot_stat(scRNA, "group_count", group_by = "sample")
+plot_stat(scRNA, "cluster_count")
+plot_stat(scRNA, "prop_fill", group_by = "group")
+plot_stat(scRNA, "prop_multi", group_by = "group")
 
 markers_1 <- FindAllMarkers(scRNA_1, logfc.threshold = 0.1, min.pct = 0, only.pos = T)
 
