@@ -51,8 +51,8 @@ plot_scdata(scRNA, color_by = "sample")
 plot_scdata(scRNA, split_by = "sample")
 plot_scdata(scRNA, color_by = "group", split_by = "seurat_clusters", pal_setup = pal)
 
-plot_stat(scRNA, "group_count", group_by = "sample")
-plot_stat(scRNA, "cluster_count")
+plot_stat(scRNA, "group_count", group_by = "group")
+plot_stat(scRNA, "cluster_count", group_by = "group")
 plot_stat(scRNA, "prop_fill", group_by = "group")
 plot_stat(scRNA, "prop_multi", group_by = "group")
 
