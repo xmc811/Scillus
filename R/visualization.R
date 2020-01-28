@@ -630,7 +630,8 @@ plot_measure <- function(dataset,
                                          fill = .data[[group_by]])) +
                         scale_fill_brewer(palette = pal) +
                         {if (show != "box") geom_violin()} +
-                        {if (show != "violin") geom_boxplot(alpha = a)}
+                        {if (show != "violin") geom_boxplot(alpha = a)} +
+                        theme(legend.position = "none")
         }
         patchwork::wrap_plots(p)
 }

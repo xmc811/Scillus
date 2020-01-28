@@ -1,4 +1,6 @@
 library(Scillus)
+library(Seurat)
+library(magrittr)
 
 a <- list.files("./test/GSE128531_RAW", full.names = TRUE)
 m <- tibble::tibble(file = a, 
@@ -69,7 +71,7 @@ plot_cluster_go(markers_1, cluster_name = '1', org = "human", ont = "CC")
 
 plot_all_cluster_go(markers_1, org = 'human', ont = "CC")
 
-plot_measure(dataset = scRNA_1, measures = c("KRT14","S100A8","FAM138A","percent.mt"), 
+plot_measure(dataset = scRNA, measures = c("KRT14","S100A8","FAM138A","percent.mt"), 
              group_by = "group", 
              pal_setup = pal)
 
@@ -85,3 +87,8 @@ gsea_res <- test_GSEA(de,
                       pathway = pathways.hallmark)
 
 plot_GSEA(gsea_res)
+
+
+
+
+
