@@ -96,7 +96,6 @@ gsea_res <- test_GSEA(de,
 plot_GSEA(gsea_res)
 
 
-labs(x = "UMAP_1", y = "UMAP_2") +
 
 
 

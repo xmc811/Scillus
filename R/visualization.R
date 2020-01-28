@@ -144,7 +144,7 @@ plot_measure_dim <- function(dataset,
         p <- list()
         
         for (i in seq_along(1:length(measures))) {
-                
+    
                 p[[i]] <- ggplot(df) +
                         geom_point(aes(x = .data$UMAP_1,
                                        y = .data$UMAP_2,
@@ -167,11 +167,15 @@ plot_measure_dim <- function(dataset,
                                                           fill = NA, 
                                                           size = 1, 
                                                           linetype = 1),
-                              axis.line = element_blank(),
-                              aspect.ratio = 1) +
+                              axis.line = element_blank()) +
                         labs(x = "UMAP_1", y = "UMAP_2") +
                         ggtitle(measures[i]) +
-                        if (!is.null(split_by)) {facet_wrap(as.formula(paste("~", split_by)))}
+                        if (!is.null(split_by)) {
+                                facet_wrap(as.formula(paste("~", split_by)))
+                        } else {
+                                theme(aspect.ratio = 1)
+                        }
+                
         }
         patchwork::wrap_plots(p)
 }
