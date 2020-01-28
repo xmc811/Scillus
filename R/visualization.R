@@ -635,7 +635,8 @@ plot_measure <- function(dataset,
                         {if (show != "box") geom_violin()} +
                         {if (show != "violin") geom_boxplot(alpha = a)} +
                         theme(legend.position = "none") +
-                        labs(x = NULL, y = measures[i])
+                        labs(x = group_by, y = NULL) +
+                        ggtitle(measures[i])
         }
         patchwork::wrap_plots(p)
 }

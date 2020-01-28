@@ -78,10 +78,10 @@ plot_measure(dataset = scRNA, measures = c("KRT14","S100A8","FAM138A","percent.m
              pal_setup = pal)
 
 plot_measure_dim(dataset = scRNA, 
-                 measures = c("nFeature_RNA","nCount_RNA","percent.mt"))
+                 measures = c("nFeature_RNA","nCount_RNA","percent.mt","KRT14"))
 
 plot_measure_dim(dataset = scRNA, 
-                 measures = c("nFeature_RNA","nCount_RNA","percent.mt"),
+                 measures = c("nFeature_RNA","nCount_RNA","percent.mt","KRT14"),
                  split_by = "sample")
 
 plan("multiprocess", workers = 2)
@@ -96,6 +96,7 @@ gsea_res <- test_GSEA(de,
 plot_GSEA(gsea_res)
 
 
+labs(x = "UMAP_1", y = "UMAP_2") +
 
 
 
