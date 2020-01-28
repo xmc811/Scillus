@@ -1,6 +1,8 @@
 library(Scillus)
 library(Seurat)
 library(magrittr)
+library(ggplot2)
+library(tidyverse)
 
 a <- list.files("./test/GSE128531_RAW", full.names = TRUE)
 m <- tibble::tibble(file = a, 
@@ -75,7 +77,12 @@ plot_measure(dataset = scRNA, measures = c("KRT14","S100A8","FAM138A","percent.m
              group_by = "group", 
              pal_setup = pal)
 
-plot_measure_dim(dataset = scRNA_1, measures = c("nFeature_RNA","nCount_RNA","percent.mt"))
+plot_measure_dim(dataset = scRNA, 
+                 measures = c("nFeature_RNA","nCount_RNA","percent.mt"))
+
+plot_measure_dim(dataset = scRNA, 
+                 measures = c("nFeature_RNA","nCount_RNA","percent.mt"),
+                 split_by = "sample")
 
 plan("multiprocess", workers = 2)
 de <- find_diff_genes(dataset = scRNA_1, 

@@ -109,6 +109,7 @@ plot_scdata <- function(dataset,
                                                   linetype = 1),
                       axis.line = element_blank(),
                       aspect.ratio = 1) +
+                labs(x = "UMAP_1", y = "UMAP_2", color = color_by) +
                 if (!is.null(split_by)) {facet_wrap(as.formula(paste("~", split_by)))}
 }
 
@@ -168,6 +169,8 @@ plot_measure_dim <- function(dataset,
                                                           linetype = 1),
                               axis.line = element_blank(),
                               aspect.ratio = 1) +
+                        labs(x = "UMAP_1", y = "UMAP_2") +
+                        ggtitle(measures[i]) +
                         if (!is.null(split_by)) {facet_wrap(as.formula(paste("~", split_by)))}
         }
         patchwork::wrap_plots(p)
@@ -348,7 +351,7 @@ plot_stat <- function(dataset,
                                  vjust = -0.5, 
                                  size = text_size * 0.35) +
                        scale_fill_manual(values = group_colors) + 
-                       labs(y = "Number of Cells") + 
+                       labs(x = group_by, y = "Number of Cells") + 
                        thm + thm2 + if (tilt_text) {thm3},
                
                cluster_count = stat %>%
@@ -365,7 +368,7 @@ plot_stat <- function(dataset,
                                  size = text_size * 0.35) +
                        scale_fill_manual(values = cluster_colors, 
                                          name = "Cluster") + 
-                       labs(y = "Number of Cells") + 
+                       labs(x = "Cluster", y = "Number of Cells") + 
                        thm + thm2 + if (tilt_text) {thm3},
                
                prop_fill = ggplot(stat) + 
@@ -377,7 +380,7 @@ plot_stat <- function(dataset,
                        scale_y_continuous(labels = scales::percent) +
                        scale_fill_manual(values = cluster_colors, 
                                          name = "Cluster") +
-                       labs(y = "Proportion") + 
+                       labs(x = group_by, y = "Proportion") + 
                        thm + if (tilt_text) {thm3},
                
                prop_multi = stat %>%
@@ -631,7 +634,8 @@ plot_measure <- function(dataset,
                         scale_fill_brewer(palette = pal) +
                         {if (show != "box") geom_violin()} +
                         {if (show != "violin") geom_boxplot(alpha = a)} +
-                        theme(legend.position = "none")
+                        theme(legend.position = "none") +
+                        labs(x = group_by, y = measures[i])
         }
         patchwork::wrap_plots(p)
 }
