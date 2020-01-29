@@ -1,8 +1,10 @@
 Package: Scillus
 Type: Package
-Title: Scillus is a wrapper package enhancing the visualization of single cell omics data
-Version: 0.1
-Date: 2019-08-24
+Title: Seurat wrapper package enhancing the visualization of single cell data
+Version: 0.3
+Date: 2020-01-29
+Author: Mingchu Xu
+Maintainer: Mingchu Xu <mxu.china@gmail.com>
 Authors@R: c(
         person("Mingchu", "Xu", email = "mxu.china@gmail.com", role = c("aut", "cre")),
         person("Zhongqi", "Ge", email = "zhongqi.ge@gmail.com", role = "aut")
