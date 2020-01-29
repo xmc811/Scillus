@@ -1,7 +1,7 @@
 Package: Scillus
 Type: Package
 Title: Seurat wrapper package enhancing the visualization of single cell data
-Version: 0.3
+Version: 0.3.0
 Date: 2020-01-29
 Author: Mingchu Xu
 Maintainer: Mingchu Xu <mxu.china@gmail.com>
