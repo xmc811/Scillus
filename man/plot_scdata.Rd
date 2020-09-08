@@ -18,7 +18,7 @@ plot_scdata(
 
 \item{split_by}{A string - by which metadata the plot will be split. Default value is \code{NULL}.}
 
-\item{pal_setup}{A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used. Default value is \code{NULL}.}
+\item{pal_setup}{A dataframe with 2 columns or a string - the \code{RColorBrewer} palette setup to be used. Default value is \code{NULL}.}
 }
 \value{
 A plot.

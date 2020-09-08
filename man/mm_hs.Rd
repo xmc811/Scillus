@@ -3,7 +3,9 @@
 \name{mm_hs}
 \alias{mm_hs}
 \title{Mouse Human gene symbol lookup table}
-\format{A 2-column tibble}
+\format{
+A 2-column tibble
+}
 \description{
 A 2-column tibble of mouse and human gene symbols
 }

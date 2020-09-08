@@ -69,10 +69,11 @@ plot_qc <- function(data_list,
 #' @param dataset A Seurat object.
 #' @param color_by A string - by which metadata the colors will be applied. Default value is \code{"seurat_clusters"}.
 #' @param split_by A string - by which metadata the plot will be split. Default value is \code{NULL}.
-#' @param pal_setup A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used. Default value is \code{NULL}.
+#' @param pal_setup A dataframe with 2 columns or a string - the \code{RColorBrewer} palette setup to be used. Default value is \code{NULL}.
 #' 
 #' @return A plot.
 #' @importFrom ggplot2 theme element_rect element_blank facet_wrap scale_color_brewer
+#' @importFrom stringr str_to_title
 #' @importFrom stats as.formula
 #' @export
 #' 
@@ -82,11 +83,17 @@ plot_scdata <- function(dataset,
                         split_by = NULL,
                         pal_setup = NULL) {
         
-        if (!is.null(pal_setup)) {
+        if (is.data.frame(pal_setup)) {
                 pal <- pal_setup[pal_setup[[1]] == color_by,][[2]]
+        } else if (is.character(pal_setup)){
+                pal <- pal_setup
         } else {
                 pal <- "Set2"
         }
+    
+        color_title <- ifelse(color_by == "seurat_clusters", 
+                              "Cluster", 
+                              str_to_title(color_by))
         
         df <- dataset@reductions$umap@cell.embeddings %>%
                 as.data.frame() %>%
@@ -109,7 +116,7 @@ plot_scdata <- function(dataset,
                                                   linetype = 1),
                       axis.line = element_blank(),
                       aspect.ratio = 1) +
-                labs(x = "UMAP_1", y = "UMAP_2", color = color_by) +
+                labs(x = "UMAP_1", y = "UMAP_2", color = color_title) +
                 if (!is.null(split_by)) {facet_wrap(as.formula(paste("~", split_by)))}
 }
 
