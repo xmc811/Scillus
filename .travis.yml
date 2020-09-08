@@ -1,6 +1,9 @@
 language: R
 cache: packages
-os: osx
+os:
+  - linux
+  - osx
+  - windows
 addons:
   apt:
     packages:
@@ -8,6 +11,5 @@ addons:
 
 r:
   - release
-  - devel
   
 warnings_are_errors: false
