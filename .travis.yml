@@ -1,7 +1,6 @@
 language: R
 cache: packages
-sudo: required
-dist: trusty
+os: osx
 addons:
   apt:
     packages:
