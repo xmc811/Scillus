@@ -3,7 +3,9 @@
 \name{pathways.hallmark}
 \alias{pathways.hallmark}
 \title{Hallmark genes}
-\format{A list of 50 vectors}
+\format{
+A list of 50 vectors
+}
 \description{
 Human gene symbol lists for hallmarks
 }

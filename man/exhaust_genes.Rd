@@ -3,7 +3,9 @@
 \name{exhaust_genes}
 \alias{exhaust_genes}
 \title{T cell exhaustion genes}
-\format{A vector}
+\format{
+A vector
+}
 \description{
 Human gene symbol list for T cell exhaustion status
 }

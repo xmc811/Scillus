@@ -73,6 +73,7 @@ plot_qc <- function(data_list,
 #' 
 #' @return A plot.
 #' @importFrom ggplot2 theme element_rect element_blank facet_wrap scale_color_brewer
+#' @importFrom stringr str_to_title
 #' @importFrom stats as.formula
 #' @export
 #' 
