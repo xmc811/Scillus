@@ -1,7 +1,8 @@
 language: R
 cache: packages
-sudo: required
-dist: trusty
+os:
+  - linux
+  - osx
 addons:
   apt:
     packages:
@@ -9,6 +10,5 @@ addons:
 
 r:
   - release
-  - devel
   
 warnings_are_errors: false
