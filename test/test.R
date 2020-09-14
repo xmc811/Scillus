@@ -86,7 +86,7 @@ plot_measure_dim(dataset = scRNA,
 
 plot_measure_dim(dataset = scRNA, 
                  measures = c("nFeature_RNA","nCount_RNA","percent.mt","KRT14"),
-                 split_by = "sample")
+                 split_by = "No Split")
 
 plan("multiprocess", workers = 2)
 de <- find_diff_genes(dataset = scRNA_1, 

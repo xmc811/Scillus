@@ -140,12 +140,14 @@ plot_scdata <- function(dataset,
 
 plot_measure_dim <- function(dataset, 
                              measures,
-                             split_by = NULL,
+                             split_by = NA,
                              point.size = 1) {
         
         l <- get_measure_data(dataset = dataset,
                               measures = measures,
                               return_df = FALSE)
+        
+        split_by <- ifelse(split_by == "No Split", NA, split_by)
         
         df <- l[[1]]
         measures <- l[[2]]
@@ -179,7 +181,7 @@ plot_measure_dim <- function(dataset,
                               axis.line = element_blank()) +
                         labs(x = "UMAP_1", y = "UMAP_2") +
                         ggtitle(measures[i]) +
-                        if (!is.null(split_by)) {
+                        if (!is.na(split_by)) {
                                 facet_wrap(as.formula(paste("~", split_by)))
                         } else {
                                 theme(aspect.ratio = 1)

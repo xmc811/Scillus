@@ -4,7 +4,7 @@
 \alias{plot_measure_dim}
 \title{Single cell visualization - gene expression levels}
 \usage{
-plot_measure_dim(dataset, measures, split_by = NULL, point.size = 1)
+plot_measure_dim(dataset, measures, split_by = NA, point.size = 1)
 }
 \arguments{
 \item{dataset}{A Seurat object.}
