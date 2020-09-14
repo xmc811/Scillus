@@ -7,7 +7,7 @@
 plot_scdata(
   dataset,
   color_by = "seurat_clusters",
-  split_by = NULL,
+  split_by = NA,
   pal_setup = NULL
 )
 }

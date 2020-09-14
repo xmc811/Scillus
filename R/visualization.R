@@ -80,7 +80,7 @@ plot_qc <- function(data_list,
 
 plot_scdata <- function(dataset, 
                         color_by = "seurat_clusters",
-                        split_by = NULL,
+                        split_by = NA,
                         pal_setup = NULL) {
         
         if (is.data.frame(pal_setup)) {
@@ -90,6 +90,8 @@ plot_scdata <- function(dataset,
         } else {
                 pal <- "Set2"
         }
+    
+        split_by <- ifelse(split_by == "No Split", NA, split_by)
     
         color_title <- ifelse(color_by == "seurat_clusters", 
                               "Cluster", 
@@ -117,7 +119,7 @@ plot_scdata <- function(dataset,
                       axis.line = element_blank(),
                       aspect.ratio = 1) +
                 labs(x = "UMAP_1", y = "UMAP_2", color = color_title) +
-                if (!is.null(split_by)) {facet_wrap(as.formula(paste("~", split_by)))}
+                if (!is.na(split_by)) {facet_wrap(as.formula(paste("~", split_by)))}
 }
 
 
