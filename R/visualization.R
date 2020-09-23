@@ -7,7 +7,7 @@
 #' @param data_list A list of Seurat objects
 #' @param metrics A string - the name of the QC metrics
 #' @param group_by A string - the grouping variable for plot in the metadata. Default value is \code{"sample"}.
-#' @param plot_type A string - the type of the plot. Default value is \code{"combined"}.
+#' @param plot_type A string - the type of the plot. Can take values in \code{c("box", "violin", "combined")}. Default value is \code{"combined"}.
 #' @param pal_setup A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used. Default value is \code{NULL}.
 #' 
 #' @return A plot.
