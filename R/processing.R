@@ -114,11 +114,7 @@ filter_scdata <- function(data_list, ...) {
                           size = 3.5) +
                 labs(y = "Number of Cells") +
                 theme_bw() +
-                theme(legend.title = element_text(size = 12),
-                      legend.text = element_text(size = 12),
-                      axis.title = element_text(size = 12),
-                      axis.text = element_text(size = 12),
-                      axis.title.x = element_blank())
+                theme(axis.title.x = element_blank())
         
         graphics::plot(p)
         return(data_list)
