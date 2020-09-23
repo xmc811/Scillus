@@ -12,7 +12,7 @@
 #' 
 #' @return A plot.
 #' @importFrom tibble tibble
-#' @importFrom ggplot2 ggplot geom_boxplot geom_violin aes labs theme_bw waiver
+#' @importFrom ggplot2 ggplot geom_boxplot geom_violin geom_density aes labs theme_bw waiver
 #' @importFrom scales pretty_breaks
 #' @importFrom rlang .data
 #' @export
