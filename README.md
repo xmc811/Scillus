@@ -29,6 +29,7 @@ library(Scillus)
 September 23, 2020
 
 * Version 0.4.0
+
 Additonal improvements for R Shiny applications
 
 
@@ -40,10 +41,12 @@ January 29, 2020
 December 20, 2019
 
 * Version 0.2.0
+
 Optimized processing and plotting functions; simplified installation process
 
 
 August 25, 2019
 
 * Version 0.1.0
+
 Initial release; essential functions for streamlined scRNA-seq analysis and visualization
