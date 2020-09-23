@@ -7,7 +7,7 @@
 #' @param data_list A list of Seurat objects
 #' @param metrics A string - the name of the QC metrics
 #' @param group_by A string - the grouping variable for plot in the metadata. Default value is \code{"sample"}.
-#' @param plot_type A string - the type of the plot. Can take values in \code{c("box", "violin", "combined")}. Default value is \code{"combined"}.
+#' @param plot_type A string - the type of the plot. Can take values in \code{c("box", "violin", "combined", "density")}. Default value is \code{"combined"}.
 #' @param pal_setup A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used. Default value is \code{NULL}.
 #' 
 #' @return A plot.
@@ -51,14 +51,22 @@ plot_qc <- function(data_list,
                 labs(y = metrics) +
                 theme_bw() +
                 theme(legend.position = "none",
-                      axis.text = element_text(size = 12),
-                      axis.title.y = element_text(size = 12),
                       axis.title.x = element_blank())
+        
+        p_den <- ggplot(data = qc,
+                        mapping = aes(x = .data$value, 
+                                      fill = .data$group)) +
+                geom_density(alpha = 0.3, position = "identity") +
+                scale_fill_manual(values = get_spectrum(n = length(data_list), 
+                                                    palette = palette)) +
+                labs(x = metrics, y = "Density") +
+                theme_bw()
         
         switch(plot_type,
                box = p + geom_boxplot(),
                violin = p + geom_violin(),
                combined = p + geom_violin() + geom_boxplot(alpha = 0.2),
+               density = p_den,
                stop("Unknown plot type")
         )
 }
