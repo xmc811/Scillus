@@ -19,7 +19,7 @@ plot_qc(
 
 \item{group_by}{A string - the grouping variable for plot in the metadata. Default value is \code{"sample"}.}
 
-\item{plot_type}{A string - the type of the plot. Default value is \code{"combined"}.}
+\item{plot_type}{A string - the type of the plot. Can take values in \code{c("box", "violin", "combined", "density")}. Default value is \code{"combined"}.}
 
 \item{pal_setup}{A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used. Default value is \code{NULL}.}
 }

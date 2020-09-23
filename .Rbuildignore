@@ -6,3 +6,10 @@ Scillus.png
 .github
 test/
 CODE_OF_CONDUCT.md
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+sample/
+tests/testdata/
+.DS_Store
