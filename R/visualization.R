@@ -118,8 +118,6 @@ plot_scdata <- function(dataset,
                 theme(panel.grid.major = element_blank(),
                       panel.grid.minor = element_blank(),
                       panel.background = element_blank(),
-                      axis.text = element_text(size = 12),
-                      axis.title = element_text(size = 12),
                       panel.border = element_rect(colour = "black", 
                                                   fill = NA, 
                                                   size = 1, 
@@ -571,10 +569,11 @@ plot_GSEA <- function(gsea_res,
 #' Box plot/Violin plot of gene expressions or meta measures
 #' 
 #' @param dataset A Seurat object.
-#' @param measures A string vector -
-#' @param group_by A string -
+#' @param measures A string vector - names of genes or meta measures to plot.
+#' @param group_by A string - name of grouping variable.
+#' @param split_by A string - name of split variable. Default value is \code{NA}.
 #' @param pal_setup A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used. Default value is \code{NULL}.
-#' @param show A string -
+#' @param show A string - type of the plot. Should be values in \code{c("box", "violin", "combined")}. Default value is \code{"combined"}.
 #' 
 #' @return A plot.
 #' @importFrom ggplot2 scale_fill_brewer
@@ -585,37 +584,43 @@ plot_GSEA <- function(gsea_res,
 plot_measure <- function(dataset, 
                          measures, 
                          group_by,
+                         split_by = NA,
                          pal_setup = NULL,
                          show = "combined") {
+    
+    if (!is.null(pal_setup)) {
+        pal <- pal_setup[pal_setup[[1]] == group_by,][[2]]
+    } else {
+        pal <- "Set2"
+    }
+    
+    split_by <- ifelse(split_by == "No Split", NA, split_by)
+    
+    l <- get_measure_data(dataset = dataset,
+                          measures = measures,
+                          return_df = FALSE)
+    
+    df <- l[[1]]
+    measures <- l[[2]]
+    
+    p <- list()
+    
+    a <- ifelse(show == "box", 1, 0.2)
+    
+    for (i in seq_along(1:length(measures))) {
         
-        if (!is.null(pal_setup)) {
-                pal <- pal_setup[pal_setup[[1]] == group_by,][[2]]
-        } else {
-                pal <- "Set2"
-        }
-        
-        l <- get_measure_data(dataset = dataset,
-                              measures = measures,
-                              return_df = FALSE)
-        
-        df <- l[[1]]
-        measures <- l[[2]]
-        
-        p <- list()
-        
-        a <- ifelse(show == "box", 1, 0.2)
-        
-        for (i in seq_along(1:length(measures))) {
-                
-                p[[i]] <- ggplot(df, aes(x = .data[[group_by]],
-                                         y = .data[[measures[i]]],
-                                         fill = .data[[group_by]])) +
-                        scale_fill_brewer(palette = pal) +
-                        {if (show != "box") geom_violin()} +
-                        {if (show != "violin") geom_boxplot(alpha = a)} +
-                        theme(legend.position = "none") +
-                        labs(x = group_by, y = NULL) +
-                        ggtitle(measures[i])
-        }
-        patchwork::wrap_plots(p)
+        p[[i]] <- ggplot(df, aes(x = .data[[group_by]],
+                                 y = .data[[measures[i]]],
+                                 fill = .data[[group_by]])) +
+            scale_fill_brewer(palette = pal) +
+            {if (show != "box") geom_violin()} +
+            {if (show != "violin") geom_boxplot(alpha = a)} +
+            theme(legend.position = "none") +
+            labs(x = group_by, y = NULL) +
+            {if (!is.na(split_by)) facet_wrap(as.formula(paste0("~", split_by)), nrow = 1)} +
+            ggtitle(measures[i])
+    }
+    patchwork::wrap_plots(p)
 }
+
+
