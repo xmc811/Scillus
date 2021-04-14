@@ -64,10 +64,10 @@ plot_stat(scRNA, "cluster_count", group_by = "group")
 plot_stat(scRNA, "prop_fill", group_by = "group")
 plot_stat(scRNA, "prop_multi", group_by = "group")
 
-markers_1 <- FindAllMarkers(scRNA_1, logfc.threshold = 0.1, min.pct = 0, only.pos = T)
+markers <- FindAllMarkers(scRNA, logfc.threshold = 0.1, min.pct = 0, only.pos = T)
 
-plot_heatmap(dataset = scRNA_1, 
-              markers = markers_1,
+plot_heatmap(dataset = scRNA, 
+              markers = markers,
               sort_var = c("seurat_clusters","sample"),
               anno_var = c("seurat_clusters", "sample","percent.mt","S.Score","G2M.Score"),
               anno_colors = c("Set2","Dark2","Reds","Blues","Greens"))
