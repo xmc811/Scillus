@@ -89,14 +89,12 @@ plot_qc <- function(data_list,
 plot_scdata <- function(dataset, 
                         color_by = "seurat_clusters",
                         split_by = NA,
-                        pal_setup = NULL) {
+                        pal_setup = 'Set2') {
         
         if (is.data.frame(pal_setup)) {
                 pal <- pal_setup[pal_setup[[1]] == color_by,][[2]]
-        } else if (is.character(pal_setup)){
-                pal <- pal_setup
         } else {
-                pal <- "Set2"
+                pal <- pal_setup
         }
     
         split_by <- ifelse(split_by == "No Split", NA, split_by)
@@ -109,12 +107,14 @@ plot_scdata <- function(dataset,
                 as.data.frame() %>%
                 cbind(dataset@meta.data) %>%
                 rownames_to_column(var = "barcode")
+        
+        colors <- set_colors(pal, length(unique(df[[color_by]])))
 
         ggplot(df) +
                 geom_point(aes(x = .data$UMAP_1,
                                y = .data$UMAP_2,
                                color = .data[[color_by]])) +
-                scale_color_brewer(palette = pal) +
+                scale_color_manual(values = colors) +
                 theme(panel.grid.major = element_blank(),
                       panel.grid.minor = element_blank(),
                       panel.background = element_blank(),

@@ -54,10 +54,13 @@ scRNA %<>%
 scRNA %<>%
         refactor_seurat(metadata = m)
 
+plot_scdata(scRNA)
 plot_scdata(scRNA, pal_setup = pal)
 plot_scdata(scRNA, pal_setup = "Set3")
-plot_scdata(scRNA)
-plot_scdata(scRNA, color_by = "sample")
+plot_scdata(scRNA, 
+            pal_setup = c('red','yellow','blue','green','cyan','purple','orange','grey'))
+plot_scdata(scRNA, color_by = "sample", 
+            pal_setup = c('red','yellow','blue','green','cyan','purple','orange','grey'))
 plot_scdata(scRNA, split_by = "sample")
 plot_scdata(scRNA, split_by = "No Split")
 plot_scdata(scRNA, color_by = "group", split_by = "seurat_clusters", pal_setup = pal)
