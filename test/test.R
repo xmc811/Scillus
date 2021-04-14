@@ -58,18 +58,20 @@ plot_scdata(scRNA)
 plot_scdata(scRNA, pal_setup = pal)
 plot_scdata(scRNA, pal_setup = "Set3")
 plot_scdata(scRNA, 
-            pal_setup = c('red','yellow','blue','green','cyan','purple','orange','grey'))
+            pal_setup = c('red','yellow','blue','green','cyan','purple','orange'))
 plot_scdata(scRNA, color_by = "sample", 
-            pal_setup = c('red','yellow','blue','green','cyan','purple','orange','grey'))
+            pal_setup = c('red','yellow','blue','green','cyan','purple','orange'))
 plot_scdata(scRNA, split_by = "sample")
 plot_scdata(scRNA, split_by = "No Split")
 plot_scdata(scRNA, color_by = "group", split_by = "seurat_clusters", pal_setup = pal)
 
+plot_stat(scRNA, "group_count", group_by = "seurat_clusters", pal_setup = pal)
+plot_stat(scRNA, "group_count", group_by = "sample")
+plot_stat(scRNA, "group_count", group_by = "group", pal_setup = c('red','blue'))
 
-plot_stat(scRNA, "group_count", group_by = "group")
-plot_stat(scRNA, "cluster_count", group_by = "group")
-plot_stat(scRNA, "prop_fill", group_by = "group")
-plot_stat(scRNA, "prop_multi", group_by = "group")
+plot_stat(scRNA, "prop_fill", group_by = "group", 
+          pal_setup = c('red','yellow','blue','green','cyan','purple','orange'))
+plot_stat(scRNA, "prop_multi", group_by = "sample", pal_setup = pal)
 
 markers <- FindAllMarkers(scRNA, logfc.threshold = 0.1, min.pct = 0, only.pos = T)
 
@@ -106,6 +108,17 @@ gsea_res <- test_GSEA(de,
 
 plot_GSEA(gsea_res)
 
+
+# test
+
+stat <- tibble::tibble(group = scRNA[['group']][[1]], 
+                       cluster = scRNA[['seurat_clusters']][[1]])
+
+stat %<>%
+        group_by(.data$group, 
+                 .data$cluster) %>%
+        summarise(n = n()) %>%
+        mutate(freq = n / sum(n))
 
 
 

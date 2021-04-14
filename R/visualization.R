@@ -34,12 +34,12 @@ plot_qc <- function(data_list,
         qc <- do.call(rbind, qc)
         
         if (is.data.frame(pal_setup)) {
-            palette <- pal_setup[pal_setup[[1]] == group_by,][[2]]
+            pal <- pal_setup[pal_setup[[1]] == group_by,][[2]]
         } else {
-            palette <- pal_setup
+            pal <- pal_setup
         }
         
-        colors <- set_colors(palette, length(unique(qc$group)))
+        colors <- set_colors(pal, length(unique(qc$group)))
         
         p <- ggplot(qc, 
                     mapping = aes(x = .data$group, 
@@ -319,32 +319,32 @@ plot_heatmap <- function(dataset,
 plot_stat <- function(dataset, 
                       plot_type, 
                       group_by = "sample",
-                      pal_setup = NULL,
+                      pal_setup = 'Set2',
                       plot_ratio = 1,
                       text_size = 10,
                       tilt_text = FALSE) {
         
-        if (!is.null(pal_setup)) {
-                group_palette <- pal_setup[pal_setup[[1]] == group_by,][[2]]
-                cluster_palette <- pal_setup[pal_setup[[1]] == "seurat_clusters",][[2]]
+        if (is.data.frame(pal_setup)) {
+                pal <- pal_setup[pal_setup[[1]] == group_by,][[2]]
         } else {
-                group_palette <- "Set2"
-                cluster_palette <- "Paired"
+                pal <- pal_setup
         }
-              
-        group_colors <- get_spectrum(n = length(unique(dataset[[group_by]][[1]])), 
-                                     palette = group_palette)
-        
-        cluster_colors <- get_spectrum(n = length(unique(Idents(dataset))), 
-                                       palette = cluster_palette)
         
         stat <- tibble::tibble(group = dataset[[group_by]][[1]], 
-                               cluster = Idents(dataset))
+                               cluster = dataset[['seurat_clusters']][[1]])
         stat %<>%
                 group_by(.data$group, 
                          .data$cluster) %>%
                 summarise(n = n()) %>%
                 mutate(freq = n / sum(n))
+        
+        ncolors <- if (plot_type == 'prop_fill') {
+            length(unique(dataset[['seurat_clusters']][[1]]))
+        } else {
+            length(unique(dataset[[group_by]][[1]]))
+        }
+        
+        colors <- set_colors(pal, ncolors)
         
         thm <- theme(aspect.ratio = plot_ratio,
                      legend.title = element_text(size = text_size),
@@ -362,34 +362,14 @@ plot_stat <- function(dataset,
                group_count = stat %>%
                        group_by(.data$group) %>%
                        summarise(sum(n)) %>%
-                       ggplot() +
-                       geom_col(aes(x = .data$group, 
-                                    y = .data$`sum(n)`, 
-                                    fill = .data$group)) +
-                       geom_text(aes(x = .data$group, 
-                                     y = .data$`sum(n)`, 
-                                     label = .data$`sum(n)`), 
+                       ggplot(aes(x = .data$group, 
+                                  y = .data$`sum(n)`)) +
+                       geom_col(aes(fill = .data$group)) +
+                       geom_text(aes(label = .data$`sum(n)`), 
                                  vjust = -0.5, 
                                  size = text_size * 0.35) +
-                       scale_fill_manual(values = group_colors) + 
+                       scale_fill_manual(values = colors) + 
                        labs(x = group_by, y = "Number of Cells") + 
-                       thm + thm2 + if (tilt_text) {thm3},
-               
-               cluster_count = stat %>%
-                       group_by(.data$cluster) %>%
-                       summarise(sum(n)) %>%
-                       ggplot() +
-                       geom_col(aes(x = .data$cluster, 
-                                    y = .data$`sum(n)`, 
-                                    fill = .data$cluster)) +
-                       geom_text(aes(x = .data$cluster, 
-                                     y = .data$`sum(n)`, 
-                                     label = .data$`sum(n)`), 
-                                 vjust = -0.5, 
-                                 size = text_size * 0.35) +
-                       scale_fill_manual(values = cluster_colors, 
-                                         name = "Cluster") + 
-                       labs(x = "Cluster", y = "Number of Cells") + 
                        thm + thm2 + if (tilt_text) {thm3},
                
                prop_fill = ggplot(stat) + 
@@ -399,7 +379,7 @@ plot_stat <- function(dataset,
                                 position = "fill", 
                                 stat = "identity") +
                        scale_y_continuous(labels = scales::percent) +
-                       scale_fill_manual(values = cluster_colors, 
+                       scale_fill_manual(values = colors, 
                                          name = "Cluster") +
                        labs(x = group_by, y = "Proportion") + 
                        thm + if (tilt_text) {thm3},
@@ -416,12 +396,12 @@ plot_stat <- function(dataset,
                                      label = scales::percent(.data$freq)), 
                                  vjust = -0.5, 
                                  size = text_size * 0.35) +
-                       scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)), 
+                       scale_y_continuous(expand = expansion(mult = c(0, 0.1)), 
                                           labels = scales::percent_format()) +
                        facet_wrap(~ cluster, 
                                   ncol = 4, 
                                   scales = "free") +
-                       scale_fill_manual(values = group_colors, 
+                       scale_fill_manual(values = colors, 
                                          name = "Group") +
                        labs(x = NULL, 
                             y = "Proportion") + 
