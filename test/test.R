@@ -17,7 +17,11 @@ scRNA <- load_scfile(m)
 plot_qc(scRNA, metrics = "percent.mt")
 plot_qc(scRNA, metrics = "nFeature_RNA")
 plot_qc(scRNA, metrics = "nCount_RNA")
+plot_qc(scRNA, metrics = "nCount_RNA", group_by = "group")
 plot_qc(scRNA, metrics = "nCount_RNA", group_by = "group", pal_setup = pal)
+plot_qc(scRNA, metrics = "nCount_RNA", group_by = "group", pal_setup = c('blue','red'))
+plot_qc(scRNA, metrics = "nCount_RNA", pal_setup = c('blue','red','green','yellow','grey','purple'))
+plot_qc(scRNA, metrics = "nCount_RNA", pal_setup = c('blue','red','green'))
 
 
 scRNA <- filter_scdata(scRNA, subset = nFeature_RNA > 500 & percent.mt < 10)

@@ -133,7 +133,7 @@ get_top_genes <- function(dataset, markers, n) {
         return(df$gene)
 }
 
-#' Get a vector of colors for cluster coding
+#' Get a long vector of colors for cluster coding
 #' 
 #' @param ncolor Number of colors to be generated
 #' @param palette A string vector describing the name of palette in \code{RColorBrewer}.
@@ -143,10 +143,10 @@ get_top_genes <- function(dataset, markers, n) {
 #' @export
 #' 
 #' @examples
-#' get_palette(12, c("Set2", "Set1"))
+#' get_long_palette(12, c("Set2", "Set1"))
 #' 
 
-get_palette <- function(ncolor, palette = c("Paired", "Set2", "Set1")) {
+get_long_palette <- function(ncolor, palette = c("Paired", "Set2", "Set1")) {
         
         num <- c()
         for (i in seq(length(palette))) {
@@ -203,5 +203,45 @@ get_colors <- function(v, pal = "Paired") {
         return(brewer.pal(n = ncol, name = pal)[v])
         
 }
+
+
+#' Test if a vector of strings are valid colors
+#' 
+#' @param x A string vector.
+#' @return A named vector of logicals.
+#' @importFrom grDevices col2rgb
+#' 
+
+are_colors <- function(x) {
+        sapply(x, function(X) {
+                tryCatch(is.matrix(col2rgb(X)), 
+                         error = function(e) FALSE)
+        })
+}
+
+
+set_colors <- function(pal, n) {
+        
+        if (all(pal %in% rownames(brewer.pal.info))) {
+                num <- c()
+                for (i in seq(length(pal))) {
+                        num[i] <- brewer.pal.info[pal[i],][[1]]
+                }
+                full_pal <- do.call(c, map2(.x = num, .y = pal, .f = brewer.pal))
+        } else if (all(are_colors(pal))) {
+                full_pal <- pal
+        } else {
+                stop('Incorrect palette setup. Please input valid RColorBrewer palette names or color names.')
+        }
+                
+        if (n <= length(full_pal)) {
+                return(full_pal[1:n])
+        } else {
+                warning("Number of colors required exceeds palette capacity. RdYlBu spectrum will be used instead.", 
+                        immediate. = TRUE)
+                return(colorRampPalette(brewer.pal(11, "RdYlBu"))(n))
+        }
+}
+
 
 

@@ -22,7 +22,7 @@ plot_qc <- function(data_list,
                     metrics,
                     group_by = "sample",
                     plot_type = "combined",
-                    pal_setup = NULL) {
+                    pal_setup = 'Set2') {
         
         qc <- list()
         
@@ -33,18 +33,19 @@ plot_qc <- function(data_list,
         
         qc <- do.call(rbind, qc)
         
-        if(!is.null(pal_setup)) {
-                palette <- pal_setup[pal_setup[[1]] == group_by,][[2]]
+        if (is.data.frame(pal_setup)) {
+            palette <- pal_setup[pal_setup[[1]] == group_by,][[2]]
         } else {
-                palette <- "Set2"
+            palette <- pal_setup
         }
+        
+        colors <- set_colors(palette, length(unique(qc$group)))
         
         p <- ggplot(qc, 
                     mapping = aes(x = .data$group, 
                                   y = .data$value, 
                                   fill = .data$group)) + 
-                scale_fill_manual(values = get_spectrum(n = length(data_list), 
-                                                        palette = palette)) +
+                scale_fill_manual(values = colors) +
                 scale_y_continuous(labels = if (metrics == "percent.mt") function(x) paste0(x, "%") else waiver(),
                                    breaks = scales::pretty_breaks(n = 5),
                                    limits = if (!metrics %in% c("S.Score", "G2M.Score")) c(0, NA)) +
@@ -57,8 +58,7 @@ plot_qc <- function(data_list,
                         mapping = aes(x = .data$value, 
                                       fill = .data$group)) +
                 geom_density(alpha = 0.3, position = "identity") +
-                scale_fill_manual(values = get_spectrum(n = length(data_list), 
-                                                    palette = palette)) +
+                scale_fill_manual(values = colors) +
                 labs(x = metrics, y = "Density") +
                 theme_bw()
         
@@ -258,7 +258,7 @@ plot_heatmap <- function(dataset,
                 } else {
                         
                         l <- levels(factor(anno[[anno_var[i]]]))
-                        col <- get_palette(ncolor = length(l), 
+                        col <- get_long_palette(ncolor = length(l), 
                                            palette = anno_colors[i])
                         names(col) <- l
                         col <- list(a = col)
