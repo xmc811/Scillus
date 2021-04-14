@@ -111,6 +111,9 @@ plot_GSEA(gsea_res)
 
 # test
 
-
-
+ha = HeatmapAnnotation(a = 1:10)
+names(ha) <- 'foo'
+ha@anno_list[[1]]@color_mapping@name <- 'foo'
+ha@anno_list[[1]]@name_param$label <- 'foo'
+names(ha@anno_list)
 

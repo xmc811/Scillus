@@ -236,8 +236,7 @@ plot_heatmap <- function(dataset,
         mat <- t(mat)
         mat <- mat[match(anno$barcode, rownames(mat)),]
         mat <- t(mat)
-        
-        
+    
         annos <- list()
         
         for (i in seq_along(1:length(anno_var))) {
@@ -254,7 +253,8 @@ plot_heatmap <- function(dataset,
                         
                         ha <- HeatmapAnnotation(a = anno[[anno_var[i]]],
                                                 col = list(a = col_fun),
-                                                border = TRUE)
+                                                border = TRUE,
+                                                annotation_label = anno_var[i])
                 } else {
                         
                         l <- levels(factor(anno[[anno_var[i]]]))
@@ -265,13 +265,10 @@ plot_heatmap <- function(dataset,
                         
                         ha <- HeatmapAnnotation(a = anno[[anno_var[i]]],
                                                 col = col,
-                                                border = TRUE)
+                                                border = TRUE,
+                                                annotation_label = anno_var[i])
                 }
-                
                 names(ha) <- anno_var[i]
-                names(ha@anno_list) <- anno_var[i]
-                ha@anno_list[[1]]@color_mapping@name <- anno_var[i]
-                ha@anno_list[[1]]@name_param$label <- anno_var[i]
                 
                 annos[[i]] <- ha
         }
