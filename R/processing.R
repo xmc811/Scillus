@@ -69,7 +69,7 @@ load_scfile <- function(metadata, ...) {
 #' Filter a list of Seurat objects
 #' 
 #' @param data_list A list of Seurat objects
-#' @param ... Additional arguments to be passed to the function \code{\link{subset.Seurat}}
+#' @param ... Additional arguments to be passed to the function \code{subset}.
 #' 
 #' @return A list of Seurat objects
 #' 

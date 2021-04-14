@@ -8,7 +8,7 @@
 #' @param metrics A string - the name of the QC metrics
 #' @param group_by A string - the grouping variable for plot in the metadata. Default value is \code{"sample"}.
 #' @param plot_type A string - the type of the plot. Can take values in \code{c("box", "violin", "combined", "density")}. Default value is \code{"combined"}.
-#' @param pal_setup A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used. Default value is \code{NULL}.
+#' @param pal_setup A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used, or a string vector of \code{RColorBrewer} palettes, or a string vector of colors. Default value is \code{'Set2'} in \code{RColorBrewer}.
 #' 
 #' @return A plot.
 #' @importFrom tibble tibble
@@ -76,11 +76,11 @@ plot_qc <- function(data_list,
 #' 
 #' @param dataset A Seurat object.
 #' @param color_by A string - by which metadata the colors will be applied. Default value is \code{"seurat_clusters"}.
-#' @param split_by A string - by which metadata the plot will be split. Default value is \code{NULL}.
-#' @param pal_setup A dataframe with 2 columns or a string - the \code{RColorBrewer} palette setup to be used. Default value is \code{NULL}.
+#' @param split_by A string - by which metadata the plot will be split. Default value is \code{NA}.
+#' @param pal_setup A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used, or a string vector of \code{RColorBrewer} palettes, or a string vector of colors. Default value is \code{'Set2'} in \code{RColorBrewer}.
 #' 
 #' @return A plot.
-#' @importFrom ggplot2 theme element_rect element_blank facet_wrap scale_color_brewer
+#' @importFrom ggplot2 theme element_rect element_blank facet_wrap scale_color_manual
 #' @importFrom stringr str_to_title
 #' @importFrom stats as.formula
 #' @export
@@ -303,13 +303,13 @@ plot_heatmap <- function(dataset,
 #' @param dataset A Seurat object.
 #' @param plot_type A string - one of \code{"group_count"}, \code{"cluster_count"}, \code{"prop_fill"}, and \code{"prop_multi"}.
 #' @param group_by A string - the grouping variable for plot in the metadata. Default value is \code{"sample"}.
-#' @param pal_setup A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used. Default value is \code{NULL}.
+#' @param pal_setup A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used, or a string vector of \code{RColorBrewer} palettes, or a string vector of colors. Default value is \code{'Set2'} in \code{RColorBrewer}.
 #' @param plot_ratio A double - the aspect ratio of the plot. Default value is \code{1}.
 #' @param text_size A double - the text size of the plot. Default value is \code{10}.
 #' @param tilt_text A logical - whether the x axis label text is tilted. Default value is \code{FALSE}.
 #' 
 #' @return A plot.
-#' @importFrom ggplot2 geom_col geom_text geom_bar scale_fill_manual scale_y_continuous coord_flip facet_wrap expand_scale
+#' @importFrom ggplot2 geom_col geom_text geom_bar scale_fill_manual scale_y_continuous coord_flip facet_wrap expansion
 #' @importFrom dplyr mutate summarise n
 #' @importFrom forcats fct_rev
 #' @importFrom formattable percent

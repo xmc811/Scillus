@@ -8,7 +8,7 @@ plot_scdata(
   dataset,
   color_by = "seurat_clusters",
   split_by = NA,
-  pal_setup = NULL
+  pal_setup = "Set2"
 )
 }
 \arguments{
@@ -16,9 +16,9 @@ plot_scdata(
 
 \item{color_by}{A string - by which metadata the colors will be applied. Default value is \code{"seurat_clusters"}.}
 
-\item{split_by}{A string - by which metadata the plot will be split. Default value is \code{NULL}.}
+\item{split_by}{A string - by which metadata the plot will be split. Default value is \code{NA}.}
 
-\item{pal_setup}{A dataframe with 2 columns or a string - the \code{RColorBrewer} palette setup to be used. Default value is \code{NULL}.}
+\item{pal_setup}{A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used, or a string vector of \code{RColorBrewer} palettes, or a string vector of colors. Default value is \code{'Set2'} in \code{RColorBrewer}.}
 }
 \value{
 A plot.

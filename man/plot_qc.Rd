@@ -9,7 +9,7 @@ plot_qc(
   metrics,
   group_by = "sample",
   plot_type = "combined",
-  pal_setup = NULL
+  pal_setup = "Set2"
 )
 }
 \arguments{
@@ -21,7 +21,7 @@ plot_qc(
 
 \item{plot_type}{A string - the type of the plot. Can take values in \code{c("box", "violin", "combined", "density")}. Default value is \code{"combined"}.}
 
-\item{pal_setup}{A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used. Default value is \code{NULL}.}
+\item{pal_setup}{A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used, or a string vector of \code{RColorBrewer} palettes, or a string vector of colors. Default value is \code{'Set2'} in \code{RColorBrewer}.}
 }
 \value{
 A plot.

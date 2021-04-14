@@ -9,7 +9,7 @@ filter_scdata(data_list, ...)
 \arguments{
 \item{data_list}{A list of Seurat objects}
 
-\item{...}{Additional arguments to be passed to the function \code{\link{subset.Seurat}}}
+\item{...}{Additional arguments to be passed to the function \code{subset}.}
 }
 \value{
 A list of Seurat objects

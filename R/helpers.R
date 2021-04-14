@@ -161,49 +161,6 @@ get_long_palette <- function(ncolor, palette = c("Paired", "Set2", "Set1")) {
         
 }
 
-#' Get a vector of colors for sample coding
-#' 
-#' @param n Number of colors to be generated
-#' @param palette A string
-#' @return A vector of colors
-#' @importFrom grDevices colorRampPalette
-#' @export
-#' 
-
-get_spectrum <- function(n, palette = "Set2") {
-        
-        if (n <= brewer.pal.info[palette,]['maxcolors'][[1]]) {
-                return(suppressWarnings(brewer.pal(n, name = palette)))
-        } else {
-                warning("Number of colors exceeds palette capacity. RdYlBu spectrum will be used instead.", immediate. = TRUE)
-                return(colorRampPalette(brewer.pal(11, "RdYlBu"))(n))
-        }
-}
-
-
-#' Get a vector of colors
-#' 
-#' @param v An integer index vector.
-#' @param pal A string value describing the name of palette in \code{RColorBrewer}.
-#' @return A vector of colors.
-#' @importFrom RColorBrewer brewer.pal.info brewer.pal
-#' @export
-#' 
-#' @examples
-#' get_colors(c(1:2,4,6), "Paired")
-#' 
-
-get_colors <- function(v, pal = "Paired") {
-        
-        ncol <- brewer.pal.info[pal,][[1]]
-        
-        if (sum(!(v %in% 1:ncol)) > 0) {
-                stop("Please input a valid numeric vector")
-        }
-        return(brewer.pal(n = ncol, name = pal)[v])
-        
-}
-
 
 #' Test if a vector of strings are valid colors
 #' 
@@ -219,6 +176,13 @@ are_colors <- function(x) {
         })
 }
 
+#' Setup the colors for plotting
+#' 
+#' @param pal A string or a string vector.
+#' @param n An integer.
+#' @return A string vector of colors.
+#' @importFrom grDevices colorRampPalette
+#' 
 
 set_colors <- function(pal, n) {
         

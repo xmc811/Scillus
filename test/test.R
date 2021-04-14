@@ -111,14 +111,6 @@ plot_GSEA(gsea_res)
 
 # test
 
-stat <- tibble::tibble(group = scRNA[['group']][[1]], 
-                       cluster = scRNA[['seurat_clusters']][[1]])
-
-stat %<>%
-        group_by(.data$group, 
-                 .data$cluster) %>%
-        summarise(n = n()) %>%
-        mutate(freq = n / sum(n))
 
 
 

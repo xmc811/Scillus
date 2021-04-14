@@ -8,7 +8,7 @@ plot_stat(
   dataset,
   plot_type,
   group_by = "sample",
-  pal_setup = NULL,
+  pal_setup = "Set2",
   plot_ratio = 1,
   text_size = 10,
   tilt_text = FALSE
@@ -21,7 +21,7 @@ plot_stat(
 
 \item{group_by}{A string - the grouping variable for plot in the metadata. Default value is \code{"sample"}.}
 
-\item{pal_setup}{A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used. Default value is \code{NULL}.}
+\item{pal_setup}{A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used, or a string vector of \code{RColorBrewer} palettes, or a string vector of colors. Default value is \code{'Set2'} in \code{RColorBrewer}.}
 
 \item{plot_ratio}{A double - the aspect ratio of the plot. Default value is \code{1}.}
 
