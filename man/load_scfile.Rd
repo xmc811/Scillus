@@ -12,7 +12,7 @@ load_scfile(metadata, ...)
 \item{...}{Additional arguments to be passed to the function \code{\link{CreateSeuratObject}}}
 }
 \value{
-A list of Seurat object
+A list of Seurat objects
 }
 \description{
 Load single cell RNA-seq data from directory or file

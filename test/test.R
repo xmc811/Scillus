@@ -49,7 +49,7 @@ ElbowPlot(scRNA, ndims = 50)
 scRNA %<>%
         RunUMAP(reduction = "pca", dims = 1:20, n.neighbors = 30) %>%
         FindNeighbors(reduction = "pca", dims = 1:20) %>%
-        FindClusters(resolution = 0.2)
+        FindClusters(resolution = 0.3)
 
 scRNA %<>%
         refactor_seurat(metadata = m)
@@ -58,7 +58,7 @@ plot_scdata(scRNA)
 plot_scdata(scRNA, pal_setup = pal)
 plot_scdata(scRNA, pal_setup = "Set3")
 plot_scdata(scRNA, 
-            pal_setup = c('red','yellow','blue','green','cyan','purple','orange'))
+            pal_setup = c('red','yellow','blue','green','cyan','purple','orange','black'))
 plot_scdata(scRNA, color_by = "sample", 
             pal_setup = c('red','yellow','blue','green','cyan','purple','orange'))
 plot_scdata(scRNA, split_by = "sample")
@@ -70,7 +70,7 @@ plot_stat(scRNA, "group_count", group_by = "sample")
 plot_stat(scRNA, "group_count", group_by = "group", pal_setup = c('red','blue'))
 
 plot_stat(scRNA, "prop_fill", group_by = "group", 
-          pal_setup = c('red','yellow','blue','green','cyan','purple','orange'))
+          pal_setup = c('red','yellow','blue','green','cyan','purple','orange','black'))
 plot_stat(scRNA, "prop_multi", group_by = "sample", pal_setup = pal)
 
 markers <- FindAllMarkers(scRNA, logfc.threshold = 0.1, min.pct = 0, only.pos = T)
@@ -105,18 +105,19 @@ plot_measure_dim(dataset = scRNA,
 
 plot_measure_dim(dataset = scRNA, 
                  measures = c("nFeature_RNA","nCount_RNA","percent.mt","KRT14"),
-                 split_by = "group")
+                 split_by = "sample")
 
 plan("multiprocess", workers = 2)
-de <- find_diff_genes(dataset = scRNA_1, 
-                      clusters = as.character(0:6),
+de <- find_diff_genes(dataset = scRNA, 
+                      clusters = as.character(0:7),
                       comparison = c("group", "CTCL", "Normal"),
-                      logfc = 0)
+                      logfc.threshold = 0,
+                      min.cells.group = 1)
 
 gsea_res <- test_GSEA(de, 
                       pathway = pathways.hallmark)
 
-plot_GSEA(gsea_res)
+plot_GSEA(gsea_res, p_cutoff = 0.01)
 
 
 # test

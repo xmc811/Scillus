@@ -23,9 +23,9 @@ plot_qc(
 
 \item{pal_setup}{A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used; 
 
-Or a string vector of \code{RColorBrewer} palettes. Multiple palettes can be specified, in case of many levels to be colored;
+Or a character vector of \code{RColorBrewer} palettes. Multiple palettes can be specified, in case of many levels to be colored;
  
-Or a string vector of colors.}
+Or a character vector of colors.}
 }
 \value{
 A plot.

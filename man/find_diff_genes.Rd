@@ -4,19 +4,22 @@
 \alias{find_diff_genes}
 \title{Find differential expressed genes between two groups in each cluster}
 \usage{
-find_diff_genes(dataset, clusters, comparison, logfc = 0.25)
+find_diff_genes(dataset, clusters, comparison, ...)
 }
 \arguments{
 \item{dataset}{A Seurat object.}
 
-\item{clusters}{A string vector - clusters to investigate.}
+\item{clusters}{A character vector - clusters to investigate.}
 
-\item{comparison}{A string vector of length 3 -}
+\item{comparison}{A character vector of length 3 - the first element is the variable name, the second one is the level of the baseline group, 
+the third one is the level to be compared with the baseline.
 
-\item{logfc}{A double -}
+For example, \code{c("condition","untreated","treated")} will generate the results of \code{"treated"} group vs \code{"untreated"} group in the \code{"condition"} variable.}
+
+\item{...}{Additional parameters to be passed to \code{Seurat::FindMarkes}.}
 }
 \value{
-A Seurat object.
+A dataframe.
 }
 \description{
 Find differential expressed genes between two groups in each cluster

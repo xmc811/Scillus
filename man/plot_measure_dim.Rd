@@ -9,7 +9,7 @@ plot_measure_dim(dataset, measures, split_by = NA, point.size = 1)
 \arguments{
 \item{dataset}{A Seurat object.}
 
-\item{measures}{A string vector - the names of genes or measures to be plotted.}
+\item{measures}{A character vector - the names of genes or measures to be plotted.}
 
 \item{split_by}{A string - the splitting variable in the metadata.}
 

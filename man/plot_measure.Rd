@@ -16,7 +16,7 @@ plot_measure(
 \arguments{
 \item{dataset}{A Seurat object.}
 
-\item{measures}{A string vector - names of genes or meta measures to plot.}
+\item{measures}{A character vector - names of genes or meta measures to plot.}
 
 \item{group_by}{A string - the grouping variable in the metadata.}
 
@@ -24,9 +24,9 @@ plot_measure(
 
 \item{pal_setup}{A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used; 
 
-Or a string vector of \code{RColorBrewer} palettes. Multiple palettes can be specified, in case of many levels to be colored;
+Or a character vector of \code{RColorBrewer} palettes. Multiple palettes can be specified, in case of many levels to be colored;
  
-Or a string vector of colors.}
+Or a character vector of colors.}
 
 \item{plot_type}{A string - type of the plot. Should be values in \code{c("box", "violin", "combined")}.}
 }

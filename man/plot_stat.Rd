@@ -23,15 +23,15 @@ plot_stat(
 
 \item{pal_setup}{A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used; 
 
-or a string vector of \code{RColorBrewer} palettes. Multiple palettes can be specified, in case of many levels to be colored; 
+or a character vector of \code{RColorBrewer} palettes. Multiple palettes can be specified, in case of many levels to be colored; 
 
-or a string vector of colors.}
+or a character vector of colors.}
 
-\item{plot_ratio}{A numeric - the aspect ratio of the plot.}
+\item{plot_ratio}{A numeric value - the aspect ratio of the plot.}
 
-\item{text_size}{A numeric - the text size of the plot.}
+\item{text_size}{A numeric value - the text size of the plot.}
 
-\item{tilt_text}{A logical - whether the x axis label text is tilted.}
+\item{tilt_text}{A logical value - whether the x axis label text is tilted.}
 }
 \value{
 A plot.

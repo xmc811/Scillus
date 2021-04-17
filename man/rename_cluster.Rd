@@ -9,7 +9,7 @@ rename_cluster(dataset, labels)
 \arguments{
 \item{dataset}{A Seurat object.}
 
-\item{labels}{An string vector - new names of each cluster.}
+\item{labels}{An character vector - new names of each cluster.}
 }
 \value{
 A Seurat object.
