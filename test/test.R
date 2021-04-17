@@ -83,7 +83,9 @@ plot_heatmap(dataset = scRNA,
                                  c('red','orange','yellow','purple','blue','green'),
                                  "Reds",
                                  c('blue','white','red'),
-                                 "Greens"))
+                                 "Greens"),
+             hm_limit = c(-1.5,0,1.5),
+             hm_colors = c('purple','black','yellow'))
 
 
 plot_cluster_go(markers, cluster_name = '1', org = "human", ont = "CC")

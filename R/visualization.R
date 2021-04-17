@@ -222,6 +222,9 @@ plot_measure_dim <- function(dataset,
 #' 
 #' For a categorical variable, the element can be the names of palettes in \code{RColorBrewer}. Multiple palettes can be specified, in case of many levels to be colored. 
 #' It can also be a string vector of colors, corresponding to the levels in the categorical variable. Hence, the number of colors specified should be at least the number of levels (unique values) in the categorical variable.
+#' @param hm_limit A numeric vector - three numeric values that dictate the lowest limit, midpoint, and highest limit of the color gradient. These three values correspond to the colors specified in the \code{hm_colors}.  
+#' @param hm_colors A string vector - three colors corresponding to the lowest limit, midpoint, and highest limit specified in \code{hm_colors}.
+#' 
 #' 
 #' @return A plot.
 #' @importFrom Seurat GetAssayData
@@ -239,7 +242,9 @@ plot_heatmap <- function(dataset,
                          sort_var = c('seurat_clusters'),
                          n = 8, 
                          anno_var, 
-                         anno_colors) {
+                         anno_colors,
+                         hm_limit = c(-2, 0, 2), 
+                         hm_colors = c("#4575b4","white","#d73027")) {
         
         mat <- GetAssayData(object = dataset, assay = "integrated", slot = "scale.data")
         
@@ -331,7 +336,7 @@ plot_heatmap <- function(dataset,
                       heatmap_legend_param = list(direction = "horizontal",
                                                   legend_width = unit(6, "cm"),
                                                   title = "Expression"),
-                      col = colorRamp2(c(-2, 0, 2), c("#4575b4", "white", "#d73027")),
+                      col = colorRamp2(hm_limit, hm_colors),
                       show_column_names = FALSE,
                       row_names_side = "left",
                       top_annotation = annos)

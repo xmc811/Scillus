@@ -10,7 +10,9 @@ plot_heatmap(
   sort_var = c("seurat_clusters"),
   n = 8,
   anno_var,
-  anno_colors
+  anno_colors,
+  hm_limit = c(-2, 0, 2),
+  hm_colors = c("#4575b4", "white", "#d73027")
 )
 }
 \arguments{
@@ -33,6 +35,10 @@ It can also be a string vector with three color values, corresponding to the \co
 
 For a categorical variable, the element can be the names of palettes in \code{RColorBrewer}. Multiple palettes can be specified, in case of many levels to be colored. 
 It can also be a string vector of colors, corresponding to the levels in the categorical variable. Hence, the number of colors specified should be at least the number of levels (unique values) in the categorical variable.}
+
+\item{hm_limit}{A numeric vector - three numeric values that dictate the lowest limit, midpoint, and highest limit of the color gradient. These three values correspond to the colors specified in the \code{hm_colors}.}
+
+\item{hm_colors}{A string vector - three colors corresponding to the lowest limit, midpoint, and highest limit specified in \code{hm_colors}.}
 }
 \value{
 A plot.
