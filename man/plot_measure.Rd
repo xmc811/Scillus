@@ -9,8 +9,8 @@ plot_measure(
   measures,
   group_by,
   split_by = NA,
-  pal_setup = NULL,
-  show = "combined"
+  pal_setup = "Set2",
+  plot_type = "combined"
 )
 }
 \arguments{
@@ -18,13 +18,17 @@ plot_measure(
 
 \item{measures}{A string vector - names of genes or meta measures to plot.}
 
-\item{group_by}{A string - name of grouping variable.}
+\item{group_by}{A string - the grouping variable in the metadata.}
 
-\item{split_by}{A string - name of split variable. Default value is \code{NA}.}
+\item{split_by}{A string - the splitting variable in the metadata.}
 
-\item{pal_setup}{A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used. Default value is \code{NULL}.}
+\item{pal_setup}{A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used; 
 
-\item{show}{A string - type of the plot. Should be values in \code{c("box", "violin", "combined")}. Default value is \code{"combined"}.}
+Or a string vector of \code{RColorBrewer} palettes. Multiple palettes can be specified, in case of many levels to be colored;
+ 
+Or a string vector of colors.}
+
+\item{plot_type}{A string - type of the plot. Should be values in \code{c("box", "violin", "combined")}.}
 }
 \value{
 A plot.

@@ -17,7 +17,7 @@ plot_qc(
 
 \item{metrics}{A string - the name of the QC metrics.}
 
-\item{group_by}{A string - the grouping variable in the metadata to plot.}
+\item{group_by}{A string - the grouping variable in the metadata.}
 
 \item{plot_type}{A string - the type of the plot. Can take values in \code{c("box", "violin", "combined", "density")}.}
 

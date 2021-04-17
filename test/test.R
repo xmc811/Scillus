@@ -93,15 +93,19 @@ plot_cluster_go(markers, cluster_name = '1', org = "human", ont = "CC")
 plot_all_cluster_go(markers, org = 'human', ont = "CC")
 
 plot_measure(dataset = scRNA, measures = c("KRT14","S100A8","FAM138A","percent.mt"), 
-             group_by = "group", 
-             pal_setup = pal)
+             group_by = "group",
+             pal_setup = 'Set2')
+
+plot_measure(dataset = scRNA, measures = c("KRT14","S100A8","FAM138A","percent.mt"), 
+             group_by = "group",
+             pal_setup = c('blue','red'))
 
 plot_measure_dim(dataset = scRNA, 
                  measures = c("nFeature_RNA","nCount_RNA","percent.mt","KRT14"))
 
 plot_measure_dim(dataset = scRNA, 
                  measures = c("nFeature_RNA","nCount_RNA","percent.mt","KRT14"),
-                 split_by = "No Split")
+                 split_by = "group")
 
 plan("multiprocess", workers = 2)
 de <- find_diff_genes(dataset = scRNA_1, 

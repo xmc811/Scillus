@@ -16,7 +16,7 @@ plot_scdata(
 
 \item{color_by}{A string - by which metadata variable the colors will be applied.}
 
-\item{split_by}{A string - by which metadata variable the plot will be split.}
+\item{split_by}{A string - the splitting variable in the metadata.}
 
 \item{pal_setup}{A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used;
 

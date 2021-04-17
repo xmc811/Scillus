@@ -19,7 +19,7 @@ plot_stat(
 
 \item{plot_type}{A string - one of \code{"group_count"}, \code{"prop_fill"}, and \code{"prop_multi"}.}
 
-\item{group_by}{A string - the grouping variable for plot in the metadata.}
+\item{group_by}{A string - the grouping variable in the metadata.}
 
 \item{pal_setup}{A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used; 
 
@@ -27,9 +27,9 @@ or a string vector of \code{RColorBrewer} palettes. Multiple palettes can be spe
 
 or a string vector of colors.}
 
-\item{plot_ratio}{A double - the aspect ratio of the plot.}
+\item{plot_ratio}{A numeric - the aspect ratio of the plot.}
 
-\item{text_size}{A double - the text size of the plot.}
+\item{text_size}{A numeric - the text size of the plot.}
 
 \item{tilt_text}{A logical - whether the x axis label text is tilted.}
 }
