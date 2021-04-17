@@ -17,17 +17,21 @@ plot_stat(
 \arguments{
 \item{dataset}{A Seurat object.}
 
-\item{plot_type}{A string - one of \code{"group_count"}, \code{"cluster_count"}, \code{"prop_fill"}, and \code{"prop_multi"}.}
+\item{plot_type}{A string - one of \code{"group_count"}, \code{"prop_fill"}, and \code{"prop_multi"}.}
 
-\item{group_by}{A string - the grouping variable for plot in the metadata. Default value is \code{"sample"}.}
+\item{group_by}{A string - the grouping variable for plot in the metadata.}
 
-\item{pal_setup}{A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used, or a string vector of \code{RColorBrewer} palettes, or a string vector of colors. Default value is \code{'Set2'} in \code{RColorBrewer}.}
+\item{pal_setup}{A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used; 
 
-\item{plot_ratio}{A double - the aspect ratio of the plot. Default value is \code{1}.}
+or a string vector of \code{RColorBrewer} palettes. Multiple palettes can be specified, in case of many levels to be colored; 
 
-\item{text_size}{A double - the text size of the plot. Default value is \code{10}.}
+or a string vector of colors.}
 
-\item{tilt_text}{A logical - whether the x axis label text is tilted. Default value is \code{FALSE}.}
+\item{plot_ratio}{A double - the aspect ratio of the plot.}
+
+\item{text_size}{A double - the text size of the plot.}
+
+\item{tilt_text}{A logical - whether the x axis label text is tilted.}
 }
 \value{
 A plot.

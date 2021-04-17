@@ -13,16 +13,19 @@ plot_qc(
 )
 }
 \arguments{
-\item{data_list}{A list of Seurat objects}
+\item{data_list}{A list of Seurat objects.}
 
-\item{metrics}{A string - the name of the QC metrics}
+\item{metrics}{A string - the name of the QC metrics.}
 
-\item{group_by}{A string - the grouping variable for plot in the metadata. Default value is \code{"sample"}.}
+\item{group_by}{A string - the grouping variable in the metadata to plot.}
 
-\item{plot_type}{A string - the type of the plot. Can take values in \code{c("box", "violin", "combined", "density")}. Default value is \code{"combined"}.}
+\item{plot_type}{A string - the type of the plot. Can take values in \code{c("box", "violin", "combined", "density")}.}
 
-\item{pal_setup}{A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used, or a string vector of \code{RColorBrewer} palettes, 
-or a string vector of colors. Default value is \code{'Set2'} in \code{RColorBrewer}.}
+\item{pal_setup}{A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used; 
+
+Or a string vector of \code{RColorBrewer} palettes. Multiple palettes can be specified, in case of many levels to be colored;
+ 
+Or a string vector of colors.}
 }
 \value{
 A plot.

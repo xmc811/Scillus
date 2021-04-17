@@ -14,12 +14,15 @@ plot_scdata(
 \arguments{
 \item{dataset}{A Seurat object.}
 
-\item{color_by}{A string - by which metadata the colors will be applied. Default value is \code{"seurat_clusters"}.}
+\item{color_by}{A string - by which metadata variable the colors will be applied.}
 
-\item{split_by}{A string - by which metadata the plot will be split. Default value is \code{NA}.}
+\item{split_by}{A string - by which metadata variable the plot will be split.}
 
-\item{pal_setup}{A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used, or a string vector of \code{RColorBrewer} palettes, 
-or a string vector of colors. Default value is \code{'Set2'} in \code{RColorBrewer}.}
+\item{pal_setup}{A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used;
+
+Or a string vector of \code{RColorBrewer} palettes. Multiple palettes can be specified, in case of many levels to be colored; 
+
+Or a string vector of colors.}
 }
 \value{
 A plot.
