@@ -78,13 +78,17 @@ markers <- FindAllMarkers(scRNA, logfc.threshold = 0.1, min.pct = 0, only.pos = 
 plot_heatmap(dataset = scRNA, 
               markers = markers,
               sort_var = c("seurat_clusters","sample"),
-              anno_var = c("seurat_clusters", "sample","percent.mt","S.Score","G2M.Score"),
-              anno_colors = c("Set2","Dark2","Reds","Blues","Greens"))
+              anno_var = c("seurat_clusters","sample","percent.mt","S.Score","G2M.Score"),
+              anno_colors = list("Set2",
+                                 c('red','orange','yellow','purple','blue','green'),
+                                 "Reds",
+                                 c('blue','white','red'),
+                                 "Greens"))
 
 
-plot_cluster_go(markers_1, cluster_name = '1', org = "human", ont = "CC")
+plot_cluster_go(markers, cluster_name = '1', org = "human", ont = "CC")
 
-plot_all_cluster_go(markers_1, org = 'human', ont = "CC")
+plot_all_cluster_go(markers, org = 'human', ont = "CC")
 
 plot_measure(dataset = scRNA, measures = c("KRT14","S100A8","FAM138A","percent.mt"), 
              group_by = "group", 

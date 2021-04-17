@@ -21,7 +21,8 @@ plot_qc(
 
 \item{plot_type}{A string - the type of the plot. Can take values in \code{c("box", "violin", "combined", "density")}. Default value is \code{"combined"}.}
 
-\item{pal_setup}{A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used, or a string vector of \code{RColorBrewer} palettes, or a string vector of colors. Default value is \code{'Set2'} in \code{RColorBrewer}.}
+\item{pal_setup}{A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used, or a string vector of \code{RColorBrewer} palettes, 
+or a string vector of colors. Default value is \code{'Set2'} in \code{RColorBrewer}.}
 }
 \value{
 A plot.

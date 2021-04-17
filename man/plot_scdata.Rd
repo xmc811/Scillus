@@ -18,7 +18,8 @@ plot_scdata(
 
 \item{split_by}{A string - by which metadata the plot will be split. Default value is \code{NA}.}
 
-\item{pal_setup}{A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used, or a string vector of \code{RColorBrewer} palettes, or a string vector of colors. Default value is \code{'Set2'} in \code{RColorBrewer}.}
+\item{pal_setup}{A dataframe with 2 columns - the \code{RColorBrewer} palette setup to be used, or a string vector of \code{RColorBrewer} palettes, 
+or a string vector of colors. Default value is \code{'Set2'} in \code{RColorBrewer}.}
 }
 \value{
 A plot.

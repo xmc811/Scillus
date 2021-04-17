@@ -133,34 +133,6 @@ get_top_genes <- function(dataset, markers, n) {
         return(df$gene)
 }
 
-#' Get a long vector of colors for cluster coding
-#' 
-#' @param ncolor Number of colors to be generated
-#' @param palette A string vector describing the name of palette in \code{RColorBrewer}.
-#' @return A vector of colors.
-#' @importFrom RColorBrewer brewer.pal.info brewer.pal
-#' @importFrom purrr map2
-#' @export
-#' 
-#' @examples
-#' get_long_palette(12, c("Set2", "Set1"))
-#' 
-
-get_long_palette <- function(ncolor, palette = c("Paired", "Set2", "Set1")) {
-        
-        num <- c()
-        for (i in seq(length(palette))) {
-                num[i] <- brewer.pal.info[palette[i],][[1]]
-        }
-        
-        ful_pal <- do.call(c, map2(.x = num, .y = palette, .f = brewer.pal))
-        
-        pal <- ful_pal[1:ncolor]
-        
-        return(pal)
-        
-}
-
 
 #' Test if a vector of strings are valid colors
 #' 
@@ -182,6 +154,8 @@ are_colors <- function(x) {
 #' @param n An integer.
 #' @return A string vector of colors.
 #' @importFrom grDevices colorRampPalette
+#' @importFrom RColorBrewer brewer.pal.info brewer.pal
+#' @importFrom purrr map2
 #' 
 
 set_colors <- function(pal, n) {
