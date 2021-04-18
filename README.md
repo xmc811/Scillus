@@ -28,27 +28,22 @@ library(Scillus)
 
 ### Version History
 
+* April 17, 2021
+ 
+  Version 0.5.0: Support of long palettes and customized colors
+
 * September 23, 2020
 
-Version 0.4.0
-
-Additonal improvements for R Shiny applications
-
+  Version 0.4.0: Additonal improvements for R Shiny applications
 
 * January 29, 2020
 
-Version 0.3.0
-
+  Version 0.3.0
 
 * December 20, 2019
 
-Version 0.2.0
-
-Optimized processing and plotting functions; simplified installation process
-
+  Version 0.2.0: Optimized processing and plotting functions; simplified installation process
 
 * August 25, 2019
 
-Version 0.1.0
-
-Initial release; essential functions for streamlined scRNA-seq analysis and visualization
+  Version 0.1.0: Initial release; essential functions for streamlined scRNA-seq analysis and visualization
