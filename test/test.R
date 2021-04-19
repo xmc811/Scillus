@@ -1,7 +1,6 @@
 library(Scillus)
 library(Seurat)
 library(magrittr)
-library(ggplot2)
 library(tidyverse)
 
 a <- list.files("./test/GSE128531_RAW", full.names = TRUE)
@@ -75,6 +74,8 @@ plot_stat(scRNA, "prop_fill", group_by = "group",
 plot_stat(scRNA, "prop_multi", group_by = "sample", pal_setup = pal)
 
 markers <- FindAllMarkers(scRNA, logfc.threshold = 0.1, min.pct = 0, only.pos = T)
+
+DefaultAssay(scRNA)
 
 plot_heatmap(dataset = scRNA, 
               markers = markers,

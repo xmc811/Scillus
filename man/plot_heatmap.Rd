@@ -12,7 +12,8 @@ plot_heatmap(
   anno_var,
   anno_colors,
   hm_limit = c(-2, 0, 2),
-  hm_colors = c("#4575b4", "white", "#d73027")
+  hm_colors = c("#4575b4", "white", "#d73027"),
+  row_font_size = 12
 )
 }
 \arguments{
@@ -39,6 +40,8 @@ It can also be a character vector of colors, corresponding to the levels in the 
 \item{hm_limit}{A numeric vector - three numeric values that dictate the lowest limit, midpoint, and highest limit of the color gradient. These three values correspond to the colors specified in the \code{hm_colors}.}
 
 \item{hm_colors}{A character vector of length 3 - three colors corresponding to the lowest limit, midpoint, and highest limit specified in \code{hm_colors}.}
+
+\item{row_font_size}{An integer - the font size of row names.}
 }
 \value{
 A plot.

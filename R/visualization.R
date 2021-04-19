@@ -224,16 +224,17 @@ plot_measure_dim <- function(dataset,
 #' It can also be a character vector of colors, corresponding to the levels in the categorical variable. Hence, the number of colors specified should be at least the number of levels (unique values) in the categorical variable.
 #' @param hm_limit A numeric vector - three numeric values that dictate the lowest limit, midpoint, and highest limit of the color gradient. These three values correspond to the colors specified in the \code{hm_colors}.  
 #' @param hm_colors A character vector of length 3 - three colors corresponding to the lowest limit, midpoint, and highest limit specified in \code{hm_colors}.
-#' 
+#' @param row_font_size An integer - the font size of row names.
 #' 
 #' @return A plot.
-#' @importFrom Seurat GetAssayData
+#' @importFrom Seurat GetAssayData DefaultAssay
 #' @importFrom tibble rownames_to_column
 #' @importFrom rlang syms
 #' @importFrom circlize colorRamp2
 #' @importFrom ggplot2 unit
 #' @importFrom ComplexHeatmap Heatmap draw HeatmapAnnotation
 #' @importFrom RColorBrewer brewer.pal.info brewer.pal
+#' @importFrom grid gpar
 #' @export
 #' 
 
@@ -244,9 +245,10 @@ plot_heatmap <- function(dataset,
                          anno_var, 
                          anno_colors,
                          hm_limit = c(-2, 0, 2), 
-                         hm_colors = c("#4575b4","white","#d73027")) {
+                         hm_colors = c("#4575b4","white","#d73027"),
+                         row_font_size = 12) {
         
-        mat <- GetAssayData(object = dataset, assay = "integrated", slot = "scale.data")
+        mat <- GetAssayData(object = dataset, assay = DefaultAssay(dataset), slot = "scale.data")
         
         if (is.data.frame(markers)) {
             genes <- get_top_genes(dataset, markers, n)
@@ -339,6 +341,7 @@ plot_heatmap <- function(dataset,
                       col = colorRamp2(hm_limit, hm_colors),
                       show_column_names = FALSE,
                       row_names_side = "left",
+                      row_names_gp = gpar(fontsize = row_font_size),
                       top_annotation = annos)
         
         draw(ht, 
