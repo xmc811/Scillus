@@ -87,7 +87,8 @@ plot_heatmap(dataset = scRNA,
                                  c('blue','white','red'),
                                  "Greens"),
              hm_limit = c(-1.5,0,1.5),
-             hm_colors = c('purple','black','yellow'))
+             hm_colors = c('purple','black','yellow'),
+             row_font_size = 5)
 
 
 plot_cluster_go(markers, cluster_name = '1', org = "human", ont = "CC")
@@ -124,9 +125,21 @@ plot_GSEA(gsea_res, p_cutoff = 0.01)
 
 # test
 
-ha = HeatmapAnnotation(a = 1:10)
-names(ha) <- 'foo'
-ha@anno_list[[1]]@color_mapping@name <- 'foo'
-ha@anno_list[[1]]@name_param$label <- 'foo'
-names(ha@anno_list)
+library(RColorBrewer)
+
+pal1 <- rep(brewer.pal(12, "Paired"),2)
+
+plot_heatmap(dataset = scRNA, 
+             markers = markers,
+             sort_var = c("seurat_clusters","sample"),
+             anno_var = c("seurat_clusters","sample","percent.mt","S.Score","G2M.Score"),
+             anno_colors = list("Set2",
+                                pal1,
+                                "Reds",
+                                c('blue','white','red'),
+                                "Greens"),
+             hm_limit = c(-1.5,0,1.5),
+             hm_colors = c('purple','black','yellow'),
+             row_font_size = 5)
+
 

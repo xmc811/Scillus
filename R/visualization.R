@@ -314,8 +314,9 @@ plot_heatmap <- function(dataset,
                     } else {
                         stop(err_msg)
                     }
-                        
+                    
                     names(col) <- l
+                    col <- col[!is.na(names(col))]
                     col <- list(a = col)
                         
                     ha <- HeatmapAnnotation(a = anno[[anno_var[i]]],
